@@ -1,0 +1,6 @@
+with the offers here https://education.github.com/pack/offers, we get free hosting credit so github lets u host shit for free
+figure out how to store messages in database, backend shit for neil
+figure out how to get strings from messages and get messages themselves
+figure out how to serach for all past messages from a user
+tensorflow shit
+maybe do a command where a user can request for the bot to delete all their previous messages

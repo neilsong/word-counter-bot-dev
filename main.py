@@ -1,6 +1,5 @@
 from discord.ext import commands, tasks
 import discord
-import psutil
 
 import datetime
 import re
@@ -21,7 +20,6 @@ bot = commands.Bot(
     fetch_offline_members=True
 )
 
-bot.process = psutil.Process(os.getpid())
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")

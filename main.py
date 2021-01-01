@@ -98,26 +98,10 @@ async def on_guild_remove(guild):
         name=f"for words on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
 
-@tasks.loop(minutes=5, loop=bot.loop)
-async def update_db():
+#@tasks.loop(minutes=5, loop=bot.loop)
+#async def update_db():
     # Update the MongoDB every 5 minutes
 
-    async with bot.pool.acquire() as conn:
-        await conn.execute("""
-            INSERT INTO words
-            (id)
-            VALUES {}
-            ON CONFLICT
-                DO NOTHING
-        ;""".format(", ".join([f"({u})" for u in bot.words])))
-
-        for data in bot.words.copy().values():
-            await conn.execute("""
-                UPDATE words
-                SET total = {},
-                    hard_r = {}
-                WHERE id = {}
-            ;""".format(data["total"], data["hard_r"], data["id"]))
 
 
 @bot.command(hidden=True)
@@ -140,8 +124,8 @@ async def restartdb(ctx):
 @bot.command(hidden=True)
 @commands.is_owner()
 async def restartudb(ctx):
-    update_db.cancel()
-    update_db.start()
+    #update_db.cancel()
+    #update_db.start()
     await ctx.send("Cancelled and restarted `update_db()`")
 
 
@@ -155,6 +139,5 @@ except KeyboardInterrupt:
     print("Logging out")
     bot.loop.run_until_complete(bot.logout())
 finally:
-    update_db.cancel()
-    bot.loop.run_until_complete(bot.pool.close())
+    #update_db.cancel()
     print("Closed")

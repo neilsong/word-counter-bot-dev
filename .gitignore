@@ -133,3 +133,5 @@ dmypy.json
 
 # MongoDB
 MongoDB/
+
+.vscode/

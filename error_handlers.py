@@ -1,11 +1,3 @@
-"""
-N-Word Counter - A simple-to-use Discord bot that counts how many times each user has said the N-word
-Written in 2019 by NinjaSnail1080 (Discord user: @NinjaSnail1080#8581)
-
-To the extent possible under law, the author has dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
-You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
-"""
-
 from discord.ext import commands
 import discord
 

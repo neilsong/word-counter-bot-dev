@@ -1,6 +1,6 @@
 from discord.ext import commands, tasks
 import discord
-import pymongo
+from pymongo import MongoClient
 import psutil
 
 import datetime
@@ -28,8 +28,23 @@ bot.load_extension("commands")
 bot.load_extension("error_handlers")
 
 
+# DB Schema
+# users-db = db
+# users = collection
+# doc: {
+#   id: discord-user-id
+#   word_1: count 
+# }
+
 async def create_db():
-        # Create db & collection in MongoDB if it doesn't already exist.
+        # Create db in MongoDB if it doesn't already exist.
+        bot.collection = await MongoClient(config.MONGO)['users-db']['users']
+        async with bot.collection as conn:
+            query = conn.find({}, {"_id": 0})
+
+        bot.words = {}
+        for i in query:
+            bot.words.update({i.get("id"): dict(i)})
         
         print("\nCreating DB")
 
@@ -100,9 +115,12 @@ async def on_guild_remove(guild):
         name=f"for words on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
 
-#@tasks.loop(minutes=5, loop=bot.loop)
-#async def update_db():
+@tasks.loop(minutes=5, loop=bot.loop)
+async def update_db():
     # Update the MongoDB every 5 minutes
+    async with bot.collection as conn:
+        for data in bot.words:
+            conn.update_one({"id": data.get(id, "total")}, {"$inc": data}, True)
 
 
 
@@ -126,8 +144,8 @@ async def restartdb(ctx):
 @bot.command(hidden=True)
 @commands.is_owner()
 async def restartudb(ctx):
-    #update_db.cancel()
-    #update_db.start()
+    update_db.cancel()
+    update_db.start()
     await ctx.send("Cancelled and restarted `update_db()`")
 
 

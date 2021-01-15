@@ -36,6 +36,8 @@ bot.load_extension("error_handlers")
 #   word_1: count 
 # }
 
+# Bot.words
+# {12345667890: {'hi': 1, 'id': 428563260170567700, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}, 0: {'hi': 1, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
@@ -43,6 +45,8 @@ async def create_db():
         async for i in bot.collection.find({}, {"_id": 0}):
            bot.words.update({i.get("id"): dict(i)})           
         
+        print("\n")
+        print(bot.words)
         print("\nCreating DB")
 
 @bot.event
@@ -95,22 +99,22 @@ async def on_message(message):
         # Untested for-each, init doc reference only
         #for w in message.content:
         result=message.content.split(" ")
-        t=[shuffle_word(word) for word in result]
-        msg=listToString(t)
-        await message.channel.send(msg)
-            #if message.author.id not in bot.words:
-            #    bot.words.update(
-            #        {message.author.id: {w: 0, "id": message.author.id}})
-            #bot.words[message.author.id][w] += 1
-            #bot.words[0][w] += 1
-        if 'neil' in result or 'Neil' in result :
-            emoji = '🇬'
-            await message.add_reaction(emoji)
-            emoji = '🅰️'
-            await message.add_reaction(emoji)
-            emoji = '🇾'
-            await message.add_reaction(emoji)
-        
+        for w in result:
+            if message.author.id not in bot.words:
+                bot.words.update({message.author.id: { w: 0, "id": message.author.id }})
+            elif w not in bot.words[message.author.id]:
+                bot.words[message.author.id].update({ w: 0, "id": message.author.id })
+            bot.words[message.author.id][w] += 1
+            if 0 not in bot.words:
+                bot.words.update({ 0: { w: 0 }})
+            elif w not in bot.words[0]:
+                bot.words[0].update({ w: 0 })
+            bot.words[0][w] += 1
+
+
+    # Local cache debugging
+    # print("\n")
+    # print(bot.words)
 
     ctx = await bot.get_context(message)
     if ctx.valid:
@@ -139,6 +143,7 @@ async def on_guild_remove(guild):
 @tasks.loop(minutes=5, loop=bot.loop)
 async def update_db():
     # Update the MongoDB every 5 minutes
+    print("\nUpdating")
     async with bot.collection as conn:
         for data in bot.words:
             await conn.update_one({"id": data.get(id, "total")}, {"$inc": data}, True)

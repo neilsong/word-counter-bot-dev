@@ -37,7 +37,8 @@ bot.load_extension("error_handlers")
 # }
 
 # Bot.words
-# {12345667890: {'hi': 1, 'id': 428563260170567700, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}, 0: {'hi': 1, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
+# {12345667890: {'hi': 1, 'id': 428563260170567700, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}, 
+# 0: {'hi': 1, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
@@ -77,10 +78,6 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=discord.Activity(
         name=f"for any word on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
-def shuffle_word(word):
-    word = list(word)
-    shuffle(word)
-    return ''.join(word)
 
 def listToString(s):  
     
@@ -97,8 +94,8 @@ async def on_message(message):
 
     if message.guild is not None:
         # Untested for-each, init doc reference only
-        #for w in message.content:
-        result=message.content.split(" ")
+        result= message.content.split(" ")
+        result = listToString(result).split("\n")
         for w in result:
             if message.author.id not in bot.words:
                 bot.words.update({message.author.id: { w: 0, "id": message.author.id }})
@@ -113,8 +110,8 @@ async def on_message(message):
 
 
     # Local cache debugging
-    # print("\n")
-    # print(bot.words)
+    print("\n")
+    print(bot.words)
 
     ctx = await bot.get_context(message)
     if ctx.valid:

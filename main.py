@@ -1,6 +1,6 @@
 from discord.ext import commands, tasks
 import discord
-from pymongo import MongoClient
+import motor.motor_asyncio
 import psutil
 
 import datetime
@@ -38,13 +38,10 @@ bot.load_extension("error_handlers")
 
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
-        bot.collection = await MongoClient(config.MONGO)['users-db']['users']
-        async with bot.collection as conn:
-            query = conn.find({}, {"_id": 0})
-
+        bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.words = {}
-        for i in query:
-            bot.words.update({i.get("id"): dict(i)})
+        async for i in bot.collection.find({}, {"_id": 0}):
+           bot.words.update({i.get("id"): dict(i)})           
         
         print("\nCreating DB")
 
@@ -120,7 +117,7 @@ async def update_db():
     # Update the MongoDB every 5 minutes
     async with bot.collection as conn:
         for data in bot.words:
-            conn.update_one({"id": data.get(id, "total")}, {"$inc": data}, True)
+            await conn.update_one({"id": data.get(id, "total")}, {"$inc": data}, True)
 
 
 
@@ -159,5 +156,5 @@ except KeyboardInterrupt:
     print("Logging out")
     bot.loop.run_until_complete(bot.logout())
 finally:
-    #update_db.cancel()
+    update_db.cancel()
     print("Closed")

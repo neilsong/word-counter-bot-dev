@@ -1,3 +1,5 @@
 discord.py
 psutil
 pymongo
+motor
+dnspython

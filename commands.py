@@ -73,40 +73,74 @@ class Commands(commands.Cog):
 
         await ctx.send(embed=embed)
 
+
+    @commands.command()
+    async def countS(self, ctx, user: discord.User=None,string: String=None):
+        if user == self.bot.user:
+            return await ctx.send("Man, why would I count my own words?")
+        if user.bot:
+            return await ctx.send("I don't count words said by bots.")
+        try:
+            words=self.bot.words[user.id]
+        except:
+            return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
+        
+        
+        await ctx.send("Here's my invite link so I can count words on your server too:\n"
+                f"https://discordapp.com/oauth2/authorize?client_id={self.bot.app_info.id}"
+                "&scope=bot&permissions=8")
+
+
     @commands.command()
     async def count(self, ctx, user: discord.User=None):
         """Get the number of times a user has said the N-Word
         Format like this: `count <@mention user>`
         If you don't mention a user, I'll get **your** N-word count
         """
+        #for w in message.content:
+
+
+
         if user is None:
             user = ctx.author
         if user == self.bot.user:
-            return await ctx.send("You crazy? I'd never, ever say the ***nigga***-word")
+            return await ctx.send("Man, why would I count my own words?")
         if user.bot:
-            return await ctx.send(
-                "I don't count N-Words said by bots. Can you imagine how hectic that would be?")
-
+            return await ctx.send("I don't count words said by bots.")
         try:
-            count = self.bot.nwords[user.id]
+            words=self.bot.words[user.id]
         except:
-            return await ctx.send(f"{user.mention} has not said the N-word yet. Good for them")
+            return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
+        
+        counter=0
 
-        if count["total"]:
-            msg = (f"{user.mention} has said the N-word **{count['total']:,} "
-                   f"time{'' if count['total'] == 1 else 's'}**")
-            if count["hard_r"]:
-                msg += f", __{count['hard_r']:,} of which had a hard-R__"
-            if "last_time" in count:
-                since_last = count["total"] - count["last_time"]
-                if since_last:
-                    msg += (f".\n\nThey've said the N-word __{since_last:,} "
-                            f"time{'' if since_last == 1 else 's'}__ since they were last "
-                            "investigated")
-            await ctx.send(msg)
-            self.bot.nwords[user.id]["last_time"] = self.bot.nwords[user.id]["total"]
-        else:
-            await ctx.send(f"{user.mention} has not said the N-word yet. Good for them")
+        words={k: v for k, v in sorted(words.items(), key=lambda item: item[1],reverse=True)}
+        for w in words:
+            if w=="id":
+                continue
+            counter+=words[w]
+
+        embed = discord.Embed(
+            title=user.name+"\'s Word Counts",
+            description=str(len(words)-1)+
+                        " distinct words have been said, "
+                        " with "
+                        +str(counter)+
+                        " words said in total. (Only showing top 10)",
+            color=find_color(ctx))
+        ct=0
+        for w in words:
+            if w=="id":
+                continue
+            ct+=1
+            embed.add_field(name=w, value=str(words[w]), inline=False)
+            if ct==10:
+                break
+        embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
+        
+        await ctx.send(embed=embed)
+
+
 
     @count.error
     async def count_error(self, ctx, exc):

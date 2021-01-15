@@ -94,8 +94,10 @@ async def on_message(message):
 
     if message.guild is not None:
         # Untested for-each, init doc reference only
-        result= message.content.split(" ")
-        result = listToString(result).split("\n")
+        msgcontent = message.content.replace("\n", " ")
+        msgcontent=' '.join(msgcontent.split())
+        result= msgcontent.split(" ")
+        #esult = listToString(result).split("\n")
         for w in result:
             if message.author.id not in bot.words:
                 bot.words.update({message.author.id: { w: 0, "id": message.author.id }})

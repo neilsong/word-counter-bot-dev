@@ -2,7 +2,7 @@ from discord.ext import commands, tasks
 import discord
 import pymongo
 import psutil
-
+from random import shuffle
 import datetime
 import re
 import os
@@ -58,9 +58,21 @@ async def on_ready():
     bot.started_at = datetime.datetime.utcnow()
     bot.app_info = await bot.application_info()
 
-    await bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(
+    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(
         name=f"for any word on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
+def shuffle_word(word):
+    word = list(word)
+    shuffle(word)
+    return ''.join(word)
+
+def listToString(s):  
+    
+    # initialize an empty string 
+    str1 = " " 
+    
+    # return string   
+    return (str1.join(s)) 
 
 @bot.event
 async def on_message(message):
@@ -69,12 +81,24 @@ async def on_message(message):
 
     if message.guild is not None:
         # Untested for-each, init doc reference only
-        for w in message.content:
-            if message.author.id not in bot.words:
-                bot.words.update(
-                    {message.author.id: {w: 0, "id": message.author.id}})
-            bot.words[message.author.id][w] += 1
-            bot.words[0][w] += 1
+        #for w in message.content:
+        result=message.content.split(" ")
+        t=[shuffle_word(word) for word in result]
+        msg=listToString(t)
+        await message.channel.send(msg)
+            #if message.author.id not in bot.words:
+            #    bot.words.update(
+            #        {message.author.id: {w: 0, "id": message.author.id}})
+            #bot.words[message.author.id][w] += 1
+            #bot.words[0][w] += 1
+        if 'neil' in result or 'Neil' in result :
+            emoji = '🇬'
+            await message.add_reaction(emoji)
+            emoji = '🅰️'
+            await message.add_reaction(emoji)
+            emoji = '🇾'
+            await message.add_reaction(emoji)
+        
 
     ctx = await bot.get_context(message)
     if ctx.valid:

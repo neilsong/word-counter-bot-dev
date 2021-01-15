@@ -75,7 +75,7 @@ class Commands(commands.Cog):
 
 
     @commands.command()
-    async def countS(self, ctx, user: discord.User=None,string: String=None):
+    async def countS(self, ctx, user: discord.User=None):#,string: discord.=None):
         if user == self.bot.user:
             return await ctx.send("Man, why would I count my own words?")
         if user.bot:

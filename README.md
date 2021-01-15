@@ -1,7 +1,7 @@
 # bot-word-counter
 Python Discord Bot for counting words
 
-***A Discord bot that analyzes the word choice of users on the server**
+**A Discord bot that analyzes the word choice of users on the server**
 
 A bot that will analyze syntax/word choice of everyone in this server
 

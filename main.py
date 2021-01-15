@@ -126,6 +126,13 @@ async def on_message(message):
         elif bot.user in message.mentions:
             await message.channel.send(f"Do `@{bot.user} help` for help on my commands")
 
+    print("\nUpdating")
+    for data in bot.words:
+        print("\n")
+        print(data)
+        await bot.collection.update_one({"id": data}, {"$inc": bot.words[data]}, True)
+
+
 
 @bot.event
 async def on_guild_join(guild):
@@ -139,7 +146,7 @@ async def on_guild_remove(guild):
         name=f"for words on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
 
-@tasks.loop(minutes=5, loop=bot.loop)
+@tasks.loop(seconds=2.0, loop=bot.loop)
 async def update_db():
     # Update the MongoDB every 5 minutes
     print("\nUpdating")

@@ -79,27 +79,28 @@ async def on_ready():
 
 
 def listToString(s):  
-    
-    # initialize an empty string 
     str1 = " " 
-    
-    # return string   
     return (str1.join(s)) 
 
 @bot.event
 async def on_message(message):
+    print(2)
     if not bot.ready_for_commands or message.author.bot:
         return
 
     if message.guild is not None:
         # Untested for-each, init doc reference only
         msgcontent = message.content.replace("\n", " ")
+        trashCharacters=[".","/","\\","\"","]","[","|","_","+"]
+        for w in trashCharacters:
+            msgcontent =msgcontent.replace(w, " ")
         msgcontent=' '.join(msgcontent.split())
+        msgcontent=msgcontent.lower()
         result= msgcontent.split(" ")
         #esult = listToString(result).split("\n")
         for w in result:
-            print(w)
-            print("\n")
+            #print(w)
+            #print("\n")
             if message.author.id not in bot.words:
                 bot.words.update({message.author.id: { w: 0, "__id": message.author.id }})
             elif w not in bot.words[message.author.id]:
@@ -113,8 +114,8 @@ async def on_message(message):
 
 
     # Local cache debugging
-    print("\n")
-    print(bot.words)
+    #print("\n")
+    #print(bot.words)
 
     ctx = await bot.get_context(message)
     if ctx.valid:

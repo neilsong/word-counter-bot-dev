@@ -116,7 +116,7 @@ class Commands(commands.Cog):
 
         words={k: v for k, v in sorted(words.items(), key=lambda item: item[1],reverse=True)}
         for w in words:
-            if w=="id":
+            if w=="__id":
                 continue
             counter+=words[w]
 
@@ -130,7 +130,7 @@ class Commands(commands.Cog):
             color=find_color(ctx))
         ct=0
         for w in words:
-            if w=="id":
+            if w=="__id":
                 continue
             ct+=1
             embed.add_field(name=w, value=str(words[w]), inline=False)

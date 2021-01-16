@@ -54,7 +54,6 @@ async def create_db():
 async def on_connect():
     print("\nConnected to Discord")
 
-
 @bot.event
 async def on_ready():
     await create_db()
@@ -130,7 +129,7 @@ async def on_message(message):
     for data in bot.words:
         print("\n")
         print(data)
-        await bot.collection.update_one({"id": data}, {"$inc": bot.words[data]}, True)
+        await bot.collection.update_one({"id": data}, {"$set": bot.words[data]}, True)
 
 
 

@@ -147,7 +147,7 @@ async def update_db():
     # Update the MongoDB every 5 minutes
     print("\nUpdating")
     for data in bot.words:
-        await bot.collection.update_one({"__id": data}, {"$set": bot.words[data]}, True)
+        await bot.collection.update_one({"__id": data}, {'$set': bot.words[data]}, True)
 
 
 

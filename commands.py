@@ -130,6 +130,8 @@ class Commands(commands.Cog):
             color=find_color(ctx))
         ct=0
         for w in words:
+            if len(w)>256:
+                w=(w[:252] + '..')
             if w=="__id":
                 continue
             ct+=1

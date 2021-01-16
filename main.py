@@ -84,7 +84,7 @@ def listToString(s):
 
 @bot.event
 async def on_message(message):
-    print(2)
+   
     if not bot.ready_for_commands or message.author.bot:
         return
 
@@ -98,6 +98,9 @@ async def on_message(message):
         msgcontent=msgcontent.lower()
         result= msgcontent.split(" ")
         #esult = listToString(result).split("\n")
+        #print(result)
+        if result[0]=="":
+            return
         for w in result:
             #print(w)
             #print("\n")

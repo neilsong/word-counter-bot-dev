@@ -44,7 +44,7 @@ async def create_db():
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.words = {}
         async for i in bot.collection.find({}, {"_id": 0}):
-           bot.words.update({i.get("id"): dict(i)})           
+           bot.words.update({i.get("__id"): dict(i)})           
         
         print("\n")
         print(bot.words)
@@ -69,7 +69,7 @@ async def on_ready():
     print("Users: " + str(len(bot.users)))
     print("-----------------\n")
 
-    #update_db.start()
+    update_db.start()
     bot.ready_for_commands = True
     bot.started_at = datetime.datetime.utcnow()
     bot.app_info = await bot.application_info()
@@ -98,15 +98,17 @@ async def on_message(message):
         result= msgcontent.split(" ")
         #esult = listToString(result).split("\n")
         for w in result:
+            print(w)
+            print("\n")
             if message.author.id not in bot.words:
-                bot.words.update({message.author.id: { w: 0, "id": message.author.id }})
+                bot.words.update({message.author.id: { w: 0, "__id": message.author.id }})
             elif w not in bot.words[message.author.id]:
-                bot.words[message.author.id].update({ w: 0, "id": message.author.id })
+                bot.words[message.author.id].update({ w: 0, "__id": message.author.id })
             bot.words[message.author.id][w] += 1
             if 0 not in bot.words:
-                bot.words.update({ 0: { w: 0 }})
+                bot.words.update({ 0: { w: 0, "__id": 0}})
             elif w not in bot.words[0]:
-                bot.words[0].update({ w: 0 })
+                bot.words[0].update({ w: 0, "__id": 0})
             bot.words[0][w] += 1
 
 
@@ -125,12 +127,6 @@ async def on_message(message):
         elif bot.user in message.mentions:
             await message.channel.send(f"Do `@{bot.user} help` for help on my commands")
 
-    print("\nUpdating")
-    for data in bot.words:
-        print("\n")
-        print(data)
-        await bot.collection.update_one({"id": data}, {"$set": bot.words[data]}, True)
-
 
 
 @bot.event
@@ -145,13 +141,12 @@ async def on_guild_remove(guild):
         name=f"for words on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
 
-@tasks.loop(seconds=2.0, loop=bot.loop)
+@tasks.loop(minutes=5, loop=bot.loop)
 async def update_db():
     # Update the MongoDB every 5 minutes
     print("\nUpdating")
-    async with bot.collection as conn:
-        for data in bot.words:
-            await conn.update_one({"id": data.get(id, "total")}, {"$inc": data}, True)
+    for data in bot.words:
+        await bot.collection.update_one({"__id": data}, {"$set": bot.words[data]}, True)
 
 
 

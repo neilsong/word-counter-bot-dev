@@ -286,7 +286,8 @@ class Commands(commands.Cog):
         """Delete a user's entry from the dict"""
 
         try:
-            self.bot.nwords.pop(user_id)
+            self.bot.words.pop(user_id)
+            await self.bot.collection.delete_one({"__id": user_id})
             await ctx.send("Done")
         except KeyError as e:
             await ctx.send(f"KeyError: ```{e}```")

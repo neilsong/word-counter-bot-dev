@@ -142,11 +142,11 @@ async def on_guild_remove(guild):
         name=f"for words on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
 
-@tasks.loop(minutes=5, loop=bot.loop)
+@tasks.loop(minutes=2, loop=bot.loop)
 async def update_db():
     # Update the MongoDB every 5 minutes
     print("\nUpdating")
-    for data in bot.words:
+    for data in list(bot.words):
         await bot.collection.update_one({"__id": data}, {'$set': bot.words[data]}, True)
 
 

@@ -91,7 +91,7 @@ async def on_message(message):
     if message.guild is not None:
         # Untested for-each, init doc reference only
         msgcontent = message.content.replace("\n", " ")
-        trashCharacters=[".","/","\\","\"","]","[","|","_","+"]
+        trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","!","?"]
         for w in trashCharacters:
             msgcontent =msgcontent.replace(w, " ")
         msgcontent=' '.join(msgcontent.split())

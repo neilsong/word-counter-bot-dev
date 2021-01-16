@@ -104,13 +104,20 @@ class Commands(commands.Cog):
         if user is None:
             user = ctx.author
         if user == self.bot.user:
-            return await ctx.send("Man, why would I count my own words?")
-        if user.bot:
-            return await ctx.send("I don't count words said by bots.")
-        try:
-            words=self.bot.words[user.id]
-        except:
-            return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
+            try:
+                words=self.bot.words[0]
+            except:
+                return await ctx.send("Nothing found? Something must have gone wrong.")
+            
+            #return await ctx.send("Man, why would I count my own words?")
+        #if user.bot:
+            #return await ctx.send("I don't count words said by bots.")
+
+        if not (user == self.bot.user):
+            try:
+                words=self.bot.words[user.id]
+            except:
+                return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
         
         counter=0
 
@@ -130,12 +137,10 @@ class Commands(commands.Cog):
             color=find_color(ctx))
         ct=0
         for w in words:
-            if len(w)>256:
-                w=(w[:252] + '..')
             if w=="__id":
                 continue
             ct+=1
-            embed.add_field(name=w, value=str(words[w]), inline=False)
+            embed.add_field(name=((w[:252] + '...') if len(w)>256 else w), value=str(words[w]), inline=False)
             if ct==10:
                 break
         embed.set_footer(text="Note: I don't count words said in the past before I joined this server")

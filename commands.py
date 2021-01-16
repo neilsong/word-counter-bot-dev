@@ -75,20 +75,41 @@ class Commands(commands.Cog):
 
 
     @commands.command()
-    async def countS(self, ctx, user: discord.User=None):#,string: discord.=None):
-        if user == self.bot.user:
-            return await ctx.send("Man, why would I count my own words?")
-        if user.bot:
-            return await ctx.send("I don't count words said by bots.")
-        try:
-            words=self.bot.words[user.id]
-        except:
-            return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
+    async def countS(self, ctx, word):
         
+        users = {}
+        for user in self.bot.words:
+            if user==0:
+                continue
+            try:
+                users[user]=self.bot.words[user][word]
+            except:
+                continue
+
         
-        await ctx.send("Here's my invite link so I can count words on your server too:\n"
-                f"https://discordapp.com/oauth2/authorize?client_id={self.bot.app_info.id}"
-                "&scope=bot&permissions=8")
+        users={k: v for k, v in sorted(users.items(), key=lambda item: item[1],reverse=True)}
+        for u in users:
+            asdfg=u
+            break
+
+
+        desc=str(len(users))+" have said this word. (Only showing top 10)"
+        ct=0
+        for u in users:
+            ct+=1
+            desc+="\n"+f"{self.bot.get_user(u).mention}"
+            desc+="\n"+str(users[u])
+            if ct==10:
+                break
+        embed = discord.Embed(
+            title="Leaderboard for the word "+word,
+            description=desc,
+            color=find_color(ctx))
+        
+        embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
+        
+        await ctx.send(embed=embed)
+
 
 
     @commands.command()

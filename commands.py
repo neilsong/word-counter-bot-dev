@@ -121,23 +121,21 @@ class Commands(commands.Cog):
             if w=="__id":
                 continue
             counter+=words[w]
-
-        embed = discord.Embed(
-            title="The Server\'s Word Count",
-            description=str(len(words)-1)+
-                        " distinct words have been said, "
-                        " with "
-                        +str(counter)+
-                        " words said in total. (Only showing top 10)",
-            color=find_color(ctx))
         ct=0
+        desc=""
         for w in words:
             if w=="__id":
                 continue
             ct+=1
-            embed.add_field(name=((w[:252] + '...') if len(w)>256 else w), value=str(words[w]), inline=False)
+            desc+="\n**"+ w+"** \n"+str(words[w])
             if ct==10:
                 break
+
+        embed = discord.Embed(
+            title="The Server\'s Word Count",
+            description=str(len(words)-1)+" distinct words have been said, with "+str(counter)+" words said in total. (Only showing top 10)"+desc,
+            color=find_color(ctx))
+
         embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
         
         await ctx.send(embed=embed)
@@ -175,22 +173,21 @@ class Commands(commands.Cog):
                 continue
             counter+=words[w]
 
-        embed = discord.Embed(
-            title=user.name+"\'s Word Counts",
-            description=str(len(words)-1)+
-                        " distinct words have been said, "
-                        " with "
-                        +str(counter)+
-                        " words said in total. (Only showing top 10)",
-            color=find_color(ctx))
         ct=0
+        desc=""
         for w in words:
             if w=="__id":
                 continue
             ct+=1
-            embed.add_field(name=((w[:252] + '...') if len(w)>256 else w), value=str(words[w]), inline=False)
+            desc+="\n**"+ w+"** \n"+str(words[w])
             if ct==10:
                 break
+
+        embed = discord.Embed(
+            title=user.name+"\'s Word Counts",
+            description=str(len(words)-1)+" distinct words have been said, with "+str(counter)+" words said in total. (Only showing top 10)"+desc,
+            color=find_color(ctx))
+
         embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
         
         await ctx.send(embed=embed)

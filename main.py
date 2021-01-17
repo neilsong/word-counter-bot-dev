@@ -105,7 +105,7 @@ async def on_message(message):
             await message.channel.send(f"Do `@{bot.user} help` for help on my commands")
         elif message.guild is not None:
             msgcontent = message.content.replace("\n", " ")
-            trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?"]
+            trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$"]
             for w in trashCharacters:
                 msgcontent =msgcontent.replace(w, " ")
             msgcontent=' '.join(msgcontent.split())

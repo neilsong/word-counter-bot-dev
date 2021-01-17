@@ -79,10 +79,12 @@ class Commands(commands.Cog):
         
         users = {}
         async for user in ctx.guild.fetch_members(limit=None):
-            if user==0:
+            if user.id==0:
                 continue
             try:
-                users[user]=self.bot.userWords[user][word]
+                print("\n")
+                print(user.id)
+                users[user.id]=self.bot.userWords[user.id][word]
             except:
                 continue
 

@@ -75,7 +75,7 @@ class Commands(commands.Cog):
 
 
     @commands.command()
-    async def countS(self, ctx, word):
+    async def countword(self, ctx, word):
         
         users = {}
         for user in self.bot.words:
@@ -88,9 +88,6 @@ class Commands(commands.Cog):
 
         
         users={k: v for k, v in sorted(users.items(), key=lambda item: item[1],reverse=True)}
-        for u in users:
-            asdfg=u
-            break
 
 
         desc=str(len(users))+" have said this word. (Only showing top 10)"
@@ -110,29 +107,55 @@ class Commands(commands.Cog):
         
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def countserver(self, ctx):
+        try:
+            words=self.bot.words[0]
+        except:
+            return await ctx.send("Nothing found? Something must have gone wrong.")
+        
+        counter=0
+
+        words={k: v for k, v in sorted(words.items(), key=lambda item: item[1],reverse=True)}
+        for w in words:
+            if w=="__id":
+                continue
+            counter+=words[w]
+
+        embed = discord.Embed(
+            title="The Server\'s Word Count",
+            description=str(len(words)-1)+
+                        " distinct words have been said, "
+                        " with "
+                        +str(counter)+
+                        " words said in total. (Only showing top 10)",
+            color=find_color(ctx))
+        ct=0
+        for w in words:
+            if w=="__id":
+                continue
+            ct+=1
+            embed.add_field(name=((w[:252] + '...') if len(w)>256 else w), value=str(words[w]), inline=False)
+            if ct==10:
+                break
+        embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
+        
+        await ctx.send(embed=embed)
 
 
     @commands.command()
     async def count(self, ctx, user: discord.User=None):
-        """Get the number of times a user has said the N-Word
+        """Get the number of times a user has said any word
         Format like this: `count <@mention user>`
-        If you don't mention a user, I'll get **your** N-word count
+        If requester doesn't mention a user, the bot will get requester's count
         """
-        #for w in message.content:
-
-
 
         if user is None:
             user = ctx.author
-        if user == self.bot.user:
-            try:
-                words=self.bot.words[0]
-            except:
-                return await ctx.send("Nothing found? Something must have gone wrong.")
             
             #return await ctx.send("Man, why would I count my own words?")
-        #if user.bot:
-            #return await ctx.send("I don't count words said by bots.")
+        if user.bot:
+            return await ctx.send("I don't count words said by bots.")
 
         if not (user == self.bot.user):
             try:

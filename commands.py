@@ -78,7 +78,7 @@ class Commands(commands.Cog):
     async def countword(self, ctx, word):
         
         users = {}
-        for user in ctx.guild.fetch_members:
+        async for user in ctx.guild.fetch_members(limit=None):
             if user==0:
                 continue
             try:

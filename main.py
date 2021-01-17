@@ -12,8 +12,19 @@ import config
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 
+
+custom_prefixes = []
+default_prefixes = ['duckbot ','spedbot ','!']
+async def determine_prefix(bot, message):
+    guild = message.guild
+    #Only allow custom prefixes in server
+    if guild:
+        return custom_prefixes + default_prefixes
+    else:
+        return default_prefixes
+
 bot = commands.Bot(
-    command_prefix=commands.when_mentioned,
+    command_prefix=determine_prefix,
     description="Word Counter Bot",
     case_insensitive=True,
     help_command=None,

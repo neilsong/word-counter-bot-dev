@@ -7,7 +7,7 @@ import time
 import pprint
 import sys
 
-
+from main import custom_prefixes, default_prefixes
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
 
@@ -142,6 +142,10 @@ class Commands(commands.Cog):
         
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def prefix(self, ctx):
+        await ctx.send("The prefix(es) for this bot as of now are: "+ (' '.join(default_prefixes) + ' ' + ' '.join(custom_prefixes)))
+
 
     @commands.command()
     async def count(self, ctx, user: discord.User=None):
@@ -202,7 +206,7 @@ class Commands(commands.Cog):
     async def invite(self, ctx):
         """Sends an invite link so you can invite me to your own server"""
 
-        await ctx.send("Here's my invite link so I can count N-words on your server too:\n"
+        await ctx.send("Here's my invite link so I can count words on your server too:\n"
                        f"https://discordapp.com/oauth2/authorize?client_id={self.bot.app_info.id}"
                        "&scope=bot&permissions=8")
 
@@ -256,7 +260,7 @@ class Commands(commands.Cog):
             value=f"{len(self.bot.nwords):,}",
             inline=False)
         embed.add_field(
-            name="Total N-Words Counted",
+            name="Total Words Counted",
             value=f"{self.bot.nwords[0]['total']:,} "
                   f"({self.bot.nwords[0]['hard_r']:,} with hard-R)",
             inline=False)
@@ -319,6 +323,22 @@ class Commands(commands.Cog):
     async def top_error(self, ctx, exc):
         if isinstance(exc, commands.NoPrivateMessage):
             return await ctx.send(exc)
+
+
+    @commands.command()
+    @commands.guild_only()
+    async def setprefix(self, ctx, *, prefixes=""):
+        if len(prefixes) > 0:
+             custom_prefixes.clear
+             custom_prefixes.append(prefixes + " " if len(prefixes) != 1 else prefixes)
+             #im so lazy :D
+             await ctx.send("Prefixes set!")
+        
+        else:
+             await ctx.send("Please set a one-character prefix")
+        
+
+
 
     @commands.command(hidden=True)
     @commands.is_owner()

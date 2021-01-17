@@ -1,0 +1,22 @@
+on: [push]
+
+name: DeployToAzureVM
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+        enable-AzPSSession: true 
+        
+    - name: Run Azure PowerShell script
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          Invoke-AzVMRunCommand -ResourceGroupName 'VM1_group' -Name 'VM1' -CommandId 'DeployToAzureVMScript' -ScriptPath '.github/workflows/DeploytoAzureVM.sh'
+        azPSVersion: '4.8.0'

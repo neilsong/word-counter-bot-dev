@@ -82,8 +82,6 @@ class Commands(commands.Cog):
             if user.id==0:
                 continue
             try:
-                print("\n")
-                print(user.id)
                 users[user.id]=self.bot.userWords[user.id][word]
             except:
                 continue

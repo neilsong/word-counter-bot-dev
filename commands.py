@@ -1,3 +1,4 @@
+
 from discord.ext import commands
 import discord
 
@@ -8,6 +9,7 @@ import pprint
 import sys
 
 from main import custom_prefixes, default_prefixes
+
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
 
@@ -82,7 +84,7 @@ class Commands(commands.Cog):
             if user.id==0:
                 continue
             try:
-                users[user.id]=self.bot.userWords[user.id][word]
+                users[user.id]= self.bot.userWords[user.id][word]
             except:
                 continue
 
@@ -198,6 +200,55 @@ class Commands(commands.Cog):
     async def count_error(self, ctx, exc):
         if isinstance(exc, commands.BadArgument):
             return await ctx.send(exc)
+
+    @commands.command()
+    async def readhistory(self, ctx):
+        async for msg in ctx.channel.history(limit=300):
+            msgcontent = msg.content.replace("\n", " ")
+            print("History: " + msgcontent)
+            trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$"]
+            for w in trashCharacters:
+                msgcontent = msgcontent.replace(w, " ")
+            msgcontent=' '.join(msgcontent.split())
+            msgcontent=msgcontent.lower()
+            
+            result= msgcontent.split(" ")
+            #result = listToString(result).split("\n")
+            #print(result)
+
+            # print(msgcontent)
+            # print(self.bot.userLastMsg.get(msg.author.id,''))
+
+            if result[0]=="":
+                return
+            if self.bot.userLastMsg.get(msg.author.id,'') == msgcontent:
+                return
+            self.bot.userLastMsg.update({msg.author.id : msgcontent})
+
+            for w in result:
+                #print(w)
+                #print("\n")    
+                if msg.guild.id not in self.bot.serverWords:
+                    self.bot.serverWords.update({msg.guild.id: { w: 0, "__id": msg.guild.id }})
+                elif w not in self.bot.serverWords[msg.guild.id]:
+                    self.bot.serverWords[msg.guild.id].update({ w: 0, "__id": msg.guild.id })
+                self.bot.serverWords[msg.guild.id][w] += 1
+
+
+                if msg.author.id not in self.bot.userWords:
+                    self.bot.userWords.update({msg.author.id: { w: 0, "__id": msg.author.id }})
+                elif w not in self.bot.userWords[msg.author.id]:
+                    self.bot.userWords[msg.author.id].update({ w: 0, "__id": msg.author.id })
+                self.bot.userWords[msg.author.id][w] += 1
+
+
+                if 0 not in self.bot.serverWords:
+                    self.bot.serverWords.update({ 0: { w: 0, "__id": 0}})
+                elif w not in self.bot.serverWords[0]:
+                    self.bot.serverWords[0].update({ w: 0, "__id": 0})
+                self.bot.serverWords[0][w] += 1
+    
+
 
     @commands.command()
     async def invite(self, ctx):
@@ -318,7 +369,7 @@ class Commands(commands.Cog):
 
     @top.error
     async def top_error(self, ctx, exc):
-        if isinstance(exc, commands.NoPrivateMessage):
+        if isinstance(exc, commands.NoPrivateMsg):
             return await ctx.send(exc)
 
 

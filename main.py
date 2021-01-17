@@ -101,11 +101,9 @@ def listToString(s):
     return (str1.join(s)) 
 
 @bot.event
-async def on_message(message):
-   
+async def on_message(message):   
     if not bot.ready_for_commands or message.author.bot:
         return
-
     ctx = await bot.get_context(message)
     if ctx.valid:
            await bot.invoke(ctx)
@@ -164,7 +162,6 @@ async def on_message(message):
                     bot.serverWords[0].update({ w: 0, "__id": 0})
                 bot.serverWords[0][w] += 1
 
-                   
 
 
 @bot.event

@@ -6,6 +6,7 @@ from random import shuffle
 import datetime
 import re
 import os
+import sys
 
 import config
 
@@ -33,6 +34,8 @@ bot = commands.Bot(
 )
 
 bot.process = psutil.Process(os.getpid())
+with open('app.pid', 'w') as file:
+    file.write(str(bot.process.pid))
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")
@@ -160,8 +163,7 @@ async def on_message(message):
                     bot.serverWords.update({ 0: { w: 0, "__id": 0}})
                 elif w not in bot.serverWords[0]:
                     bot.serverWords[0].update({ w: 0, "__id": 0})
-                bot.serverWords[0][w] += 1
-
+                bot.serverWords[0][w] += 1          
 
 
 @bot.event
@@ -224,3 +226,4 @@ except KeyboardInterrupt:
 finally:
     update_db.cancel()
     print("Closed")
+    sys.exit(1)

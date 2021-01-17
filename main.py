@@ -6,24 +6,15 @@ from random import shuffle
 import datetime
 import re
 import os
+import signal
 
 import config
 
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 
-
-custom_prefixes = []
-default_prefixes = ['duckbot ','spedbot ','!']
-
-
-async def determine_prefix(bot, message):
-    guild = message.guild
-    return custom_prefixes + default_prefixes
-  
-
 bot = commands.Bot(
-    command_prefix=determine_prefix,
+    command_prefix=commands.when_mentioned,
     description="Word Counter Bot",
     case_insensitive=True,
     help_command=None,
@@ -53,7 +44,6 @@ async def create_db():
         # Create db in MongoDB if it doesn't already exist.
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.userWords = {}
-        bot.userLastMsg = {}
         async for i in bot.collection.find({}, {"_id": 0}):
            bot.userWords.update({i.get("__id"): dict(i)})           
         
@@ -92,8 +82,6 @@ async def on_ready():
 
     await bot.change_presence(status=discord.Status.online, activity=discord.Activity(
         name=f"for any word on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
-# hi
-
 
 def listToString(s):  
     str1 = " " 
@@ -119,26 +107,17 @@ async def on_message(message):
             msgcontent = message.content.replace("\n", " ")
             trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$"]
             for w in trashCharacters:
-                msgcontent = msgcontent.replace(w, " ")
+                msgcontent =msgcontent.replace(w, " ")
             msgcontent=' '.join(msgcontent.split())
             msgcontent=msgcontent.lower()
-            
             result= msgcontent.split(" ")
             #result = listToString(result).split("\n")
             #print(result)
-
-            # print(msgcontent)
-            # print(bot.userLastMsg.get(message.author.id,''))
-
             if result[0]=="":
                 return
-            if bot.userLastMsg.get(message.author.id,'') == msgcontent:
-                return
-            bot.userLastMsg.update({message.author.id : msgcontent})
-
             for w in result:
                 #print(w)
-                #print("\n")    
+                #print("\n")
                 if message.guild.id not in bot.serverWords:
                     bot.serverWords.update({message.guild.id: { w: 0, "__id": message.guild.id }})
                 elif w not in bot.serverWords[message.guild.id]:
@@ -159,7 +138,6 @@ async def on_message(message):
                     bot.serverWords[0].update({ w: 0, "__id": 0})
                 bot.serverWords[0][w] += 1
 
-                   
 
 
 @bot.event
@@ -176,7 +154,7 @@ async def on_guild_remove(guild):
 
 @tasks.loop(minutes=2, loop=bot.loop)
 async def update_db():
-    # Update the MongoDB every 2 minutes
+    # Update the MongoDB every 5 minutes
     print("\nUpdating")
     for data in list(bot.userWords):
         await bot.collection.update_one({"__id": data}, {'$set': bot.userWords[data]}, True)
@@ -209,9 +187,24 @@ async def restartudb(ctx):
     update_db.start()
     await ctx.send("Cancelled and restarted `update_db()`")
 
+class GracefulKiller:
+  kill_now = False
+  def __init__(self):
+    signal.signal(signal.SIGINT, self.exit_gracefully)
+    signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+  def exit_gracefully(self,signum, frame):
+    print("\nClosing")
+    bot.loop.run_until_complete(bot.change_presence(status=discord.Status.invisible))
+    for e in bot.extensions.copy():
+        bot.unload_extension(e)
+    print("Logging out")
+    bot.loop.run_until_complete(bot.logout())
 
 try:
-    bot.loop.run_until_complete(bot.start(config.TOKEN))
+    killer = GracefulKiller()
+    while not killer.kill_now:
+        bot.loop.run_until_complete(bot.start(config.TOKEN))
 except KeyboardInterrupt:
     print("\nClosing")
     bot.loop.run_until_complete(bot.change_presence(status=discord.Status.invisible))

@@ -78,11 +78,11 @@ class Commands(commands.Cog):
     async def countword(self, ctx, word):
         
         users = {}
-        for user in self.bot.words:
+        for user in ctx.guild.members:
             if user==0:
                 continue
             try:
-                users[user]=self.bot.words[user][word]
+                users[user]=self.bot.userWords[user][word]
             except:
                 continue
 
@@ -110,7 +110,7 @@ class Commands(commands.Cog):
     @commands.command()
     async def countserver(self, ctx):
         try:
-            words=self.bot.words[0]
+            words=self.bot.serverWords[ctx.guild.id]
         except:
             return await ctx.send("Nothing found? Something must have gone wrong.")
         
@@ -159,7 +159,7 @@ class Commands(commands.Cog):
 
         if not (user == self.bot.user):
             try:
-                words=self.bot.words[user.id]
+                words=self.bot.userWords[user.id]
             except:
                 return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
         
@@ -337,7 +337,7 @@ class Commands(commands.Cog):
         """Delete a user's entry from the dict"""
 
         try:
-            self.bot.words.pop(user_id)
+            self.bot.userWords.pop(user_id)
             await self.bot.collection.delete_one({"__id": user_id})
             await ctx.send("Done")
         except KeyError as e:

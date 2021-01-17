@@ -36,18 +36,23 @@ bot.load_extension("error_handlers")
 #   word_1: count 
 # }
 
-# Bot.words
+# bot.userWords
 # {12345667890: {'hi': 1, 'id': 428563260170567700, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}, 
 # 0: {'hi': 1, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
-        bot.words = {}
+        bot.userWords = {}
         async for i in bot.collection.find({}, {"_id": 0}):
-           bot.words.update({i.get("__id"): dict(i)})           
+           bot.userWords.update({i.get("__id"): dict(i)})           
         
+        bot.serverCollection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['servers-db']['servers']
+        bot.serverWords = {}
+        async for i in bot.serverCollection.find({}, {"_id": 0}):
+           bot.serverWords.update({i.get("__id"): dict(i)})   
+
         print("\n")
-        print(bot.words)
+        print(bot.userWords)
         print("\nCreating DB")
 
 @bot.event
@@ -97,28 +102,37 @@ async def on_message(message):
         msgcontent=' '.join(msgcontent.split())
         msgcontent=msgcontent.lower()
         result= msgcontent.split(" ")
-        #esult = listToString(result).split("\n")
+        #result = listToString(result).split("\n")
         #print(result)
         if result[0]=="":
             return
         for w in result:
             #print(w)
             #print("\n")
-            if message.author.id not in bot.words:
-                bot.words.update({message.author.id: { w: 0, "__id": message.author.id }})
-            elif w not in bot.words[message.author.id]:
-                bot.words[message.author.id].update({ w: 0, "__id": message.author.id })
-            bot.words[message.author.id][w] += 1
-            if 0 not in bot.words:
-                bot.words.update({ 0: { w: 0, "__id": 0}})
-            elif w not in bot.words[0]:
-                bot.words[0].update({ w: 0, "__id": 0})
-            bot.words[0][w] += 1
+            if message.guild.id not in bot.serverWords:
+                bot.serverWords.update({message.guild.id: { w: 0, "__id": message.guild.id }})
+            elif w not in bot.serverWords[message.guild.id]:
+                bot.serverWords[message.guild.id].update({ w: 0, "__id": message.guild.id })
+            bot.serverWords[message.guild.id][w] += 1
+
+
+            if message.author.id not in bot.userWords:
+                bot.userWords.update({message.author.id: { w: 0, "__id": message.author.id }})
+            elif w not in bot.userWords[message.author.id]:
+                bot.userWords[message.author.id].update({ w: 0, "__id": message.author.id })
+            bot.userWords[message.author.id][w] += 1
+
+
+            if 0 not in bot.serverWords:
+                bot.serverWords.update({ 0: { w: 0, "__id": 0}})
+            elif w not in bot.serverWords[0]:
+                bot.serverWords[0].update({ w: 0, "__id": 0})
+            bot.serverWords[0][w] += 1
 
 
     # Local cache debugging
     #print("\n")
-    #print(bot.words)
+    #print(bot.userWords)
 
     ctx = await bot.get_context(message)
     if ctx.valid:
@@ -149,8 +163,10 @@ async def on_guild_remove(guild):
 async def update_db():
     # Update the MongoDB every 5 minutes
     print("\nUpdating")
-    for data in list(bot.words):
-        await bot.collection.update_one({"__id": data}, {'$set': bot.words[data]}, True)
+    for data in list(bot.userWords):
+        await bot.collection.update_one({"__id": data}, {'$set': bot.userWords[data]}, True)
+    for data in list(bot.serverWords):
+        await bot.serverCollection.update_one({"__id": data}, {'$set': bot.serverWords[data]}, True)
 
 
 

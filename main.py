@@ -63,7 +63,8 @@ async def create_db():
            bot.serverWords.update({i.get("__id"): dict(i)})   
 
         print("\n")
-        print(bot.userWords)
+        print("Number of Users: "+str(len(bot.userWords))+"\nNumber of Servers: "+str(len(bot.serverWords)))
+        #print(bot.userWords)
         print("\nCreating DB")
 
 @bot.event
@@ -126,7 +127,12 @@ async def on_message(message):
             #print(result)
             if result[0]=="":
                 return
+
             for w in result:
+                if '!' in w:
+                    if not re.search("^<@!\d{18}[>$]", w):
+                        w=w.replace("!", "")
+                        
                 #print(w)
                 #print("\n")
                 if message.guild.id not in bot.serverWords:

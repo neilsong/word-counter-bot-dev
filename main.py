@@ -15,13 +15,12 @@ bot_intents.members = True
 
 custom_prefixes = []
 default_prefixes = ['duckbot ','spedbot ','!']
+
+
 async def determine_prefix(bot, message):
     guild = message.guild
-    #Only allow custom prefixes in server
-    if guild:
-        return custom_prefixes + default_prefixes
-    else:
-        return default_prefixes
+    return custom_prefixes + default_prefixes
+  
 
 bot = commands.Bot(
     command_prefix=determine_prefix,
@@ -54,6 +53,7 @@ async def create_db():
         # Create db in MongoDB if it doesn't already exist.
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.userWords = {}
+        bot.userLastMsg = {}
         async for i in bot.collection.find({}, {"_id": 0}):
            bot.userWords.update({i.get("__id"): dict(i)})           
         
@@ -95,6 +95,7 @@ async def on_ready():
         name=f"for any word on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 # hi
 
+
 def listToString(s):  
     str1 = " " 
     return (str1.join(s)) 
@@ -119,14 +120,22 @@ async def on_message(message):
             msgcontent = message.content.replace("\n", " ")
             trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$"]
             for w in trashCharacters:
-                msgcontent =msgcontent.replace(w, " ")
+                msgcontent = msgcontent.replace(w, " ")
             msgcontent=' '.join(msgcontent.split())
             msgcontent=msgcontent.lower()
+            
             result= msgcontent.split(" ")
             #result = listToString(result).split("\n")
             #print(result)
+
+            # print(msgcontent)
+            # print(bot.userLastMsg.get(message.author.id,''))
+
             if result[0]=="":
                 return
+            if bot.userLastMsg.get(message.author.id,'') == msgcontent:
+                return
+            bot.userLastMsg.update({message.author.id : msgcontent})
 
             for w in result:
                 if '!' in w:
@@ -134,7 +143,7 @@ async def on_message(message):
                         w=w.replace("!", "")
                         
                 #print(w)
-                #print("\n")
+                #print("\n")    
                 if message.guild.id not in bot.serverWords:
                     bot.serverWords.update({message.guild.id: { w: 0, "__id": message.guild.id }})
                 elif w not in bot.serverWords[message.guild.id]:
@@ -155,6 +164,7 @@ async def on_message(message):
                     bot.serverWords[0].update({ w: 0, "__id": 0})
                 bot.serverWords[0][w] += 1
 
+                   
 
 
 @bot.event
@@ -171,7 +181,7 @@ async def on_guild_remove(guild):
 
 @tasks.loop(minutes=2, loop=bot.loop)
 async def update_db():
-    # Update the MongoDB every 5 minutes
+    # Update the MongoDB every 2 minutes
     print("\nUpdating")
     for data in list(bot.userWords):
         await bot.collection.update_one({"__id": data}, {'$set': bot.userWords[data]}, True)

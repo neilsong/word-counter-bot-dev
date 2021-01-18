@@ -33,7 +33,7 @@ bot = commands.Bot(
     fetch_offline_members=True
 )
 
-bot.process = psutil.Process(os.getpid())
+bot.process = psutil.Process(os.getppid())
 with open('app.pid', 'w') as file:
     file.write(str(bot.process.pid))
 bot.ready_for_commands = False

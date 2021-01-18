@@ -412,7 +412,7 @@ class Commands(commands.Cog):
             await self.bot.collection.delete_one({"__id": user_id})
             await ctx.send("Done")
         except KeyError as e:
-            await ctx.send(f"KeyError: ```{e}```")
+            await ctx.send(f"User `{e}` does not exist or has no words logged yet.")
 
 
     @commands.command(hidden=True)
@@ -447,7 +447,7 @@ class Commands(commands.Cog):
     @isaBotAdmin()
     async def restartstatus(self, ctx):
         await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(
-            name=f"for N-Words on {len(self.bot.guilds)} servers",
+            name=f"any Words on {len(self.bot.guilds)} servers",
             type=discord.ActivityType.watching))
 
         await ctx.send("Reset playing status")
@@ -473,7 +473,7 @@ class Commands(commands.Cog):
     @commands.command(hidden=True)
     @isaBotAdmin()
     async def updatedb(self, ctx):
-        bot.update_db()
+        self.bot.update_db()
 
 def setup(bot):
     bot.add_cog(Commands(bot))

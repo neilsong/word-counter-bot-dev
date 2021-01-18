@@ -183,11 +183,12 @@ async def on_guild_remove(guild):
 @tasks.loop(minutes=2, loop=bot.loop)
 async def update_db():
     # Update the MongoDB every 2 minutes
-    print("\nUpdating")
+    print("\nStart Updating")
     for data in list(bot.userWords):
         await bot.collection.update_one({"__id": data}, {'$set': bot.userWords[data]}, True)
     for data in list(bot.serverWords):
         await bot.serverCollection.update_one({"__id": data}, {'$set': bot.serverWords[data]}, True)
+    print("\nDone Updating")
 
 
 

@@ -19,4 +19,9 @@ jobs:
       with:
         azcliversion: 2.17.1
         inlineScript: |
-          az vm run-command invoke -g VM1_group -n VM1 --command-id RunShellScript --scripts @.github/workflows/script.sh
+          az vm run-command invoke -g VM1_group -n VM1 --command-id RunShellScript --scripts \
+          'cd /home/azureuser/word-counter-bot' \
+          'screen -X quit' \
+          'source venv/bin/activate' \
+          'git pull' \
+          'screen -d -m python3 main.py'

@@ -22,6 +22,5 @@ jobs:
           az vm run-command invoke -g VM1_group -n VM1 --command-id RunShellScript --scripts \
           'cd /home/azureuser/word-counter-bot' \
           'screen -X quit' \
-          'source venv/bin/activate' \
           'git pull' \
-          'screen -d -m python3 main.py'
+          'screen -d -m /home/azureuser/word-counter-bot/.github/workflows/execution.sh'

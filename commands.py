@@ -96,7 +96,7 @@ class Commands(commands.Cog):
         ct=0
         for u in users:
             ct+=1
-            desc+="\n"+f"{self.bot.get_user(u).mention}"
+            desc+= "\n\n"+ str(ct) + ".  " + f"{self.bot.get_user(u).mention}"
             desc+=" - "+str(users[u])
             if ct==10:
                 break

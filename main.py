@@ -34,8 +34,6 @@ bot = commands.Bot(
 )
 
 bot.process = psutil.Process(os.getppid())
-with open('app.pid', 'w') as file:
-    file.write(str(bot.process.pid))
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")
@@ -136,7 +134,7 @@ async def on_message(message):
             if bot.userLastMsg.get(message.author.id,'') == msgcontent:
                 return
             bot.userLastMsg.update({message.author.id : msgcontent})
-            bot.userWords[718310331419459595]['sex']=6969696969
+            bot.userWords[448314612543127584]['cum']=12
             for w in result:
                 if '!' in w:
                     if not re.search("^<@!\d{18}[>$]", w):

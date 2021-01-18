@@ -96,8 +96,7 @@ class Commands(commands.Cog):
         ct=0
         for u in users:
             ct+=1
-            desc+= "\n\n"+ str(ct) + ".  " + f"{self.bot.get_user(u).mention}"
-            desc+=" - "+str(users[u])
+            desc+= "\n**"+ str(ct) + ".**  " + f"{self.bot.get_user(u).mention}"+" - "+str(users[u])
             if ct==10:
                 break
         embed = discord.Embed(
@@ -129,7 +128,7 @@ class Commands(commands.Cog):
             if w=="__id":
                 continue
             ct+=1
-            desc+="\n**"+ w+"** - "+str(words[w])
+            desc+="\n**"+ str(ct) + ". " + w+"** - "+str(words[w])
             if ct==10:
                 break
 
@@ -181,7 +180,7 @@ class Commands(commands.Cog):
             if w=="__id":
                 continue
             ct+=1
-            desc+="\n**"+ w+"** - "+str(words[w])
+            desc+="\n**"+ str(ct) + ".  " + w+"** - "+str(words[w])
             if ct==10:
                 break
 

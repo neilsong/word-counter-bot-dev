@@ -14,9 +14,9 @@ jobs:
         creds: ${{secrets.AZURE_CREDENTIALS}}
         enable-AzPSSession: true 
         
-    - name: Run Azure PowerShell script
-      uses: azure/powershell@v1
+    - name: Azure CLI script
+      uses: azure/CLI@v1
       with:
+        azcliversion: 2.17.1
         inlineScript: |
-          Invoke-AzVMRunCommand -ResourceGroupName 'VM1_group' -Name 'VM1' -CommandId 'DeployToAzureVMScript' -ScriptPath '.github/workflows/DeploytoAzureVM.sh'
-        azPSVersion: '4.8.0'
+          az vm run-command invoke -g VM1_group -n VM1 --command-id RunShellScript --scripts "cd word-counter-bot && kill -2 $(cat app.pid) && source venv/bin/activate && git pull && python3 main.py"

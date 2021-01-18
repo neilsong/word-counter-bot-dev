@@ -12,7 +12,7 @@ class Error_Handlers(commands.Cog):
     async def on_command_error(self, ctx, exception):
         exc = exception
         if isinstance(exc, commands.NotOwner):
-            return await ctx.send(f"Only my owner, {self.bot.app_info.owner}, can use that command")
+            return await ctx.send("Only bot admins can use this command.")
 
         elif isinstance(exc, commands.NoPrivateMessage):
             return

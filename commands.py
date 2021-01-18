@@ -9,6 +9,8 @@ import pprint
 import sys
 
 from main import custom_prefixes, default_prefixes
+from main import allowedIds
+from decorators import isaBotAdmin
 
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
@@ -389,7 +391,7 @@ class Commands(commands.Cog):
 
 
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @isaBotAdmin()
     async def edit(self, ctx, user_id: int, total: int, hard_r: int, last_time: int=None):
         """Edit a user's entry in the dict or add a new one"""
 
@@ -400,8 +402,9 @@ class Commands(commands.Cog):
         await ctx.send("Done")
 
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @isaBotAdmin()
     async def pop(self, ctx, user_id: int):
+
         """Delete a user's entry from the dict"""
 
         try:
@@ -411,8 +414,9 @@ class Commands(commands.Cog):
         except KeyError as e:
             await ctx.send(f"KeyError: ```{e}```")
 
+
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @isaBotAdmin()
     async def execute(self, ctx, *, query):
         """Execute a query in the database"""
 
@@ -425,7 +429,7 @@ class Commands(commands.Cog):
             await ctx.send(f"Query failed:```{e}```")
 
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @isaBotAdmin()
     async def fetch(self, ctx, *, query):
         """Run a query in the database and fetch the result"""
 
@@ -440,7 +444,7 @@ class Commands(commands.Cog):
             await ctx.send(f"Query failed:```{e}```")
 
     @commands.command(aliases=["resetstatus"], hidden=True)
-    @commands.is_owner()
+    @isaBotAdmin()
     async def restartstatus(self, ctx):
         await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(
             name=f"for N-Words on {len(self.bot.guilds)} servers",
@@ -449,7 +453,7 @@ class Commands(commands.Cog):
         await ctx.send("Reset playing status")
 
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @isaBotAdmin()
     async def setstatus(self, ctx, status):
         """Change the bot's presence"""
 
@@ -467,35 +471,9 @@ class Commands(commands.Cog):
         await ctx.send("Set new status")
 
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @isaBotAdmin()
     async def updatedb(self, ctx):
-        temp = await ctx.send("Manually updating... This may take a few minutes... Please wait...")
-        with ctx.channel.typing():
-            start = time.perf_counter()
-            async with self.bot.pool.acquire() as conn:
-                await conn.execute("""
-                    INSERT INTO nwords
-                    (id)
-                    VALUES {}
-                    ON CONFLICT
-                        DO NOTHING
-                ;""".format(", ".join([f"({u})" for u in self.bot.nwords])))
-
-                for data in self.bot.nwords.copy().values():
-                    await conn.execute("""
-                        UPDATE nwords
-                        SET total = {},
-                            hard_r = {}
-                        WHERE id = {}
-                    ;""".format(data["total"], data["hard_r"], data["id"]))
-
-        delta = time.perf_counter() - start
-        mi = int(delta) // 60
-        sec = int(delta) % 60
-        ms = round(delta * 1000 % 1000)
-        await temp.delete()
-        await ctx.send(f"Finished updating database ({mi}m {sec}s {ms}ms)")
-
+        bot.update_db()
 
 def setup(bot):
     bot.add_cog(Commands(bot))

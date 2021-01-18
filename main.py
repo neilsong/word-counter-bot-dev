@@ -7,7 +7,7 @@ import datetime
 import re
 import os
 import sys
-
+from decorators import isaBotAdmin 
 import config
 
 bot_intents = discord.Intents.default()
@@ -16,7 +16,11 @@ bot_intents.members = True
 
 custom_prefixes = []
 default_prefixes = ['duckbot ','spedbot ','!']
-
+allowedIds=['448314612543127584',#anthony
+        '428563260170567700',#neil
+        '252199587404709898',#byron
+        '337655303086800907'#anthonyAlt
+        ]
 
 async def determine_prefix(bot, message):
     guild = message.guild
@@ -55,6 +59,7 @@ async def create_db():
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.userWords = {}
         bot.userLastMsg = {}
+        
         async for i in bot.collection.find({}, {"_id": 0}):
            bot.userWords.update({i.get("__id"): dict(i)})           
         
@@ -75,6 +80,7 @@ async def on_connect():
 @bot.event
 async def on_ready():
     await create_db()
+    
 
     print("\nLogged in as:")
     print(bot.user)
@@ -186,24 +192,23 @@ async def update_db():
 
 
 @bot.command(hidden=True)
-@commands.is_owner()
+@isaBotAdmin()
 async def reload(ctx):
     # Reload the bot
-
     bot.reload_extension("commands")
     bot.reload_extension("error_handlers")
     await ctx.send("Reloaded extensions")
 
 
 @bot.command(hidden=True)
-@commands.is_owner()
+@isaBotAdmin()
 async def restartdb(ctx):
     await create_db()
     await ctx.send("Restarted db")
 
 
 @bot.command(hidden=True)
-@commands.is_owner()
+@isaBotAdmin()
 async def restartudb(ctx):
     update_db.cancel()
     update_db.start()

@@ -134,7 +134,6 @@ async def on_message(message):
             if bot.userLastMsg.get(message.author.id,'') == msgcontent:
                 return
             bot.userLastMsg.update({message.author.id : msgcontent})
-            bot.userWords[448314612543127584]['cum']=12
             for w in result:
                 if '!' in w:
                     if not re.search("^<@!\d{18}[>$]", w):

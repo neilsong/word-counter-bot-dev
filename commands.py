@@ -92,12 +92,12 @@ class Commands(commands.Cog):
         users={k: v for k, v in sorted(users.items(), key=lambda item: item[1],reverse=True)}
 
 
-        desc=str(len(users))+" have said this word. (Only showing top 10)"
+        desc=str(len(users))+" have said this word. (Only showing top 10)\n"
         ct=0
         for u in users:
             ct+=1
             desc+="\n"+f"{self.bot.get_user(u).mention}"
-            desc+="\n"+str(users[u])
+            desc+=" - "+str(users[u])
             if ct==10:
                 break
         embed = discord.Embed(
@@ -124,12 +124,12 @@ class Commands(commands.Cog):
                 continue
             counter+=words[w]
         ct=0
-        desc=""
+        desc="\n"
         for w in words:
             if w=="__id":
                 continue
             ct+=1
-            desc+="\n**"+ w+"** \n"+str(words[w])
+            desc+="\n**"+ w+"** - "+str(words[w])
             if ct==10:
                 break
 
@@ -176,12 +176,12 @@ class Commands(commands.Cog):
             counter+=words[w]
 
         ct=0
-        desc=""
+        desc="\n"
         for w in words:
             if w=="__id":
                 continue
             ct+=1
-            desc+="\n**"+ w+"** \n"+str(words[w])
+            desc+="\n**"+ w+"** - "+str(words[w])
             if ct==10:
                 break
 

@@ -77,8 +77,9 @@ class Commands(commands.Cog):
 
 
     @commands.command()
-    async def countword(self, ctx, word):
-        
+    async def countword(self, ctx, word=None):
+        if word==None:
+            return await ctx.send("Please type a word to search for.\n ex: `!countword lol`")
         users = {}
         async for user in ctx.guild.fetch_members(limit=None):
             if user.id==0:

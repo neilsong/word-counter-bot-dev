@@ -34,8 +34,6 @@ bot = commands.Bot(
 )
 
 bot.process = psutil.Process(os.getppid())
-with open('app.pid', 'w') as file:
-    file.write(str(bot.process.pid))
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")

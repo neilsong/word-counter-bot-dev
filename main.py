@@ -56,6 +56,7 @@ bot.load_extension("error_handlers")
 # 0: {'hi': 1, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
+        print("\nCreating or Fetching DB")
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.userWords = {}
         bot.userLastMsg = {}
@@ -67,11 +68,10 @@ async def create_db():
         bot.serverWords = {}
         async for i in bot.serverCollection.find({}, {"_id": 0}):
            bot.serverWords.update({i.get("__id"): dict(i)})   
-
-        print("\n")
-        print("Number of Users: "+str(len(bot.userWords))+"\nNumber of Servers: "+str(len(bot.serverWords)))
-        #print(bot.userWords)
-        print("\nCreating DB")
+        
+        print("\nDone")
+        print("\nNumber of Users: "+str(len(bot.userWords))+"\nNumber of Servers: "+str(len(bot.serverWords)))
+        
 
 @bot.event
 async def on_connect():

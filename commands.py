@@ -52,7 +52,7 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["info"])
     async def about(self, ctx):
-        # Some basic info about me
+        # Some basic info about this bot
 
         embed = discord.Embed(
             title=str(self.bot.user), description=self.bot.app_info.description +
@@ -75,40 +75,6 @@ class Commands(commands.Cog):
         embed.add_field(
             name = "Distant Cousin", value="https://github.com/NWordCounter/bot", inline=False)
 
-        await ctx.send(embed=embed)
-
-
-    @commands.command()
-    async def countword(self, ctx, word=None):
-        if word==None:
-            return await ctx.send("Please type a word to search for.\n ex: `!countword lol`")
-        users = {}
-        async for user in ctx.guild.fetch_members(limit=None):
-            if user.id==0:
-                continue
-            try:
-                users[user.id]= self.bot.userWords[user.id][word]
-            except:
-                continue
-
-        
-        users={k: v for k, v in sorted(users.items(), key=lambda item: item[1],reverse=True)}
-
-
-        desc=str(len(users))+" have said this word. (Only showing top 10)\n"
-        ct=0
-        for u in users:
-            ct+=1
-            desc+= "\n**"+ str(ct) + ".**  " + f"{self.bot.get_user(u).mention}"+" - "+str(users[u])
-            if ct==10:
-                break
-        embed = discord.Embed(
-            title="Leaderboard for the word "+word,
-            description=desc,
-            color=find_color(ctx))
-        
-        embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
-        
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -151,16 +117,15 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def count(self, ctx, user: discord.User=None):
-        """Get the number of times a user has said any word
-        Format like this: `count <@mention user>`
-        If requester doesn't mention a user, the bot will get requester's count
-        """
+        # Get the number of times a user has said any word
+        # Format like this: `count <@mention user>`
+        # If requester doesn't mention a user, the bot will get requester's count
 
         if user is None:
             user = ctx.author
             
-            #return await ctx.send("Man, why would I count my own words?")
-        if user.bot:
+            return await ctx.send("Man, why would I count my own words?")
+        elif user.bot:
             return await ctx.send("I don't count words said by bots.")
 
         if not (user == self.bot.user):
@@ -254,7 +219,7 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx):
-        """Sends an invite link so you can invite me to your own server"""
+        # Sends an invite link
 
         await ctx.send("Here's my invite link so I can count words on your server too:\n"
                        f"https://discordapp.com/oauth2/authorize?client_id={self.bot.app_info.id}"
@@ -262,13 +227,12 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def stats(self, ctx):
-        """View my statistics"""
+        # View stats
 
         await ctx.channel.trigger_typing()
 
         uptime = datetime.datetime.utcnow() - self.bot.started_at
 
-        #* This code was copied from my other bot, MAT
         y = int(uptime.total_seconds()) // 31557600  #* Number of seconds in 356.25 days
         mo = int(uptime.total_seconds()) // 2592000 % 12  #* Number of seconds in 30 days
         d = int(uptime.total_seconds()) // 86400 % 30  #* Number of seconds in 1 day
@@ -290,8 +254,12 @@ class Commands(commands.Cog):
         if se != 0:
             frmtd_uptime.append(f"{se}s")
 
+        total = 0
+        for i in self.bot.serverWords[0]:
+            total += self.bot.serverWords[0][i]
+
         embed = discord.Embed(
-            description=f"User ID: {self.bot.user.id}",
+            description=f"Bot User ID: {self.bot.user.id}",
             timestamp=datetime.datetime.utcnow(),
             color=find_color(ctx))
         embed.add_field(name="Server Count", value=f"{len(self.bot.guilds):,} servers")
@@ -306,72 +274,73 @@ class Commands(commands.Cog):
         embed.add_field(name="Latency/Ping", value=f"{round(self.bot.latency * 1000, 2)}ms")
         embed.add_field(name="Uptime", value=" ".join(frmtd_uptime) + " since last restart")
         embed.add_field(
-            name="Number of Users Who Have Said the N-Word",
-            value=f"{len(self.bot.nwords):,}",
+            name="Number of Users Who Have Said Any Word",
+            value=f"{len(self.bot.userWords):,}",
             inline=False)
         embed.add_field(
             name="Total Words Counted",
-            value=f"{self.bot.nwords[0]['total']:,} "
-                  f"({self.bot.nwords[0]['hard_r']:,} with hard-R)",
+            value=f"{total:,} ",
             inline=False)
-        embed.set_author(name="N-Word Counter Bot: Statistics", icon_url=self.bot.user.avatar_url)
-        embed.set_footer(text="These statistics are accurate as of:")
+        embed.set_author(name="Word Counter Bot: Statistics", icon_url=self.bot.user.avatar_url)
+        now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        embed.set_footer(text="These statistics are accurate as of ")
 
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["leaderboard", "high"])
     @commands.guild_only()
-    async def top(self, ctx, param: str=None):
-        """See the leaderboard of the top N-word users of this server. Do `top global` to see the top users across all servers
-        Note: If a user said N-words on another server that I'm also on, those will be taken into account
-        """
-        await ctx.channel.trigger_typing()
-        def create_leaderboard():
-            leaderboard = {}
-            if param == "global":
-                for u, n in self.bot.nwords.items():
-                    if self.bot.get_user(u):
-                        leaderboard.update({self.bot.get_user(u): n["total"]})
-                leaderboard = dict(collections.Counter(leaderboard).most_common(10))
-            else:
-                for m in ctx.guild.members:
-                    if m.id in self.bot.nwords and not m.bot:
-                        if self.bot.nwords[m.id]["total"]:
-                            leaderboard.update({m: self.bot.nwords[m.id]["total"]})
-                leaderboard = dict(collections.Counter(leaderboard).most_common(10))
-            return leaderboard
+    async def top(self, ctx, word: str=None, isGlobal: str=None):
+        # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
+        # Note: If a user said any words on another server that this bot is also on, those will be taken into account
+        if word==None:
+            return await ctx.send("Please type a word to search for.\n Ex: `!top lol`")
 
-        leaderboard = await self.bot.loop.run_in_executor(None, create_leaderboard)
+        await ctx.channel.trigger_typing()
+        leaderboard = {}
+        if isGlobal == "global":
+            for u, c in self.bot.userWords.items():
+                try:
+                    leaderboard.update({self.bot.get_user(u): c[word]})
+                except:
+                    continue
+            leaderboard = dict(collections.Counter(leaderboard).most_common(10))
+        else:
+            async for user in ctx.guild.fetch_members(limit=None):
+                try:
+                    leaderboard.update({user: self.bot.userWords[user.id][word]})
+                except:
+                    continue
+            leaderboard = dict(collections.Counter(leaderboard).most_common(10))
+
         if not len(leaderboard):
-            return await ctx.send("No one on this server has said the N-word yet")
+            return await ctx.send("No one on this server has said this word yet")
 
         description = "\n"
         counter = 1
         for m, c in leaderboard.items():
-            description += (f"**{counter}.** {m if param == 'global' else m.mention} - __{c:,} "
-                            f"time{'' if c == 1 else 's'}__ ({self.bot.nwords[m.id]['hard_r']:,} "
-                            "with hard-R)\n")
+            description += (f"**{counter}.** {m if word == 'global' else m.mention} - __{c:,} "
+                            f"time{'' if c == 1 else 's'}__\n")
             counter += 1
 
         description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
 
         embed = discord.Embed(description=description, color=find_color(ctx),
                               timestamp=datetime.datetime.utcnow())
-        if param == "global":
+        if isGlobal == "global":
             embed.set_author(
-                name=f"Top N-Word Users of All Time")
+                name=f"Top Users of \"{word}\"")
         else:
             embed.set_author(
-                name=f"Top N-Word Users of {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+                name=f"Top Users of \"{word}\" in {ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
         embed.set_footer(
-            text="These listings are accurate as of:", icon_url=self.bot.user.avatar_url)
+            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 
     @top.error
     async def top_error(self, ctx, exc):
-        if isinstance(exc, commands.NoPrivateMsg):
+        if isinstance(exc, commands.NoPrivateMessage):
             return await ctx.send(exc)
 
 
@@ -392,13 +361,11 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    async def edit(self, ctx, user_id: int, total: int, hard_r: int, last_time: int=None):
-        """Edit a user's entry in the dict or add a new one"""
+    async def edit(self, ctx, user_id: int, word: str=None, total: int=0):
+        #Edit a user's entry in the dict or add a new one
+        if (total == 0): self.bot.userWords[user_id].pop(word)
 
-        if last_time:
-            self.bot.nwords[user_id] = {"id": user_id, "total": total, "hard_r": hard_r, "last_time": last_time}
-        else:
-            self.bot.nwords[user_id] = {"id": user_id, "total": total, "hard_r": hard_r}
+        self.bot.userWords[user_id][word] = {"id": user_id, "total": total}
         await ctx.send("Done")
 
     @commands.command(hidden=True)

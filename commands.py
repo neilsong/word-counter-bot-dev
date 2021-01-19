@@ -9,7 +9,7 @@ import pprint
 import sys
 
 from main import custom_prefixes, default_prefixes
-from main import allowedIds
+from helper import isaBotAdmin
 
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
@@ -458,10 +458,3 @@ class Commands(commands.Cog):
 def setup(bot):
     bot.add_cog(Commands(bot))
 
-def isaBotAdmin():
-    def predicate(ctx):
-        if not str(ctx.author.id) in allowedIds:
-            raise commands.NotOwner('You are a not an admin of this bot.')
-        return True
-        # a function that takes ctx as it's only arg, that returns a truethy or falsey value, or raises an exception
-    return commands.check(predicate)

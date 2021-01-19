@@ -8,7 +8,7 @@ import re
 import os
 import sys
 import config
-from commands import isaBotAdmin
+from helper import isaBotAdmin
 
 bot_intents = discord.Intents.default()
 bot_intents.members = True

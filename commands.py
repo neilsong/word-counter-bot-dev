@@ -8,7 +8,7 @@ import time
 import pprint
 import sys
 
-from main import custom_prefixes, default_prefixes, update_db
+from main import custom_prefixes, default_prefixes
 from main import allowedIds
 from decorators import isaBotAdmin
 
@@ -373,12 +373,12 @@ class Commands(commands.Cog):
         
         if (count == 0):
             try: self.bot.userWords[user_id].pop(word)
-
+            except: pass
+        
         self.bot.userWords[user_id][word] = count
         self.bot.serverWords[ctx.guild.id][word] += change
         self.bot.serverWords[0][word] += change
         
-        await update_db()
         await ctx.send("Done")
 
     
@@ -393,7 +393,6 @@ class Commands(commands.Cog):
         for u in self.bot.serverWords:
             try: self.bot.userWords[u].pop(word)
             except: continue
-        await update_db()
         await ctx.send("Done")
 
     @commands.command(hidden=True)
@@ -407,7 +406,6 @@ class Commands(commands.Cog):
                 self.bot.serverWords[0][u] -= c
             self.bot.userWords.pop(user_id)
             await self.bot.collection.delete_one({"__id": user_id})
-            await update_db()
             await ctx.send("Done")
         except KeyError as e:
             await ctx.send(f"User `{e}` does not exist or has no words logged yet.")

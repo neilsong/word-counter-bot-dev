@@ -6,7 +6,7 @@ Release: https://github.com/neilsong/word-counter-bot
 
 **A Python Discord Bot for Word Counting, Analytics, and Insights**
 
-Currently, we are trying our best to deliver a stable beta release with all the features we wish to include. This repo will serve as version control for releases.
+Currently, we are trying our best to deliver a stable beta release with all the features we wish to include. This repo is used for all development and testing of the bot.
 
 ## Features
 

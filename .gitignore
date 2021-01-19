@@ -137,3 +137,5 @@ MongoDB/
 .vscode/
 .DS_Store
 app.pid
+
+config.py

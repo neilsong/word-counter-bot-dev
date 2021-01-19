@@ -159,6 +159,8 @@ class Commands(commands.Cog):
         #if user="global":
         #    user='0'
 
+        words={}
+
         if user is None:
             user = ctx.author
         elif user == self.bot.user:
@@ -168,35 +170,33 @@ class Commands(commands.Cog):
 
         if not (user == self.bot.user):
             try:
-                words=self.bot.userWords[user.id]
+                words=dict(collections.Counter(self.bot.userWords[user.id]).most_common(11))
+                words.pop('__id')
             except:
                 return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
         
-        counter=0
+                
+        if not len(words):
+            return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
 
-        words={k: v for k, v in sorted(words.items(), key=lambda item: item[1],reverse=True)}
-        for w in words:
-            if w=="__id":
-                continue
-            counter+=words[w]
 
-        ct=0
-        desc="\n"
-        for w in words:
-            if w=="__id":
-                continue
-            ct+=1
-            desc+="\n**"+ str(ct) + ".  " + w+"** - "+str(words[w])
-            if ct==10:
-                break
+        description = "\n"
+        counter = 1
+        for m, c in words.items():
+            description += (f"**{counter}.** {m} - __{c:,} "
+                            f"time{'' if c == 1 else 's'}__\n")
+            counter += 1
 
-        embed = discord.Embed(
-            title=user.name+"\'s Word Counts",
-            description=str(len(words)-1)+" distinct words have been said, with "+str(counter)+" words said in total. (Only showing top 10)"+desc,
-            color=find_color(ctx))
+        description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
 
-        embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
-        
+        embed = discord.Embed(description=description, color=find_color(ctx),
+                              timestamp=datetime.datetime.utcnow())
+        embed.set_author(
+            name=f"{user.name}'s Most Common Words", icon_url=ctx.guild.icon_url)
+
+        embed.set_footer(
+            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
+
         await ctx.send(embed=embed)
 
 
@@ -356,7 +356,7 @@ class Commands(commands.Cog):
 
         if not len(leaderboard):
             return await ctx.send("No one on this server has said this word yet")
-            
+
         description = "\n"
         counter = 1
         for m, c in leaderboard.items():

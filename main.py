@@ -8,7 +8,7 @@ import re
 import os
 import sys
 import config
-from decorator import isaBotAdmin
+from decorator import *
 
 bot_intents = discord.Intents.default()
 bot_intents.members = True
@@ -203,6 +203,7 @@ async def reload(ctx):
 
 @bot.command(hidden=True)
 @isaBotAdmin()
+@banFromChannel()
 async def restartdb(ctx):
     await create_db()
     await ctx.send("Restarted db")

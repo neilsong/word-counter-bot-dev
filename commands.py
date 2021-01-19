@@ -6,6 +6,8 @@ import datetime
 import time
 import pprint
 import sys
+import re
+
 
 from main import custom_prefixes, default_prefixes
 from decorator import *
@@ -77,6 +79,34 @@ class Commands(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    async def renderEmbed(self, ctx, lDict: dict, title ,isGlobal: str=None):
+        # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
+        # Note: If a user said any words on another server that this bot is also on, those will be taken into account
+        description = "\n"
+        counter = 1
+        for m, c in lDict.items():
+            description += (f"**{counter}.** {m.mention if bool(re.search('<@(!?)([0-9]*)>',m)) else m } - __{c:,} "
+                            f"time{'' if c == 1 else 's'}__\n")
+            counter += 1
+
+        description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
+
+        embed = discord.Embed(description=description, color=find_color(ctx),
+                              timestamp=datetime.datetime.utcnow())
+        if isGlobal == "global":
+            embed.set_author(
+                name=title)
+        else:
+            embed.set_author(
+                name=title, icon_url=ctx.guild.icon_url)
+
+        embed.set_footer(
+            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
+
+        await ctx.send(embed=embed)
+
+
+
     @commands.command()
     @banFromChannel()
     async def countserver(self, ctx):
@@ -98,10 +128,10 @@ class Commands(commands.Cog):
             if w=="__id":
                 continue
             ct+=1
-            desc+="\n**"+ str(ct) + ". " + w+"** - "+str(words[w])
+            desc+="\n**"+ str(ct) + ". " + w.mention+"** - "+str(words[w])
             if ct==10:
                 break
-
+        
         embed = discord.Embed(
             title="The Server\'s Word Leaderboard",
             description=str(len(words)-1)+" distinct words have been said, with "+str(counter)+" words said in total. (Only showing top 10)"+desc,
@@ -326,29 +356,8 @@ class Commands(commands.Cog):
 
         if not len(leaderboard):
             return await ctx.send("No one on this server has said this word yet")
+        return await self.renderEmbed(ctx,leaderboard,f"Top Users of \"{word}\"" if isGlobal == "global" else f"Top Users of \"{word}\" in {ctx.guild.name}" ,isGlobal)
 
-        description = "\n"
-        counter = 1
-        for m, c in leaderboard.items():
-            description += (f"**{counter}.** {m if word == 'global' else m.mention} - __{c:,} "
-                            f"time{'' if c == 1 else 's'}__\n")
-            counter += 1
-
-        description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
-
-        embed = discord.Embed(description=description, color=find_color(ctx),
-                              timestamp=datetime.datetime.utcnow())
-        if isGlobal == "global":
-            embed.set_author(
-                name=f"Top Users of \"{word}\"")
-        else:
-            embed.set_author(
-                name=f"Top Users of \"{word}\" in {ctx.guild.name}", icon_url=ctx.guild.icon_url)
-
-        embed.set_footer(
-            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
-
-        await ctx.send(embed=embed)
 
     @top.error
     async def top_error(self, ctx, exc):

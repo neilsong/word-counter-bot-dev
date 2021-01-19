@@ -1,4 +1,3 @@
-
 from discord.ext import commands
 import discord
 
@@ -9,7 +8,7 @@ import pprint
 import sys
 
 from main import custom_prefixes, default_prefixes
-from helper import isaBotAdmin
+from helper import *
 
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
@@ -31,6 +30,7 @@ class Commands(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @banFromChannel()
     async def help(self, ctx):
 
         cmds = sorted([c for c in self.bot.commands if not c.hidden], key=lambda c: c.name)
@@ -50,6 +50,7 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["info"])
+    @banFromChannel()
     async def about(self, ctx):
         # Some basic info about this bot
 
@@ -77,6 +78,7 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @banFromChannel()
     async def countserver(self, ctx):
         try:
             words=self.bot.serverWords[ctx.guild.id]
@@ -110,15 +112,22 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @banFromChannel()
     async def prefix(self, ctx):
         await ctx.send("The prefix(es) for this bot as of now are: "+ (' '.join(default_prefixes) + ' ' + ' '.join(custom_prefixes)))
 
 
     @commands.command()
-    async def count(self, ctx, user: discord.User=None):
+    @banFromChannel()
+    async def count(self, ctx, user=None):
         # Get the number of times a user has said any word
         # Format like this: `count <@mention user>`
         # If requester doesn't mention a user, the bot will get requester's count
+        #user=user.lower()
+        #if user=="server":
+        #    return countserver(self,ctx)
+        #if user="global":
+        #    user='0'
 
         if user is None:
             user = ctx.author
@@ -168,6 +177,7 @@ class Commands(commands.Cog):
             return await ctx.send(exc)
 
     @commands.command()
+    @banFromChannel()
     async def readhistory(self, ctx):
         async for msg in ctx.channel.history(limit=300):
             msgcontent = msg.content.replace("\n", " ")
@@ -217,6 +227,7 @@ class Commands(commands.Cog):
 
 
     @commands.command()
+    @banFromChannel()
     async def invite(self, ctx):
         # Sends an invite link
 
@@ -225,6 +236,7 @@ class Commands(commands.Cog):
                        "&scope=bot&permissions=8")
 
     @commands.command()
+    @banFromChannel()
     async def stats(self, ctx):
         # View stats
 
@@ -288,6 +300,7 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["leaderboard", "high"])
     @commands.guild_only()
+    @banFromChannel()
     async def top(self, ctx, word: str=None, isGlobal: str=None):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
@@ -345,6 +358,7 @@ class Commands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
+    @banFromChannel()
     async def setprefix(self, ctx, *, prefixes=""):
         if len(prefixes) > 0:
              custom_prefixes.clear
@@ -359,6 +373,7 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
+    @banFromChannel()
     async def edituser(self, ctx, user_id: int, word: str=None, count: int=0):
         # Edit a user's entry in all collections or add a new one
         if not user_id or not word or not count:
@@ -396,6 +411,7 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
+    @banFromChannel()
     async def popuser(self, ctx, user_id: int):
         # Pop a user from all collections
 
@@ -412,6 +428,7 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
+    @banFromChannel()
     async def execute(self, ctx, *, query):
         """Execute a query in the database"""
 
@@ -425,6 +442,7 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["resetstatus"], hidden=True)
     @isaBotAdmin()
+    @banFromChannel()
     async def restartstatus(self, ctx):
         await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(
             name=f"any Words on {len(self.bot.guilds)} servers",
@@ -434,6 +452,7 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
+    @banFromChannel()
     async def setstatus(self, ctx, status):
         """Change the bot's presence"""
 
@@ -452,9 +471,10 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
+    @banFromChannel()
+
     async def updatedb(self, ctx):
         self.bot.update_db()
 
 def setup(bot):
     bot.add_cog(Commands(bot))
-

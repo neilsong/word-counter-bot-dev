@@ -123,8 +123,8 @@ class Commands(commands.Cog):
 
         if user is None:
             user = ctx.author
-            
-            return await ctx.send("Man, why would I count my own words?")
+        elif user == self.bot.user:
+            return await ctx.send("Man, why would I count my own words?")    
         elif user.bot:
             return await ctx.send("I don't count words said by bots.")
 
@@ -255,7 +255,7 @@ class Commands(commands.Cog):
             frmtd_uptime.append(f"{se}s")
 
         total = 0
-        for i, c in self.bot.serverWords[0]:
+        for i, c in self.bot.serverWords[0].items():
             total += c
 
         embed = discord.Embed(
@@ -401,7 +401,7 @@ class Commands(commands.Cog):
         # Pop a user from all collections
 
         try:
-            for u, c in self.bot.userWords[user_id]:
+            for u, c in self.bot.userWords[user_id].items():
                 self.bot.serverWords[ctx.guild.id][u] -= c
                 self.bot.serverWords[0][u] -= c
             self.bot.userWords.pop(user_id)
@@ -458,3 +458,11 @@ class Commands(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Commands(bot))
+
+def isaBotAdmin():
+    def predicate(ctx):
+        if not str(ctx.author.id) in allowedIds:
+            raise commands.NotOwner('You do not own this bot.')
+        return True
+        # a function that takes ctx as it's only arg, that returns a truethy or falsey value, or raises an exception
+    return commands.check(predicate)

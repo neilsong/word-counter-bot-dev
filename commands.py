@@ -10,7 +10,6 @@ import sys
 
 from main import custom_prefixes, default_prefixes
 from main import allowedIds
-from decorators import isaBotAdmin
 
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color

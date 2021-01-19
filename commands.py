@@ -8,7 +8,7 @@ import time
 import pprint
 import sys
 
-from main import custom_prefixes, default_prefixes
+from main import custom_prefixes, default_prefixes, update_db
 from main import allowedIds
 from decorators import isaBotAdmin
 
@@ -102,7 +102,7 @@ class Commands(commands.Cog):
                 break
 
         embed = discord.Embed(
-            title="The Server\'s Word Count",
+            title="The Server\'s Word Leaderboard",
             description=str(len(words)-1)+" distinct words have been said, with "+str(counter)+" words said in total. (Only showing top 10)"+desc,
             color=find_color(ctx))
 
@@ -255,8 +255,8 @@ class Commands(commands.Cog):
             frmtd_uptime.append(f"{se}s")
 
         total = 0
-        for i in self.bot.serverWords[0]:
-            total += self.bot.serverWords[0][i]
+        for i, c in self.bot.serverWords[0]:
+            total += c
 
         embed = discord.Embed(
             description=f"Bot User ID: {self.bot.user.id}",
@@ -350,7 +350,6 @@ class Commands(commands.Cog):
         if len(prefixes) > 0:
              custom_prefixes.clear
              custom_prefixes.append(prefixes + " " if len(prefixes) != 1 else prefixes)
-             #im so lazy :D
              await ctx.send("Prefixes set!")
         
         else:
@@ -361,22 +360,54 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    async def edit(self, ctx, user_id: int, word: str=None, total: int=0):
-        #Edit a user's entry in the dict or add a new one
-        if (total == 0): self.bot.userWords[user_id].pop(word)
+    async def edituser(self, ctx, user_id: int, word: str=None, count: int=0):
+        # Edit a user's entry in all collections or add a new one
+        if not user_id or not word or not count:
+            return ctx.send("Parameters: user_id, word, count")
 
-        self.bot.userWords[user_id][word] = {"id": user_id, "total": total}
+        change = 0
+        try:
+            change = count - self.bot.userWords[user_id][word]
+        except:
+            change = count
+        
+        if (count == 0):
+            try: self.bot.userWords[user_id].pop(word)
+
+        self.bot.userWords[user_id][word] = count
+        self.bot.serverWords[ctx.guild.id][word] += change
+        self.bot.serverWords[0][word] += change
+        
+        await update_db()
+        await ctx.send("Done")
+
+    
+    @commands.command(hidden=True)
+    @isaBotAdmin()
+    async def popword(self, ctx, word: str=None):
+        # Pop a word from all collections
+
+        for u in self.bot.userWords:
+            try: self.bot.userWords[u].pop(word)
+            except: continue
+        for u in self.bot.serverWords:
+            try: self.bot.userWords[u].pop(word)
+            except: continue
+        await update_db()
         await ctx.send("Done")
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    async def pop(self, ctx, user_id: int):
-
-        """Delete a user's entry from the dict"""
+    async def popuser(self, ctx, user_id: int):
+        # Pop a user from all collections
 
         try:
+            for u, c in self.bot.userWords[user_id]:
+                self.bot.serverWords[ctx.guild.id][u] -= c
+                self.bot.serverWords[0][u] -= c
             self.bot.userWords.pop(user_id)
             await self.bot.collection.delete_one({"__id": user_id})
+            await update_db()
             await ctx.send("Done")
         except KeyError as e:
             await ctx.send(f"User `{e}` does not exist or has no words logged yet.")
@@ -392,21 +423,6 @@ class Commands(commands.Cog):
                 async with self.bot.pool.acquire() as conn:
                     result = await conn.execute(query)
             await ctx.send(f"Query complete:```{result}```")
-        except Exception as e:
-            await ctx.send(f"Query failed:```{e}```")
-
-    @commands.command(hidden=True)
-    @isaBotAdmin()
-    async def fetch(self, ctx, *, query):
-        """Run a query in the database and fetch the result"""
-
-        try:
-            with ctx.channel.typing():
-                async with self.bot.pool.acquire() as conn:
-                    result = await conn.fetch(query)
-
-            fmtd_result = pprint.pformat([dict(i) for i in result])
-            await ctx.send(f"Query complete:```{fmtd_result}```")
         except Exception as e:
             await ctx.send(f"Query failed:```{e}```")
 

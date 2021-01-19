@@ -7,8 +7,8 @@ import datetime
 import re
 import os
 import sys
-from decorators import isaBotAdmin 
 import config
+from commands import isaBotAdmin
 
 bot_intents = discord.Intents.default()
 bot_intents.members = True

@@ -356,7 +356,29 @@ class Commands(commands.Cog):
 
         if not len(leaderboard):
             return await ctx.send("No one on this server has said this word yet")
-        return await self.renderEmbed(ctx,leaderboard,f"Top Users of \"{word}\"" if isGlobal == "global" else f"Top Users of \"{word}\" in {ctx.guild.name}" ,isGlobal)
+            
+        description = "\n"
+        counter = 1
+        for m, c in leaderboard.items():
+            description += (f"**{counter}.** {m if word == 'global' else m.mention} - __{c:,} "
+                            f"time{'' if c == 1 else 's'}__\n")
+            counter += 1
+
+        description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
+
+        embed = discord.Embed(description=description, color=find_color(ctx),
+                              timestamp=datetime.datetime.utcnow())
+        if isGlobal == "global":
+            embed.set_author(
+                name=f"Top Users of \"{word}\"")
+        else:
+            embed.set_author(
+                name=f"Top Users of \"{word}\" in {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+
+        embed.set_footer(
+            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
+
+        await ctx.send(embed=embed)
 
 
     @top.error

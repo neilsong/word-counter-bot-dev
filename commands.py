@@ -390,7 +390,7 @@ class Commands(commands.Cog):
             try: self.bot.userWords[u].pop(word)
             except: continue
         for u in self.bot.serverWords:
-            try: self.bot.userWords[u].pop(word)
+            try: self.bot.serverWords[u].pop(word)
             except: continue
         await ctx.send("Done")
 

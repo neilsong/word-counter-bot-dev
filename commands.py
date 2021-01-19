@@ -8,7 +8,7 @@ import pprint
 import sys
 
 from main import custom_prefixes, default_prefixes
-from helper import *
+from decorator import *
 
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color

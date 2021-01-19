@@ -1,5 +1,5 @@
 # word-counter-bot
-Python Discord Bot for counting words
+Python Discord Bot for counting words & linguistics analysis
 
 **A Discord bot that analyzes the syntax/word choic of users in a server**
 

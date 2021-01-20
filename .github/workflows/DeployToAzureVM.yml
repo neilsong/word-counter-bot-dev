@@ -20,7 +20,7 @@ jobs:
         azcliversion: 2.17.1
         inlineScript: |
           az vm run-command invoke -g VM1_group -n VM1 --command-id RunShellScript --scripts \
-          'cd /home/azureuser/word-counter-bot' \
+          'cd /home/azureuser/word-counter-bot-dev' \
           'screen -X quit' \
           'git pull' \
-          'screen -d -m /home/azureuser/word-counter-bot/.github/workflows/execution.sh'
+          'screen -d -m /home/azureuser/word-counter-bot-dev/.github/workflows/execution.sh'

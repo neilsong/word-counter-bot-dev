@@ -121,7 +121,6 @@ async def on_message(message):
         elif bot.user in message.mentions:
             await message.channel.send(f"Do `@{bot.user} help` for help on my commands")
         elif message.guild is not None:
-            bot.userWords[252199587404709898]['owa']=100000000
             msgcontent = message.content.replace("\n", " ")
             trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
             for w in trashCharacters:

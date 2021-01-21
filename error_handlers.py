@@ -12,7 +12,7 @@ class Error_Handlers(commands.Cog):
     async def on_command_error(self, ctx, exception):
         exc = exception
         if isinstance(exc, commands.NotOwner):
-            return await ctx.send("You are a not an admin of this bot.")
+            return await ctx.send("You are not an admin of this bot.")
 
         elif isinstance(exc, commands.NoPrivateMessage):
             return

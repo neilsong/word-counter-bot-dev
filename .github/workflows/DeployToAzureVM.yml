@@ -23,8 +23,4 @@ jobs:
           'cd /home/azureuser/word-counter-bot-dev' \
           'screen -X quit' \
           'git pull' \
-<<<<<<< HEAD
           'screen -d -m /home/azureuser/word-counter-bot-dev/.github/workflows/execution.sh'
-=======
-          'screen -d -m /home/azureuser/word-counter-bot-dev/.github/workflows/execution.sh'
->>>>>>> master

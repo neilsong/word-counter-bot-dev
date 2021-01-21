@@ -1,3 +1,4 @@
+from discord import message
 from discord.ext import commands
 import discord
 
@@ -9,7 +10,7 @@ import sys
 import re
 
 
-from main import custom_prefixes, default_prefixes
+from main import custom_prefixes, default_prefixes, updateWord
 from decorator import *
 
 def find_color(ctx):
@@ -252,47 +253,7 @@ class Commands(commands.Cog):
         async for msg in ctx.channel.history(limit=300):
             msgcontent = msg.content.replace("\n", " ")
             print("History: " + msgcontent)
-            trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$"]
-            for w in trashCharacters:
-                msgcontent = msgcontent.replace(w, " ")
-            msgcontent=' '.join(msgcontent.split())
-            msgcontent=msgcontent.lower()
-            
-            result= msgcontent.split(" ")
-            #result = listToString(result).split("\n")
-            #print(result)
-
-            # print(msgcontent)
-            # print(self.bot.userLastMsg.get(msg.author.id,''))
-
-            if result[0]=="":
-                return
-            if self.bot.userLastMsg.get(msg.author.id,'') == msgcontent:
-                return
-            self.bot.userLastMsg.update({msg.author.id : msgcontent})
-
-            for w in result:
-                #print(w)
-                #print("\n")    
-                if msg.guild.id not in self.bot.serverWords:
-                    self.bot.serverWords.update({msg.guild.id: { w: 0, "__id": msg.guild.id }})
-                elif w not in self.bot.serverWords[msg.guild.id]:
-                    self.bot.serverWords[msg.guild.id].update({ w: 0, "__id": msg.guild.id })
-                self.bot.serverWords[msg.guild.id][w] += 1
-
-
-                if msg.author.id not in self.bot.userWords:
-                    self.bot.userWords.update({msg.author.id: { w: 0, "__id": msg.author.id }})
-                elif w not in self.bot.userWords[msg.author.id]:
-                    self.bot.userWords[msg.author.id].update({ w: 0, "__id": msg.author.id })
-                self.bot.userWords[msg.author.id][w] += 1
-
-
-                if 0 not in self.bot.serverWords:
-                    self.bot.serverWords.update({ 0: { w: 0, "__id": 0}})
-                elif w not in self.bot.serverWords[0]:
-                    self.bot.serverWords[0].update({ w: 0, "__id": 0})
-                self.bot.serverWords[0][w] += 1
+            await updateWord(message)
     
 
 

@@ -13,7 +13,8 @@ from decorator import *
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 
-
+trash_words = ['and','is','the','a','as','am','it','to']
+trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
 custom_prefixes = []
 default_prefixes = ['duckbot ','spedbot ','!']
 allowedIds=['448314612543127584',#anthony
@@ -122,7 +123,7 @@ async def on_message(message):
             await message.channel.send(f"Do `@{bot.user} help` for help on my commands")
         elif message.guild is not None:
             msgcontent = message.content.replace("\n", " ")
-            trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
+            
             for w in trashCharacters:
                 msgcontent = msgcontent.replace(w, " ")
             msgcontent=' '.join(msgcontent.split())
@@ -144,7 +145,8 @@ async def on_message(message):
                 if '!' in w:
                     if not re.search("^<@!\d{18}[>$]", w):
                         w=w.replace("!", "")
-                        
+                for trash in trash_words:
+                    if w == trash: return        
                 #print(w)
                 #print("\n")    
                 if message.guild.id not in bot.serverWords:

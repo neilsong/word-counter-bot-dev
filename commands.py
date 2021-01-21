@@ -10,7 +10,7 @@ import sys
 import re
 
 
-from main import custom_prefixes, default_prefixes, updateWord
+import main
 from decorator import *
 
 def find_color(ctx):
@@ -147,7 +147,7 @@ class Commands(commands.Cog):
     @commands.command()
     @banFromChannel()
     async def prefix(self, ctx):
-        await ctx.send("The prefix(es) for this bot as of now are: "+ (' '.join(default_prefixes) + ' ' + ' '.join(custom_prefixes)))
+        await ctx.send("The prefix(es) for this bot as of now are: "+ (' '.join(main.default_prefixes) + ' ' + ' '.join(main.custom_prefixes)))
     
     async def globalWords(self,ctx):
         try:
@@ -253,7 +253,7 @@ class Commands(commands.Cog):
         async for msg in ctx.channel.history(limit=300):
             msgcontent = msg.content.replace("\n", " ")
             print("History: " + msgcontent)
-            await updateWord(message)
+            await main.updateWord(message)
     
 
 
@@ -393,8 +393,8 @@ class Commands(commands.Cog):
     @banFromChannel()
     async def setprefix(self, ctx, *, prefixes=""):
         if len(prefixes) > 0:
-             custom_prefixes.clear
-             custom_prefixes.append(prefixes + " " if len(prefixes) != 1 else prefixes)
+             main.custom_prefixes.clear
+             main.custom_prefixes.append(prefixes + " " if len(prefixes) != 1 else prefixes)
              await ctx.send("Prefixes set!")
         
         else:

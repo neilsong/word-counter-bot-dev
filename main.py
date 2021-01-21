@@ -103,6 +103,49 @@ async def on_ready():
         name=f"for any word on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
 
 
+async def updateWord(message):
+    msgcontent = message.content.replace("\n", " ")
+    for w in trashCharacters:
+        msgcontent = msgcontent.replace(w, " ")
+    msgcontent=' '.join(msgcontent.split())
+    msgcontent=msgcontent.lower()
+    
+    result= msgcontent.split(" ")
+    #result = listToString(result).split("\n")
+    #print(result
+    # print(msgcontent)
+    # print(bot.userLastMsg.get(message.author.id,'')
+    if result[0]=="":
+        return
+    if bot.userLastMsg.get(message.author.id,'') == msgcontent:
+        return
+    bot.userLastMsg.update({message.author.id : msgcontent})
+    for w in result:
+        if '!' in w:
+            if not re.search("^<@!\d{18}[>$]", w):
+                w=w.replace("!", "")
+        for trash in trash_words:
+            if w == trash: return        
+        #print(w)
+        #print("\n")    
+        if message.guild.id not in bot.serverWords:
+            bot.serverWords.update({message.guild.id: { w: 0, "__id": message.guild.id }})
+        elif w not in bot.serverWords[message.guild.id]:
+            bot.serverWords[message.guild.id].update({ w: 0, "__id": message.guild.id })
+        bot.serverWords[message.guild.id][w] += 1
+        if message.author.id not in bot.userWords:
+            bot.userWords.update({message.author.id: { w: 0, "__id": message.author.id }})
+        elif w not in bot.userWords[message.author.id]:
+            bot.userWords[message.author.id].update({ w: 0, "__id": message.author.id })
+        bot.userWords[message.author.id][w] += 1
+        if 0 not in bot.serverWords:
+            bot.serverWords.update({ 0: { w: 0, "__id": 0}})
+        elif w not in bot.serverWords[0]:
+            bot.serverWords[0].update({ w: 0, "__id": 0})
+        bot.serverWords[0][w] += 1          
+
+
+
 def listToString(s):  
     str1 = " " 
     return (str1.join(s)) 
@@ -122,52 +165,8 @@ async def on_message(message):
         elif bot.user in message.mentions:
             await message.channel.send(f"Do `@{bot.user} help` for help on my commands")
         elif message.guild is not None:
-            msgcontent = message.content.replace("\n", " ")
+            await updateWord(message)
             
-            for w in trashCharacters:
-                msgcontent = msgcontent.replace(w, " ")
-            msgcontent=' '.join(msgcontent.split())
-            msgcontent=msgcontent.lower()
-            
-            result= msgcontent.split(" ")
-            #result = listToString(result).split("\n")
-            #print(result)
-
-            # print(msgcontent)
-            # print(bot.userLastMsg.get(message.author.id,''))
-
-            if result[0]=="":
-                return
-            if bot.userLastMsg.get(message.author.id,'') == msgcontent:
-                return
-            bot.userLastMsg.update({message.author.id : msgcontent})
-            for w in result:
-                if '!' in w:
-                    if not re.search("^<@!\d{18}[>$]", w):
-                        w=w.replace("!", "")
-                for trash in trash_words:
-                    if w == trash: return        
-                #print(w)
-                #print("\n")    
-                if message.guild.id not in bot.serverWords:
-                    bot.serverWords.update({message.guild.id: { w: 0, "__id": message.guild.id }})
-                elif w not in bot.serverWords[message.guild.id]:
-                    bot.serverWords[message.guild.id].update({ w: 0, "__id": message.guild.id })
-                bot.serverWords[message.guild.id][w] += 1
-
-
-                if message.author.id not in bot.userWords:
-                    bot.userWords.update({message.author.id: { w: 0, "__id": message.author.id }})
-                elif w not in bot.userWords[message.author.id]:
-                    bot.userWords[message.author.id].update({ w: 0, "__id": message.author.id })
-                bot.userWords[message.author.id][w] += 1
-
-
-                if 0 not in bot.serverWords:
-                    bot.serverWords.update({ 0: { w: 0, "__id": 0}})
-                elif w not in bot.serverWords[0]:
-                    bot.serverWords[0].update({ w: 0, "__id": 0})
-                bot.serverWords[0][w] += 1          
 
 
 @bot.event

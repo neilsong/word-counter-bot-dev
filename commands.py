@@ -85,7 +85,7 @@ class Commands(commands.Cog):
         description = "\n"
         counter = 1
         for m, c in lDict.items():
-            description += (f"**{counter}.** {m.mention if bool(re.search('<@(!?)([0-9]*)>',m)) else m } - __{c:,} "
+            description += (f"**{counter}.** {self.bot.get_user(int(re.sub('[^0-9]', '', m))).mention if bool(re.search('<@(!?)([0-9]*)>',m)) else m } - __{c:,} "
                             f"time{'' if c == 1 else 's'}__\n")
             counter += 1
 
@@ -107,14 +107,12 @@ class Commands(commands.Cog):
 
 
 
-    @commands.command()
-    @banFromChannel()
+
     async def countserver(self, ctx):
         try:
             words=self.bot.serverWords[ctx.guild.id]
         except:
             return await ctx.send("Nothing found? Something must have gone wrong.")
-        
         counter=0
 
         words={k: v for k, v in sorted(words.items(), key=lambda item: item[1],reverse=True)}
@@ -128,24 +126,57 @@ class Commands(commands.Cog):
             if w=="__id":
                 continue
             ct+=1
-            desc+="\n**"+ str(ct) + ". " + w.mention+"** - "+str(words[w])
+            desc+="\n**"+ str(ct) + ".** " + w+" - __"+str(words[w])+" times__"
             if ct==10:
                 break
-        
-        embed = discord.Embed(
-            title="The Server\'s Word Leaderboard",
-            description=str(len(words)-1)+" distinct words have been said, with "+str(counter)+" words said in total. (Only showing top 10)"+desc,
-            color=find_color(ctx))
+        desc = desc.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
 
-        embed.set_footer(text="Note: I don't count words said in the past before I joined this server")
-        
+        embed = discord.Embed(
+            description=str(len(words)-1)+" distinct words have been said, with "+str(counter)+" words said in total. (Only showing top 10)"+desc,
+            color=find_color(ctx),
+            timestamp=datetime.datetime.utcnow())
+
+        embed.set_author(
+                name="The Server\'s Word Leaderboard", icon_url=ctx.guild.icon_url)
+
+        embed.set_footer(
+            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
 
     @commands.command()
     @banFromChannel()
     async def prefix(self, ctx):
         await ctx.send("The prefix(es) for this bot as of now are: "+ (' '.join(default_prefixes) + ' ' + ' '.join(custom_prefixes)))
+    
+    async def globalWords(self,ctx):
+        try:
+            words=dict(collections.Counter(self.bot.serverWords[0]).most_common(11))
+            #words.pop('__id')
+        except:
+            return await ctx.send("Weird, no words logged yet.")
+                
+        #if not len(words):
+        #    return await ctx.send("Weird, no words logged yet.")
 
+
+        description = "\n"
+        counter = 1
+        for m, c in words.items():
+            description += (f"**{counter}.** {m} - __{c:,} "
+                            f"time{'' if c == 1 else 's'}__\n")
+            counter += 1
+
+        description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
+
+        embed = discord.Embed(description=description, color=find_color(ctx),
+                              timestamp=datetime.datetime.utcnow())
+        embed.set_author(
+            name="Global Most Common Words")
+
+        embed.set_footer(
+            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
+
+        await ctx.send(embed=embed)
 
     @commands.command()
     @banFromChannel()
@@ -158,8 +189,17 @@ class Commands(commands.Cog):
         #    return countserver(self,ctx)
         #if user="global":
         #    user='0'
-
+        if(user=="server"):
+            return await self.countserver(ctx)
+        if(user=="global"):
+            return await self.globalWords(ctx)
         words={}
+        
+        if not user is None:
+            try:
+                user=self.bot.get_user(int(re.sub("[^0-9]", "", user)))
+            except:
+                return await ctx.send("Not a valid user.")
 
         if user is None:
             user = ctx.author
@@ -201,10 +241,10 @@ class Commands(commands.Cog):
 
 
 
-    @count.error
-    async def count_error(self, ctx, exc):
-        if isinstance(exc, commands.BadArgument):
-            return await ctx.send(exc)
+    #@count.error
+    #async def count_error(self, ctx, exc):
+    #    if isinstance(exc, commands.BadArgument):
+    #        return await ctx.send(exc)
 
     @commands.command()
     @banFromChannel()

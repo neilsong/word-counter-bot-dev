@@ -14,9 +14,9 @@ Currently, we are trying our best to deliver a stable beta release with all the 
         - Leaderboard of most common words in the server
         - Your own personal leaderboard of most common words
 
-  2. (Possibly) Create an AI model that will mimic your style to send a message you would probably send on command
+  2. (Next major feature) Create an AI model that will mimic your style to send a message you would probably send on command
 
-  3. (Very far off/might not even happen) Create a web app that serves a dashboard with insights, charts, and analytics 
+  3. (Very far off) Create a web app that serves a dashboard with insights, charts, and analytics 
 
 ## Steps for testing
 
@@ -27,7 +27,7 @@ Currently, we are trying our best to deliver a stable beta release with all the 
   3. (Optional) Setup Virtual Environment  
      
      ```sh
-     python3 -m venv ./venv
+     python3 -m venv venv
      ```
      
   4. (Optional) Activate Virtual Environment

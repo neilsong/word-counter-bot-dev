@@ -337,16 +337,21 @@ class Commands(commands.Cog):
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word==None:
             return await ctx.send("Please type a word to search for.\n Ex: `!top lol`")
+        if isGlobal and not isGlobal == "global":
+            return await ctx.send("If you are trying to get the global leaderboard, do `!top lol global`")
 
         await ctx.channel.trigger_typing()
         leaderboard = {}
         if isGlobal == "global":
             for u, c in self.bot.userWords.items():
                 try:
-                    leaderboard.update({self.bot.get_user(u): c[word]})
+                    leaderboard.update({u: c[word]})
                 except:
                     continue
             leaderboard = dict(collections.Counter(leaderboard).most_common(10))
+            for u in leaderboard.copy():
+                user = await self.bot.fetch_user(u)
+                leaderboard[user] = leaderboard.pop(u)
         else:
             async for user in ctx.guild.fetch_members(limit=None):
                 try:
@@ -355,13 +360,15 @@ class Commands(commands.Cog):
                     continue
             leaderboard = dict(collections.Counter(leaderboard).most_common(10))
 
+
+        print(leaderboard)
         if not len(leaderboard):
             return await ctx.send("No one on this server has said this word yet")
 
         description = "\n"
         counter = 1
         for m, c in leaderboard.items():
-            description += (f"**{counter}.** {m if word == 'global' else m.mention} - __{c:,} "
+            description += (f"**{counter}.** {m if isGlobal == 'global' else m.mention} - __{c:,} "
                             f"time{'' if c == 1 else 's'}__\n")
             counter += 1
 

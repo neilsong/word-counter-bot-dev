@@ -13,7 +13,7 @@ from decorator import *
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 
-trash_words = ['and','is','the','a','as','am','it','to']
+trash_words = ['and','is','the','a','as','am','it','to','i','u','ur','not']
 trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
 custom_prefixes = []
 default_prefixes = ['duckbot ','spedbot ','!']
@@ -61,7 +61,7 @@ async def create_db():
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.userWords = {}
         bot.userLastMsg = {}
-        
+        bot.serverRecentMsgs = 0
         async for i in bot.collection.find({}, {"_id": 0}):
            bot.userWords.update({i.get("__id"): dict(i)})           
         
@@ -104,6 +104,7 @@ async def on_ready():
 
 
 async def updateWord(message):
+    bot.serverRecentMsgs += 1
     msgcontent = message.content.replace("\n", " ")
     for w in trashCharacters:
         msgcontent = msgcontent.replace(w, " ")

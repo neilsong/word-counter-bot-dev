@@ -22,7 +22,7 @@ Currently, we are trying our best to deliver a stable beta release with all the 
 
   1. Create your own MongoDB cluster - you can create a free sandbox one at https://mongodb.com/atlas or locally host
 
-  2. Add your discord bot token & MongoDB connection string to `config.py`
+  2. Add your discord bot token, MongoDB connection string, and Discord user id to `config.py`
 
   3. (Optional) Setup Virtual Environment  
      

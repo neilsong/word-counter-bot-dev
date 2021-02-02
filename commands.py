@@ -1,4 +1,4 @@
-from discord import message
+from discord import channel, message
 from discord.ext import commands
 import discord
 
@@ -40,14 +40,19 @@ class Commands(commands.Cog):
         cmds = sorted([c for c in self.bot.commands if not c.hidden], key=lambda c: c.name)
         
         description = "I keep track of every word a user says. I'm a pretty simple bot to use. My prefix"
-        if (len(self.bot.prefixes[str(ctx.guild.id)]) > 1):
+        if len(self.bot.prefixes[str(ctx.guild.id)]) > 1:
             description+="es are"
             for i in self.bot.prefixes[str(ctx.guild.id)]:
                 if i == self.bot.prefixes[len(self.bot.prefixes[str(ctx.guild.id)])-1]:
-                    description += " and `" f"{i}" "`"
-                else: description += " `" f"{i}" "`, "
+                    description += f" and `{i}`"
+                else:  
+                    description += f" `{i}`" 
+                    if len(self.bot.prefixes[str(ctx.guild.id)]) > 2:
+                        description += ", "
+                    else:
+                        description += " "
         else:
-            description += " is `!`."
+            description += " is `!`"
         description += "\n\nHere's a short list of my commands:"
         embed = discord.Embed(
             title="Word Counter Bot: Help Command",
@@ -152,21 +157,6 @@ class Commands(commands.Cog):
         embed.set_footer(
             text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)
-
-    @commands.command()
-    @isAllowed()
-    @commands.guild_only()
-    async def prefix(self, ctx):
-        description = "My prefix"
-        if (len(self.bot.prefixes[str(ctx.guild.id)]) > 1):
-            description+="es are"
-            for i in self.bot.prefixes[str(ctx.guild.id)]:
-                if i == self.bot.prefixes[len(self.bot.prefixes[str(ctx.guild.id)])-1]:
-                    description += " and `" f"{i}" "`."
-                else: description += " `" f"{i}" "`, "
-        else:
-            description += " is `!`"
-        await ctx.send(description)
     
     async def globalWords(self,ctx):
         try:
@@ -404,7 +394,27 @@ class Commands(commands.Cog):
 
         await ctx.send(embed=embed)
 
-
+    @commands.command()
+    @isAllowed()
+    @commands.guild_only()
+    async def prefix(self, ctx):
+        description = "My prefix"
+        if len(self.bot.prefixes[str(ctx.guild.id)]) > 1:
+            description+="es are "
+            for i in self.bot.prefixes[str(ctx.guild.id)]:
+                if i == self.bot.prefixes[str(ctx.guild.id)][len(self.bot.prefixes[str(ctx.guild.id)])-1]:
+                    description += f"and `{i}`"
+                else:  
+                    description += f"`{i}`" 
+                    if len(self.bot.prefixes[str(ctx.guild.id)]) > 2:
+                        description += ", "
+                    else:
+                        description += " "
+        elif len(self.bot.prefixes[str(ctx.guild.id)]) == 1:
+            description += f" is `{self.bot.prefixes[str(ctx.guild.id)][0]}`"
+        else:
+            description += " is `!`"
+        await ctx.send(description)
 
     @commands.command()
     @commands.guild_only()
@@ -414,15 +424,67 @@ class Commands(commands.Cog):
         if len(prefixes) > 0:
             prefixlist = prefixes.split(" ")
             self.bot.prefixes.update({str(ctx.guild.id): prefixlist})
-            if (len(prefixlist) > 1):
+            if len(prefixlist) > 1:
                 await ctx.send("Prefixes set!")
             else:
                 await ctx.send("Prefix set!")
         else:
             await ctx.send("Please set either a one-character prefix, or multiple one-character prefixes separated by spaces")
+
+    @commands.command()
+    @commands.guild_only()
+    @isAllowed()
+    @commands.has_permissions(manage_guild=True)
+    async def addblacklist(self, ctx, channelarg: discord.TextChannel=None):
+        if channelarg: 
+            try:
+                self.bot.blacklist[str(ctx.guild.id)].append(channelarg.id)
+            except:
+                self.bot.blacklist.update({str(ctx.guild.id) : [str(channelarg.id)]})
+            await ctx.send("Channel added!")
+        else:
+            await ctx.send("Please provide a channel")
+
+    @commands.command()
+    @commands.guild_only()
+    @isAllowed()
+    @commands.has_permissions(manage_guild=True)
+    async def removeblacklist(self, ctx, channelarg: discord.TextChannel=None):
+        if channelarg: 
+            try:
+                self.bot.blacklist[str(ctx.guild.id)].pop(channelarg.id)
+                await ctx.send("Channel removed!")
+            except:
+                await ctx.send("Channel not blacklisted")
+        else:
+            await ctx.send("Please provide a channel")
         
+    @commands.command()
+    @isAllowed()
+    @commands.guild_only()
+    async def blacklist(self, ctx):
+        blacklist = "Currently blacklisted channel"
+        if not str(ctx.guild.id) in self.bot.blacklist.keys():
+            await ctx.send("There is no blacklist for this server.")
+            return
+        if len(self.bot.blacklist[str(ctx.guild.id)]) > 1:
+            blacklist +="s:"
+            for i in self.bot.blacklist[str(ctx.guild.id)]:
+                if i == self.bot.blacklist[str(ctx.guild.id)][len(self.bot.blacklist[str(ctx.guild.id)])-1]:
+                    blacklist += "and " f"<#{i}>"
+                else: 
+                    blacklist += " " f"<#{i}>" 
+                    if len(self.bot.blacklist[str(ctx.guild.id)]) > 2:
+                        blacklist += ", "
+                    else:
+                        blacklist += " "
+        else:
+            blacklist += ": " f"<#{self.bot.blacklist[str(ctx.guild.id)][0]}>"
+        await ctx.send(blacklist)
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
+    # BOT ADMIN COMMANDS
     @commands.command(hidden=True)
     @isaBotAdmin()
     @isAllowed()
@@ -437,7 +499,7 @@ class Commands(commands.Cog):
         except:
             change = count
         
-        if (count == 0):
+        if count == 0:
             try: self.bot.userWords[user_id].pop(word)
             except: pass
         

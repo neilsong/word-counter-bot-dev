@@ -11,8 +11,11 @@ def isaBotAdmin():
 
 
 def isAllowed():
+    from main import bot
     def predicate(ctx):
-        if ctx.message.channel.id == 632387107536502797:
-            raise commands.DisabledCommand
-        return True
+        try:
+            if ctx.message.channel.id in bot.blacklist[str(ctx.guild.id)]:
+                raise commands.DisabledCommand
+            else: return True
+        except: return True
     return commands.check(predicate)

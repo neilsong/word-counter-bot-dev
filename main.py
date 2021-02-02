@@ -66,10 +66,6 @@ bot.load_extension("error_handlers")
 #   _id: 'blacklist'
 #   discord-server-id: blacklist of channels
 # }
-# whitelist doc: {
-#   _id: 'whitelist'
-#   discord-server-id: blacklist of channels
-# }
 
 # In-memory dict schemas
 # bot.userWords
@@ -99,9 +95,13 @@ async def create_db():
         bot.serverCollection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['servers-db']['servers']
         bot.serverWords = {}
         bot.prefixes = {"__id": "prefixes"}
+        bot.blacklist = {"__id": "blacklist"}
         async for i in bot.serverCollection.find({}, {"_id": 0}):
-            if(i.get("__id") == "prefixes"):
+            if i.get("__id") == "prefixes":
                 bot.prefixes.update(dict(i))
+                continue
+            if i.get("__id") == "blacklist":
+                bot.blacklist.update(dict(i))
                 continue
             bot.serverWords.update({i.get("__id"): dict(i)})
         print("\nNumber of Users: "+str(len(bot.userWords))+"\nNumber of Servers: "+str(len(bot.serverWords) - 1))
@@ -193,7 +193,13 @@ async def on_message(message):
            await bot.invoke(ctx)
     elif message.guild is not None:
         await updateWord(message)
-            
+
+@bot.event
+async def on_guild_channel_delete(channel):
+    try:
+        bot.blacklist.pop(str(channel.id))
+    except:
+        pass
 
 
 @bot.event
@@ -220,7 +226,8 @@ async def update_db():
         await bot.collection.update_one({"__id": data}, {'$set': bot.userWords[data]}, True)
     for data in list(bot.serverWords):
         await bot.serverCollection.update_one({"__id": data}, {'$set': bot.serverWords[data]}, True)
-    if bot.prefixes: await bot.serverCollection.update_one({"__id": 'prefixes'}, {'$set': bot.prefixes}, True)
+    await bot.serverCollection.update_one({"__id": 'prefixes'}, {'$set': bot.prefixes}, True)
+    await bot.serverCollection.update_one({"__id": 'blacklist'}, {'$set': bot.blacklist}, True)
     print("\nDone Updating")
 
 

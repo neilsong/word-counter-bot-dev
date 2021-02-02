@@ -37,19 +37,26 @@ class Commands(commands.Cog):
     async def help(self, ctx):
 
         cmds = sorted([c for c in self.bot.commands if not c.hidden], key=lambda c: c.name)
-
+        
+        description = "I keep track of every word a user says. I'm a pretty simple bot to use. My prefix"
+        if (len(self.bot.prefixes[str(ctx.guild.id)]) > 1):
+            description+="es are"
+            for i in self.bot.prefixes[str(ctx.guild.id)]:
+                if i == self.bot.prefixes[str(ctx.guild.id)][len(self.bot.prefixes[str(ctx.guild.id)])-1]:
+                    description += " and `" f"{i}" "`."
+                else: description += " `" f"{i}" "`, "
+        else:
+            description += " is `!`."
+        description += "\n\nHere's a short list of my commands:"
         embed = discord.Embed(
             title="Word Counter Bot: Help Command",
-            description="I keep track of every word a user says. I'm a "
-                        "pretty simple bot to use. My prefix is an @mention, meaning you'll have "
-                        f"to put {self.bot.user.mention} before every command."
-                        "\n\nHere's a short list of my commands:",
+            description= description,
             color=find_color(ctx))
         embed.set_footer(
             text="Note: I don't count words said in the past before I joined this server")
         for c in cmds:
             embed.add_field(name=c.name, value=c.help, inline=False)
-
+ 
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["info"])
@@ -185,11 +192,8 @@ class Commands(commands.Cog):
         # Get the number of times a user has said any word
         # Format like this: `count <@mention user>`
         # If requester doesn't mention a user, the bot will get requester's count
-        #user=user.lower()
-        #if user=="server":
-        #    return countserver(self,ctx)
-        #if user="global":
-        #    user='0'
+        # If requester has global as argument, the bot will get the gobal count
+
         if(user=="server"):
             return await self.countserver(ctx)
         if(user=="global"):
@@ -398,16 +402,22 @@ class Commands(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @banFromChannel()
+    @commands.has_permissions(manage_guild=True)
     async def setprefix(self, ctx, *, prefixes=""):
         if len(prefixes) > 0:
-             main.custom_prefixes.clear
-             main.custom_prefixes.append(prefixes + " " if len(prefixes) != 1 else prefixes)
-             await ctx.send("Prefixes set!")
-        
+            prefixlist = prefixes.split(" ")
+            self.bot.prefixes.update({str(ctx.guild.id): prefixlist})
+            if (len(prefixlist) > 1):
+                await ctx.send("Prefixes set!")
+            else:
+                await ctx.send("Prefix set!")
         else:
-             await ctx.send("Please set a one-character prefix")
+            await ctx.send("Please set either a one-character prefix, or multiple one-character prefixes separated by spaces")
         
-
+    @setprefix.error
+    async def setprefix_error(error, ctx):
+        if isinstance(error, MissingPermissions):
+            await ctx.send("You don't have permission to do that!")
 
 
     @commands.command(hidden=True)
@@ -446,6 +456,8 @@ class Commands(commands.Cog):
         for u in self.bot.serverWords:
             try: self.bot.serverWords[u].pop(word)
             except: continue
+        try: self.bot.serverWords[0].pop(word)
+        except: pass
         await ctx.send("Done")
 
     @commands.command(hidden=True)
@@ -465,19 +477,19 @@ class Commands(commands.Cog):
             await ctx.send(f"User `{e}` does not exist or has no words logged yet.")
 
 
-    @commands.command(hidden=True)
-    @isaBotAdmin()
-    @banFromChannel()
-    async def execute(self, ctx, *, query):
-        """Execute a query in the database"""
+    # @commands.command(hidden=True)
+    # @isaBotAdmin()
+    # @banFromChannel()
+    # async def execute(self, ctx, *, query):
+    #     """Execute a query in the database"""
 
-        try:
-            with ctx.channel.typing():
-                async with self.bot.pool.acquire() as conn:
-                    result = await conn.execute(query)
-            await ctx.send(f"Query complete:```{result}```")
-        except Exception as e:
-            await ctx.send(f"Query failed:```{e}```")
+    #     try:
+    #         with ctx.channel.typing():
+    #             async with self.bot.pool.acquire() as conn:
+    #                 result = await conn.execute(query)
+    #         await ctx.send(f"Query complete:```{result}```")
+    #     except Exception as e:
+    #         await ctx.send(f"Query failed:```{e}```")
 
     @commands.command(aliases=["resetstatus"], hidden=True)
     @isaBotAdmin()
@@ -511,9 +523,8 @@ class Commands(commands.Cog):
     @commands.command(hidden=True)
     @isaBotAdmin()
     @banFromChannel()
-
     async def updatedb(self, ctx):
-        self.bot.update_db()
+        main.update_db()
 
 def setup(bot):
     bot.add_cog(Commands(bot))

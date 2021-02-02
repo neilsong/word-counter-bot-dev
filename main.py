@@ -13,23 +13,24 @@ from decorator import *
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 
-trash_words = ['and','is','the','a','as','am','it','to','i','u','ur','not']
+trash_words = ['and','is','the','a','as','am','it','to']
 trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
-custom_prefixes = []
-default_prefixes = ['duckbot ','spedbot ','!']
+default_prefix = ['!']
 allowedIds=['448314612543127584',#anthony
         '428563260170567700',#neil
         '252199587404709898',#byron
         '337655303086800907'#anthonyAlt
         ]
 
-async def determine_prefix(bot, message):
-    guild = message.guild
-    return custom_prefixes + default_prefixes
+def get_prefix(bot, message):
+    try:
+        return bot.prefixes[str(message.guild.id)]
+    except: 
+        return default_prefix
   
 
 bot = commands.Bot(
-    command_prefix=determine_prefix,
+    command_prefix=(get_prefix),
     description="Word Counter Bot",
     case_insensitive=True,
     help_command=None,
@@ -43,35 +44,61 @@ bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")
 
-
 # DB Schema
-# users-db = db
-# users = collection
+
+# db = users-db
+# collection = users
 # doc: {
-#   id: discord-user-id
+#   __id: discord-user-id
 #   word_1: count 
 # }
 
+# db = servers-db
+# collection = servers
+# doc: {
+#   __id: discord-server-id
+#   word_1: count
+# }
+# global doc: {
+#   __id: 0
+#   word_1: count
+# }
+# prefixes doc: {
+#   _id: 'prefixes'
+#   discord-server-id: list of prefixes
+# }
+
+# In-memory dict schemas
 # bot.userWords
-# {12345667890: {'hi': 1, 'id': 428563260170567700, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}, 
-# 0: {'hi': 1, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
+# {12345667890: {'hi': 1, '__id': 1234567890, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
+
+# bot.serverWords
+# {1234567890: {'hi': 1, '__id': 1234567890, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}, 
+# 0: {'hi': 1, '__id': 0, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
+# __id : 0 represents global count
+
+# bot.prefixes
+# {'__id': 'prefixes', '1234567890': {'!', '#', '$'}} 
+
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
         print("\nCreating or Fetching DB")
         bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['users-db']['users']
         bot.userWords = {}
         bot.userLastMsg = {}
-        bot.serverRecentMsgs = 0
+        
         async for i in bot.collection.find({}, {"_id": 0}):
            bot.userWords.update({i.get("__id"): dict(i)})           
         
         bot.serverCollection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)['servers-db']['servers']
         bot.serverWords = {}
+        bot.prefixes = {"__id": "prefixes"}
         async for i in bot.serverCollection.find({}, {"_id": 0}):
-           bot.serverWords.update({i.get("__id"): dict(i)})   
-        
-        print("\nDone")
-        print("\nNumber of Users: "+str(len(bot.userWords))+"\nNumber of Servers: "+str(len(bot.serverWords)))
+            if(i.get("__id") == "prefixes"):
+                bot.prefixes.update(dict(i))
+                continue
+            bot.serverWords.update({i.get("__id"): dict(i)})
+        print("\nNumber of Users: "+str(len(bot.userWords))+"\nNumber of Servers: "+str(len(bot.serverWords) - 1))
         
 
 @bot.event
@@ -94,6 +121,7 @@ async def on_ready():
     print("Users: " + str(len(bot.users)))
     print("-----------------\n")
 
+
     update_db.start()
     bot.ready_for_commands = True
     bot.started_at = datetime.datetime.utcnow()
@@ -104,7 +132,6 @@ async def on_ready():
 
 
 async def updateWord(message):
-    bot.serverRecentMsgs += 1
     msgcontent = message.content.replace("\n", " ")
     for w in trashCharacters:
         msgcontent = msgcontent.replace(w, " ")
@@ -158,15 +185,8 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.valid:
            await bot.invoke(ctx)
-    else:
-        if bot.user in message.mentions and len(message.mentions) == 2:
-            await message.channel.send(f"You need to do `@{bot.user} count <user>` to get the "
-                                    f"word count of another user.\nDo `@{bot.user} help` "
-                                    "for help on my other commands")
-        elif bot.user in message.mentions:
-            await message.channel.send(f"Do `@{bot.user} help` for help on my commands")
-        elif message.guild is not None:
-            await updateWord(message)
+    elif message.guild is not None:
+        await updateWord(message)
             
 
 
@@ -180,6 +200,10 @@ async def on_guild_join(guild):
 async def on_guild_remove(guild):
     await bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(
         name=f"for words on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
+    try:
+        bot.prefixes.pop(str(guild.id))
+    except:
+        pass
 
 
 @tasks.loop(minutes=2, loop=bot.loop)
@@ -190,6 +214,7 @@ async def update_db():
         await bot.collection.update_one({"__id": data}, {'$set': bot.userWords[data]}, True)
     for data in list(bot.serverWords):
         await bot.serverCollection.update_one({"__id": data}, {'$set': bot.serverWords[data]}, True)
+    if bot.prefixes: await bot.serverCollection.update_one({"__id": 'prefixes'}, {'$set': bot.prefixes}, True)
     print("\nDone Updating")
 
 

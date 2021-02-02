@@ -10,7 +10,7 @@ import sys
 import re
 
 
-import main
+from main import *
 from decorator import *
 
 def find_color(ctx):
@@ -33,7 +33,8 @@ class Commands(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    @banFromChannel()
+    @isAllowed()
+    @commands.guild_only()
     async def help(self, ctx):
 
         cmds = sorted([c for c in self.bot.commands if not c.hidden], key=lambda c: c.name)
@@ -60,7 +61,7 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["info"])
-    @banFromChannel()
+    @isAllowed()
     async def about(self, ctx):
         # Some basic info about this bot
 
@@ -113,10 +114,11 @@ class Commands(commands.Cog):
 
         await ctx.send(embed=embed)
 
-
-
-
     async def countserver(self, ctx):
+        
+        if ctx.guild is None:
+            raise commands.NoPrivateMessage
+
         try:
             words=self.bot.serverWords[ctx.guild.id]
         except:
@@ -152,7 +154,8 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @banFromChannel()
+    @isAllowed()
+    @commands.guild_only()
     async def prefix(self, ctx):
         description = "My prefix"
         if (len(self.bot.prefixes[str(ctx.guild.id)]) > 1):
@@ -196,7 +199,7 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @banFromChannel()
+    @isAllowed()
     async def count(self, ctx, user=None):
         # Get the number of times a user has said any word
         # Format like this: `count <@mention user>`
@@ -261,7 +264,7 @@ class Commands(commands.Cog):
     #        return await ctx.send(exc)
 
     @commands.command()
-    @banFromChannel()
+    @isAllowed()
     async def readhistory(self, ctx):
         async for msg in ctx.channel.history(limit=300):
             msgcontent = msg.content.replace("\n", " ")
@@ -271,7 +274,7 @@ class Commands(commands.Cog):
 
 
     @commands.command()
-    @banFromChannel()
+    @isAllowed()
     async def invite(self, ctx):
         # Sends an invite link
 
@@ -280,7 +283,7 @@ class Commands(commands.Cog):
                        "&scope=bot&permissions=8")
 
     @commands.command()
-    @banFromChannel()
+    @isAllowed()
     async def stats(self, ctx):
         # View stats
 
@@ -344,7 +347,7 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["leaderboard", "high"])
     @commands.guild_only()
-    @banFromChannel()
+    @isAllowed()
     async def top(self, ctx, word: str=None, isGlobal: str=None):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
@@ -402,15 +405,10 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
 
-    @top.error
-    async def top_error(self, ctx, exc):
-        if isinstance(exc, commands.NoPrivateMessage):
-            return await ctx.send(exc)
-
 
     @commands.command()
     @commands.guild_only()
-    @banFromChannel()
+    @isAllowed()
     @commands.has_permissions(manage_guild=True)
     async def setprefix(self, ctx, *, prefixes=""):
         if len(prefixes) > 0:
@@ -423,15 +421,11 @@ class Commands(commands.Cog):
         else:
             await ctx.send("Please set either a one-character prefix, or multiple one-character prefixes separated by spaces")
         
-    @setprefix.error
-    async def setprefix_error(error, ctx):
-        if isinstance(error, MissingPermissions):
-            await ctx.send("You don't have permission to do that!")
 
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @banFromChannel()
+    @isAllowed()
     async def edituser(self, ctx, user_id: int, word: str=None, count: int=0):
         # Edit a user's entry in all collections or add a new one
         if not user_id or not word or not count:
@@ -471,7 +465,8 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @banFromChannel()
+    @commands.guild_only()
+    @isAllowed()
     async def popuser(self, ctx, user_id: int):
         # Pop a user from all collections
 
@@ -488,7 +483,7 @@ class Commands(commands.Cog):
 
     # @commands.command(hidden=True)
     # @isaBotAdmin()
-    # @banFromChannel()
+    # @isAllowed()
     # async def execute(self, ctx, *, query):
     #     """Execute a query in the database"""
 
@@ -502,7 +497,7 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["resetstatus"], hidden=True)
     @isaBotAdmin()
-    @banFromChannel()
+    @isAllowed()
     async def restartstatus(self, ctx):
         await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(
             name=f"any Words on {len(self.bot.guilds)} servers",
@@ -512,7 +507,7 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @banFromChannel()
+    @isAllowed()
     async def setstatus(self, ctx, status):
         """Change the bot's presence"""
 
@@ -528,12 +523,6 @@ class Commands(commands.Cog):
             await ctx.send("Invalid status")
 
         await ctx.send("Set new status")
-
-    @commands.command(hidden=True)
-    @isaBotAdmin()
-    @banFromChannel()
-    async def updatedb(self, ctx):
-        main.update_db()
 
 def setup(bot):
     bot.add_cog(Commands(bot))

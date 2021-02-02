@@ -352,7 +352,7 @@ class Commands(commands.Cog):
             return await ctx.send("Please type a word to search for.\n Ex: `!top lol`")
         if isGlobal and not isGlobal == "global":
             return await ctx.send("If you are trying to get the global leaderboard, do `!top lol global`")
-
+        word=word.lower();
         await ctx.channel.trigger_typing()
         leaderboard = {}
         if isGlobal == "global":

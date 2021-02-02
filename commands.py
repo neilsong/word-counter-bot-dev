@@ -42,8 +42,8 @@ class Commands(commands.Cog):
         if (len(self.bot.prefixes[str(ctx.guild.id)]) > 1):
             description+="es are"
             for i in self.bot.prefixes[str(ctx.guild.id)]:
-                if i == self.bot.prefixes[str(ctx.guild.id)][len(self.bot.prefixes[str(ctx.guild.id)])-1]:
-                    description += " and `" f"{i}" "`."
+                if i == self.bot.prefixes[len(self.bot.prefixes[str(ctx.guild.id)])-1]:
+                    description += " and `" f"{i}" "`"
                 else: description += " `" f"{i}" "`, "
         else:
             description += " is `!`."
@@ -154,7 +154,16 @@ class Commands(commands.Cog):
     @commands.command()
     @banFromChannel()
     async def prefix(self, ctx):
-        await ctx.send("The prefix(es) for this bot as of now are: "+ (' '.join(main.default_prefixes) + ' ' + ' '.join(main.custom_prefixes)))
+        description = "My prefix"
+        if (len(self.bot.prefixes[str(ctx.guild.id)]) > 1):
+            description+="es are"
+            for i in self.bot.prefixes[str(ctx.guild.id)]:
+                if i == self.bot.prefixes[len(self.bot.prefixes[str(ctx.guild.id)])-1]:
+                    description += " and `" f"{i}" "`."
+                else: description += " `" f"{i}" "`, "
+        else:
+            description += " is `!`"
+        await ctx.send(description)
     
     async def globalWords(self,ctx):
         try:
@@ -237,7 +246,7 @@ class Commands(commands.Cog):
         embed = discord.Embed(description=description, color=find_color(ctx),
                               timestamp=datetime.datetime.utcnow())
         embed.set_author(
-            name=f"{user.name}'s Most Common Words", icon_url=ctx.guild.icon_url)
+            name=f"{user.name}'s Most Common Words", icon_url=ctx.author.avatar_url)
 
         embed.set_footer(
             text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)

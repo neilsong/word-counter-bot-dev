@@ -41,16 +41,18 @@ class Commands(commands.Cog):
         
         description = "I keep track of every word a user says. I'm a pretty simple bot to use. My prefix"
         if len(self.bot.prefixes[str(ctx.guild.id)]) > 1:
-            description+="es are"
+            description+="es are "
             for i in self.bot.prefixes[str(ctx.guild.id)]:
-                if i == self.bot.prefixes[len(self.bot.prefixes[str(ctx.guild.id)])-1]:
-                    description += f" and `{i}`"
+                if i == self.bot.prefixes[str(ctx.guild.id)][len(self.bot.prefixes[str(ctx.guild.id)])-1]:
+                    description += f"and `{i}`"
                 else:  
-                    description += f" `{i}`" 
+                    description += f"`{i}`" 
                     if len(self.bot.prefixes[str(ctx.guild.id)]) > 2:
                         description += ", "
                     else:
                         description += " "
+        elif len(self.bot.prefixes[str(ctx.guild.id)]) == 1:
+            description += f" is `{self.bot.prefixes[str(ctx.guild.id)][0]}`"
         else:
             description += " is `!`"
         description += "\n\nHere's a short list of my commands:"

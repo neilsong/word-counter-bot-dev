@@ -16,11 +16,6 @@ bot_intents.members = True
 trash_words = ['and','is','the','a','as','am','it','to']
 trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
 default_prefix = ['!']
-allowedIds=['448314612543127584',#anthony
-        '428563260170567700',#neil
-        '252199587404709898',#byron
-        '337655303086800907'#anthonyAlt
-        ]
 
 def get_prefix(bot, message):
     try:
@@ -67,6 +62,14 @@ bot.load_extension("error_handlers")
 #   _id: 'prefixes'
 #   discord-server-id: list of prefixes
 # }
+# blacklist doc: {
+#   _id: 'blacklist'
+#   discord-server-id: blacklist of channels
+# }
+# whitelist doc: {
+#   _id: 'whitelist'
+#   discord-server-id: blacklist of channels
+# }
 
 # In-memory dict schemas
 # bot.userWords
@@ -78,7 +81,10 @@ bot.load_extension("error_handlers")
 # __id : 0 represents global count
 
 # bot.prefixes
-# {'__id': 'prefixes', '1234567890': {'!', '#', '$'}} 
+# {'__id': 'prefixes', '1234567890': {'!', '#', '$'}}
+
+# bot.blacklist
+# {'__id': 'blacklist', '1234567890': {'0987654321'}}
 
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
@@ -218,6 +224,7 @@ async def update_db():
     print("\nDone Updating")
 
 
+# Operational commands
 
 @bot.command(hidden=True)
 @isaBotAdmin()
@@ -230,14 +237,14 @@ async def reload(ctx):
 
 @bot.command(hidden=True)
 @isaBotAdmin()
-@banFromChannel()
+@isAllowed()
 async def restartdb(ctx):
     await create_db()
     await ctx.send("Restarted db")
 
 
 @bot.command(hidden=True)
-@isaBotAdmin()
+@isAllowed()
 async def restartudb(ctx):
     update_db.cancel()
     update_db.start()

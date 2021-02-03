@@ -87,7 +87,7 @@ bot.load_extension("error_handlers")
 # {'__id': 'blacklist', '1234567890': {'0987654321'}}
 
 # bot.filter
-# {'__id': 'filter', '1234567890': {}}
+# {'__id': 'filter', '1234567890': {'word1', 'word2'}}
 
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
@@ -103,6 +103,7 @@ async def create_db():
         bot.serverWords = {}
         bot.prefixes = {"__id": "prefixes"}
         bot.blacklist = {"__id": "blacklist"}
+        bot.filter = {"__id": "filter"}
         async for i in bot.serverCollection.find({}, {"_id": 0}):
             if i.get("__id") == "prefixes":
                 bot.prefixes.update(dict(i))
@@ -110,6 +111,9 @@ async def create_db():
             if i.get("__id") == "blacklist":
                 bot.blacklist.update(dict(i))
                 continue
+            if i.get("__id") == "filter":
+                bot.filter.update(dict(i))
+                continue 
             bot.serverWords.update({i.get("__id"): dict(i)})
         print("\nNumber of Users: "+str(len(bot.userWords))+"\nNumber of Servers: "+str(len(bot.serverWords) - 1))
         
@@ -165,7 +169,10 @@ async def updateWord(message):
         if '!' in w:
             if not re.search("^<@!\d{18}[>$]", w):
                 w=w.replace("!", "")
-        if w in defaultFilter: return        
+        if w in defaultFilter: continue
+        try: 
+            if w in bot.filter[message.guild.id]: continue
+        except: pass
         #print(w)
         #print("\n")    
         if message.guild.id not in bot.serverWords:
@@ -234,6 +241,7 @@ async def update_db():
         await bot.serverCollection.update_one({"__id": data}, {'$set': bot.serverWords[data]}, True)
     await bot.serverCollection.update_one({"__id": 'prefixes'}, {'$set': bot.prefixes}, True)
     await bot.serverCollection.update_one({"__id": 'blacklist'}, {'$set': bot.blacklist}, True)
+    await bot.serverCollection.update_one({"__id": 'filter'}, {'$set': bot.filter}, True)
     print("\nDone Updating")
 
 

@@ -2,3 +2,4 @@ discord.py
 psutil
 motor
 dnspython
+disputils

@@ -8,7 +8,8 @@ import time
 import pprint
 import sys
 import re
-
+import copy
+from disputils import BotEmbedPaginator
 
 from main import *
 from decorator import *
@@ -190,9 +191,34 @@ class Commands(commands.Cog):
 
         await ctx.send(embed=embed)
 
+
+    
+
+
+    async def makeEmbed(self,ctx,words,pageNum,user):
+        
+        description = "\n"
+        counter = 1
+        for m, c in words.items():
+            description += (f"**{counter+pageNum*15}.** {m} - __{c:,} "
+                            f"time{'' if c == 1 else 's'}__\n")
+            counter += 1
+
+        description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
+
+        embed = discord.Embed(description=description, color=find_color(ctx),
+                              timestamp=datetime.datetime.utcnow())
+        embed.set_author(
+            name=f"{user.name}'s Most Common Words", icon_url=ctx.author.avatar_url)
+
+        embed.set_footer(
+            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
+        return embed
+
+
     @commands.command()
     @isAllowed()
-    async def count(self, ctx, user=None):
+    async def count(self, ctx, user=None,):
         # Get the number of times a user has said any word
         # Format like this: `count <@mention user>`
         # If requester doesn't mention a user, the bot will get requester's count
@@ -216,10 +242,14 @@ class Commands(commands.Cog):
             return await ctx.send("Man, why would I count my own words?")    
         elif user.bot:
             return await ctx.send("I don't count words said by bots.")
+        
+        embeds=[]
 
         if not (user == self.bot.user):
             try:
-                words=dict(collections.Counter(self.bot.userWords[user.id]).most_common(11))
+                words=self.bot.userWords[user.id]
+
+                words={k: v for k, v in sorted(words.items(), key=lambda item: item[1],reverse=True)}
                 words.pop('__id')
             except:
                 return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
@@ -228,25 +258,23 @@ class Commands(commands.Cog):
         if not len(words):
             return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
 
+        embeds=[]
+        count2=0
+        fuckingJankSolution=0
+        nD={}
+        for key in words:
+            count2+=1
+            nD[key]=words[key]
+            if count2==15 or count2==len(words):
+                embeds.append(await self.makeEmbed(ctx,nD,fuckingJankSolution,user))
+                fuckingJankSolution+=1
 
-        description = "\n"
-        counter = 1
-        for m, c in words.items():
-            description += (f"**{counter}.** {m} - __{c:,} "
-                            f"time{'' if c == 1 else 's'}__\n")
-            counter += 1
+                nD.clear()
+                count2=0
 
-        description = description.replace("**1.**", ":first_place:").replace("**2.**", ":second_place:").replace("**3.**", ":third_place:")
-
-        embed = discord.Embed(description=description, color=find_color(ctx),
-                              timestamp=datetime.datetime.utcnow())
-        embed.set_author(
-            name=f"{user.name}'s Most Common Words", icon_url=ctx.author.avatar_url)
-
-        embed.set_footer(
-            text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)
-
-        await ctx.send(embed=embed)
+        paginator = BotEmbedPaginator(ctx, embeds)
+        await paginator.run()
+        #await ctx.send(embed=embed)
 
 
 

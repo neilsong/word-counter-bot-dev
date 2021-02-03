@@ -442,7 +442,7 @@ class Commands(commands.Cog):
             try:
                 self.bot.blacklist[str(ctx.guild.id)].append(channelarg.id)
             except:
-                self.bot.blacklist.update({str(ctx.guild.id) : [str(channelarg.id)]})
+                self.bot.blacklist.update({str(ctx.guild.id) : [channelarg.id]})
             await ctx.send("Channel added!")
         else:
             await ctx.send("Please provide a channel")

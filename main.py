@@ -13,7 +13,7 @@ from decorator import *
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 
-trash_words = ['and','is','the','a','as','am','it','to']
+defaultFilter = ['and','is','the','a','as','am','it','to']
 trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
 default_prefix = ['!']
 
@@ -59,12 +59,16 @@ bot.load_extension("error_handlers")
 #   word_1: count
 # }
 # prefixes doc: {
-#   _id: 'prefixes'
+#   __id: 'prefixes'
 #   discord-server-id: list of prefixes
 # }
 # blacklist doc: {
-#   _id: 'blacklist'
+#   __id: 'blacklist'
 #   discord-server-id: blacklist of channels
+# }
+# filter doc: {
+#   __id: 'filter'
+#   discord-server-id: list of words to be filtered
 # }
 
 # In-memory dict schemas
@@ -81,6 +85,9 @@ bot.load_extension("error_handlers")
 
 # bot.blacklist
 # {'__id': 'blacklist', '1234567890': {'0987654321'}}
+
+# bot.filter
+# {'__id': 'filter', '1234567890': {}}
 
 async def create_db():
         # Create db in MongoDB if it doesn't already exist.
@@ -158,8 +165,7 @@ async def updateWord(message):
         if '!' in w:
             if not re.search("^<@!\d{18}[>$]", w):
                 w=w.replace("!", "")
-        for trash in trash_words:
-            if w == trash: return        
+        if w in defaultFilter: return        
         #print(w)
         #print("\n")    
         if message.guild.id not in bot.serverWords:

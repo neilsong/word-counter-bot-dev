@@ -227,6 +227,7 @@ async def on_guild_remove(guild):
         name=f"for words on {len(bot.guilds)} servers", type=discord.ActivityType.watching))
     try:
         bot.prefixes.pop(str(guild.id))
+        bot.filter.pop(str(guild.id))
     except:
         pass
 

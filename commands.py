@@ -455,9 +455,9 @@ class Commands(commands.Cog):
             prefixlist = prefixes.split(" ")
             self.bot.prefixes.update({str(ctx.guild.id): prefixlist})
             if len(prefixlist) > 1:
-                await ctx.send("Prefixes set!")
+                await ctx.send("Prefixes set")
             else:
-                await ctx.send("Prefix set!")
+                await ctx.send("Prefix set")
         else:
             await ctx.send("Please set either a one-character prefix, or multiple one-character prefixes separated by spaces")
 
@@ -471,7 +471,7 @@ class Commands(commands.Cog):
                 self.bot.blacklist[str(ctx.guild.id)].append(channelarg.id)
             except:
                 self.bot.blacklist.update({str(ctx.guild.id) : [channelarg.id]})
-            await ctx.send("Channel added!")
+            await ctx.send("Channel added")
         else:
             await ctx.send("Please provide a channel")
 
@@ -483,7 +483,7 @@ class Commands(commands.Cog):
         if channelarg: 
             try:
                 self.bot.blacklist[str(ctx.guild.id)].pop(channelarg.id)
-                await ctx.send("Channel removed!")
+                await ctx.send("Channel removed")
             except:
                 await ctx.send("Channel not blacklisted")
         else:
@@ -495,7 +495,7 @@ class Commands(commands.Cog):
     async def blacklist(self, ctx):
         blacklist = "Currently blacklisted channel"
         if not str(ctx.guild.id) in self.bot.blacklist.keys():
-            await ctx.send("There is no blacklist for this server.")
+            await ctx.send("There is no blacklist for this server")
             return
         if len(self.bot.blacklist[str(ctx.guild.id)]) > 1:
             blacklist +="s:"
@@ -511,6 +511,70 @@ class Commands(commands.Cog):
         else:
             blacklist += ": " f"<#{self.bot.blacklist[str(ctx.guild.id)][0]}>"
         await ctx.send(blacklist)
+
+    @commands.command()
+    @commands.guild_only()
+    @isAllowed()
+    @commands.has_permissions(manage_guild=True)
+    async def removefilter(self, ctx, *, words=""):
+        response = ""
+        if len(words) > 0:
+            wordlist = words.split(" ")
+            for i in wordlist:
+                try:
+                    self.bot.filter[str(ctx.guild.id)].remove(str(i))
+                    response += f"`{i}` removed\n"
+                    if len(self.bot.filter[str(ctx.guild.id)]) == 0:
+                        self.bot.filter.pop(str(ctx.guild.id))
+                        response += f"The filter is now empty\n"
+                except:
+                    response += f"`{i}` is not in the filter\n"
+            await ctx.send(response)
+        else:
+            await ctx.send("Please remove either one word, or multiple words separated by spaces")
+
+    @commands.command()
+    @commands.guild_only()
+    @isAllowed()
+    @commands.has_permissions(manage_guild=True)
+    async def addfilter(self, ctx, *, words=""):
+        if len(words) > 0:
+            wordlist = words.split(" ")
+            for i in wordlist:
+                try:
+                    self.bot.filter[str(ctx.guild.id)].append(i)
+                except:
+                    self.bot.filter.update({str(ctx.guild.id) : [i]})
+            if len(wordlist) > 1:
+                await ctx.send("Words added")
+            else:
+                await ctx.send("Word added")
+        else:
+            await ctx.send("Please add either one word, or multiple words separated by spaces")
+        
+    @commands.command()
+    @isAllowed()
+    @commands.guild_only()
+    @commands.has_permissions(manage_guild=True)
+    async def filter(self, ctx):
+        filter = "Current filter:"
+        if not str(ctx.guild.id) in self.bot.filter.keys():
+            await ctx.send("There is no filter for this server")
+            return
+        if len(self.bot.filter[str(ctx.guild.id)]) > 1:
+            for i in self.bot.filter[str(ctx.guild.id)]:
+                if i == self.bot.filter[str(ctx.guild.id)][len(self.bot.filter[str(ctx.guild.id)])-1]:
+                    filter += "and " f"`{i}`"
+                else: 
+                    filter += " " f"`{i}`" 
+                    if len(self.bot.filter[str(ctx.guild.id)]) > 2:
+                        filter += ", "
+                    else:
+                        filter += " "
+        else:
+            filter += f" {self.bot.filter[str(ctx.guild.id)][0]}"
+        await ctx.send(filter)
+
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------
 

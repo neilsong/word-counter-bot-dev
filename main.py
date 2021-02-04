@@ -138,7 +138,6 @@ async def on_ready():
     print("Users: " + str(len(bot.users)))
     print("-----------------\n")
 
-
     update_db.start()
     bot.ready_for_commands = True
     bot.started_at = datetime.datetime.utcnow()

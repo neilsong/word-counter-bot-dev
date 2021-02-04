@@ -13,6 +13,7 @@ from disputils import BotEmbedPaginator
 
 from main import *
 from decorator import *
+from utilities import *
 
 def find_color(ctx):
     # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
@@ -25,6 +26,7 @@ def find_color(ctx):
     except AttributeError:  #* If it's a DM channel
         color = discord.Color.greyple()
     return color
+
 
 
 class Commands(commands.Cog):
@@ -78,7 +80,13 @@ class Commands(commands.Cog):
             f"\n\n**User/Client ID**: {self.bot.app_info.id}", color=find_color(ctx))
 
         embed.set_thumbnail(url=self.bot.app_info.icon_url)
-        embed.add_field(name="Owner", value=self.bot.app_info.owner)
+        from config import ADMINS
+        tadmins = ADMINS.copy()
+        for i in range(0, len(tadmins)):
+            tadmins[i] = await self.bot.fetch_user(tadmins[i])
+        tadmins = wordListToString(tadmins)
+        tadmins = tadmins.replace('`', '')
+        embed.add_field(name="Owners", value=tadmins)
         embed.add_field(name="Server Count", value=len(self.bot.guilds))
         embed.add_field(name="User Count", value=len(self.bot.users))
         embed.add_field(
@@ -143,6 +151,9 @@ class Commands(commands.Cog):
         for w in words:
             if w=="__id":
                 continue
+            try: 
+                if w in self.bot.filter[str(ctx.guild.id)]: continue
+            except: pass
             ct+=1
             desc+="\n**"+ str(ct) + ".** " + w+" - __"+str(words[w])+" times__"
             if ct==10:
@@ -163,14 +174,17 @@ class Commands(commands.Cog):
     
     async def globalWords(self,ctx):
         try:
-            words=dict(collections.Counter(self.bot.serverWords[0]).most_common(11))
-            #words.pop('__id')
+            words=self.bot.serverWords[0].copy()
+            try:
+                for i in self.bot.filter[str(ctx.guild.id)]:
+                    try: words.pop(i)
+                    except: continue
+            except: pass
+
         except:
             return await ctx.send("Weird, no words logged yet.")
-                
-        #if not len(words):
-        #    return await ctx.send("Weird, no words logged yet.")
-
+        
+        words=dict(collections.Counter(words).most_common(10))
 
         description = "\n"
         counter = 1
@@ -251,6 +265,11 @@ class Commands(commands.Cog):
 
                 words={k: v for k, v in sorted(words.items(), key=lambda item: item[1],reverse=True)}
                 words.pop('__id')
+                try:
+                    for i in self.bot.filter[str(ctx.guild.id)]:
+                        try: words.pop(i)
+                        except: continue
+                except: pass
             except:
                 return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
         
@@ -373,6 +392,10 @@ class Commands(commands.Cog):
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word==None:
             return await ctx.send("Please type a word to search for.\n Ex: `!top lol`")
+        try:
+            if word in self.bot.filter[str(ctx.guild.id)]:
+                return await ctx.send("That word is filtered")
+        except: pass
         if isGlobal and not isGlobal == "global":
             return await ctx.send("If you are trying to get the global leaderboard, do `!top lol global`")
         word=word.lower();
@@ -430,20 +453,13 @@ class Commands(commands.Cog):
     async def prefix(self, ctx):
         description = "My prefix"
         if len(self.bot.prefixes[str(ctx.guild.id)]) > 1:
-            description+="es are "
-            for i in self.bot.prefixes[str(ctx.guild.id)]:
-                if i == self.bot.prefixes[str(ctx.guild.id)][len(self.bot.prefixes[str(ctx.guild.id)])-1]:
-                    description += f"and `{i}`"
-                else:  
-                    description += f"`{i}`" 
-                    if len(self.bot.prefixes[str(ctx.guild.id)]) > 2:
-                        description += ", "
-                    else:
-                        description += " "
+            description+="es: "
+            description += wordListToString(self.bot.prefixes[str(ctx.guild.id)])
         elif len(self.bot.prefixes[str(ctx.guild.id)]) == 1:
-            description += f" is `{self.bot.prefixes[str(ctx.guild.id)][0]}`"
+            description += ": "
+            description += wordListToString(self.bot.prefixes[str(ctx.guild.id)])
         else:
-            description += " is `!`"
+            description += ": `!`"
         await ctx.send(description)
 
     @commands.command()
@@ -497,19 +513,7 @@ class Commands(commands.Cog):
         if not str(ctx.guild.id) in self.bot.blacklist.keys():
             await ctx.send("There is no blacklist for this server")
             return
-        if len(self.bot.blacklist[str(ctx.guild.id)]) > 1:
-            blacklist +="s:"
-            for i in self.bot.blacklist[str(ctx.guild.id)]:
-                if i == self.bot.blacklist[str(ctx.guild.id)][len(self.bot.blacklist[str(ctx.guild.id)])-1]:
-                    blacklist += "and " f"<#{i}>"
-                else: 
-                    blacklist += " " f"<#{i}>" 
-                    if len(self.bot.blacklist[str(ctx.guild.id)]) > 2:
-                        blacklist += ", "
-                    else:
-                        blacklist += " "
-        else:
-            blacklist += ": " f"<#{self.bot.blacklist[str(ctx.guild.id)][0]}>"
+        blacklist += channelListToString(self.bot.blacklist[str(ctx.guild.id)])
         await ctx.send(blacklist)
 
     @commands.command()
@@ -557,22 +561,11 @@ class Commands(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def filter(self, ctx):
-        filter = "Current filter:"
+        filter = "Current filter: "
         if not str(ctx.guild.id) in self.bot.filter.keys():
             await ctx.send("There is no filter for this server")
             return
-        if len(self.bot.filter[str(ctx.guild.id)]) > 1:
-            for i in self.bot.filter[str(ctx.guild.id)]:
-                if i == self.bot.filter[str(ctx.guild.id)][len(self.bot.filter[str(ctx.guild.id)])-1]:
-                    filter += "and " f"`{i}`"
-                else: 
-                    filter += " " f"`{i}`" 
-                    if len(self.bot.filter[str(ctx.guild.id)]) > 2:
-                        filter += ", "
-                    else:
-                        filter += " "
-        else:
-            filter += f" {self.bot.filter[str(ctx.guild.id)][0]}"
+        filter += wordListToString(self.bot.filter[str(ctx.guild.id)])
         await ctx.send(filter)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------

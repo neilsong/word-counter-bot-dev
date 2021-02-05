@@ -100,7 +100,7 @@ class Commands(commands.Cog):
         embed.add_field(
             name="Source Code", value="https://github.com/neilsong/word-counter-bot", inline=False)
         embed.add_field(
-            name="Contributors", value="https://github.com/neilsong/word-counter-bot-dev/graphs/contributors", inline=False)
+            name="Contributors", value="https://bit.ly/3cWYlsn", inline=False)
         embed.add_field(
             name = "Distant Cousin", value="https://github.com/NWordCounter/bot", inline=False)
 

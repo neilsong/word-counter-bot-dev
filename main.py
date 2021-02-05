@@ -209,7 +209,7 @@ async def on_message(message):
 @bot.event
 async def on_guild_channel_delete(channel):
     try:
-        bot.blacklist.pop(str(channel.id))
+        bot.blacklist.remove(channel.id)
     except:
         pass
 
@@ -227,6 +227,7 @@ async def on_guild_remove(guild):
     try:
         bot.prefixes.pop(str(guild.id))
         bot.filter.pop(str(guild.id))
+        bot.blacklist.pop(str(guild.id))
     except:
         pass
 

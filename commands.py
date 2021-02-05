@@ -86,7 +86,7 @@ class Commands(commands.Cog):
             tadmins[i] = await self.bot.fetch_user(tadmins[i])
         tadmins = wordListToString(tadmins)
         tadmins = tadmins.replace('`', '')
-        embed.add_field(name="Owners", value=tadmins)
+        embed.add_field(name="Admins", value=tadmins)
         embed.add_field(name="Server Count", value=len(self.bot.guilds))
         embed.add_field(name="User Count", value=len(self.bot.users))
         embed.add_field(
@@ -98,7 +98,9 @@ class Commands(commands.Cog):
             name="License",
             value="MIT")
         embed.add_field(
-            name="Source Code", value="https://github.com/neilsong/bot-word-counter", inline=False)
+            name="Source Code", value="https://github.com/neilsong/word-counter-bot", inline=False)
+        embed.add_field(
+            name="Contributors", value="https://github.com/neilsong/word-counter-bot-dev/graphs/contributors", inline=False)
         embed.add_field(
             name = "Distant Cousin", value="https://github.com/NWordCounter/bot", inline=False)
 
@@ -277,16 +279,13 @@ class Commands(commands.Cog):
         if not len(words):
             return await ctx.send(f"{user.mention} hasn't said anything that I have logged yet.")
 
-        embeds=[]
-        count2=0
-        fuckingJankSolution=0
-        nD={}
+        embeds=[]; count2 = 0; count = 0; nD={}
         for key in words:
             count2+=1
             nD[key]=words[key]
             if count2==15 or count2==len(words):
-                embeds.append(await self.makeEmbed(ctx,nD,fuckingJankSolution,user))
-                fuckingJankSolution+=1
+                embeds.append(await self.makeEmbed(ctx,nD,count,user))
+                count+=1
 
                 nD.clear()
                 count2=0
@@ -481,29 +480,43 @@ class Commands(commands.Cog):
     @commands.guild_only()
     @isAllowed()
     @commands.has_permissions(manage_guild=True)
-    async def addblacklist(self, ctx, channelarg: discord.TextChannel=None):
-        if channelarg: 
-            try:
-                self.bot.blacklist[str(ctx.guild.id)].append(channelarg.id)
-            except:
-                self.bot.blacklist.update({str(ctx.guild.id) : [channelarg.id]})
-            await ctx.send("Channel added")
+    async def addblacklist(self, ctx, *, channels):
+        response = ""
+        channels = channels.replace("<", "").replace("#", "").replace(">", "").split(" ")
+        if len(channels) > 0: 
+            for i in channels:
+                try:
+                    if i in self.bot.blacklist[str(ctx.guild.id)]:
+                        response += f"<#{i}> already blacklisted\n"
+                        continue
+                    self.bot.blacklist[str(ctx.guild.id)].append(int(i))
+                except:
+                    self.bot.blacklist.update({str(ctx.guild.id) : [int(i)]})
+                response += f"<#{i}> added\n"
         else:
-            await ctx.send("Please provide a channel")
+            response += "Please provide either a channel, or multiple channels separated by spaces"
+        await ctx.send(response)
 
     @commands.command()
     @commands.guild_only()
     @isAllowed()
     @commands.has_permissions(manage_guild=True)
-    async def removeblacklist(self, ctx, channelarg: discord.TextChannel=None):
-        if channelarg: 
-            try:
-                self.bot.blacklist[str(ctx.guild.id)].pop(channelarg.id)
-                await ctx.send("Channel removed")
-            except:
-                await ctx.send("Channel not blacklisted")
+    async def removeblacklist(self, ctx, *, channels):
+        response = ""
+        channels = channels.replace("<", "").replace("#", "").replace(">", "").split(" ")
+        if len(channels) > 0: 
+            for i in channels:
+                try:
+                    self.bot.blacklist[str(ctx.guild.id)].remove(int(i))
+                    response += f"<#{i}> removed\n"
+                    if len(self.bot.blacklist[str(ctx.guild.id)]) == 0:
+                        self.bot.blacklist.pop(str(ctx.guild.id))
+                        response += f"The blacklist is now empty\n"
+                except:
+                    response += f"<#{i}> not blacklisted\n"
         else:
-            await ctx.send("Please provide a channel")
+            response += "Please provide either a channel, or multiple channels separated by spaces"
+        await ctx.send(response)
         
     @commands.command()
     @isAllowed()
@@ -521,40 +534,63 @@ class Commands(commands.Cog):
     @isAllowed()
     @commands.has_permissions(manage_guild=True)
     async def removefilter(self, ctx, *, words=""):
+
+        for w in trashCharacters:
+            words = words.replace(w, " ")
+        words=' '.join(words.split())
+        words = words.lower()
+        
         response = ""
         if len(words) > 0:
             wordlist = words.split(" ")
             for i in wordlist:
+                if i in defaultFilter:
+                    response += f"`{i}` is in the default filter\n"
+                    continue
                 try:
-                    self.bot.filter[str(ctx.guild.id)].remove(str(i))
+                    self.bot.filter[str(ctx.guild.id)].remove(i)
                     response += f"`{i}` removed\n"
                     if len(self.bot.filter[str(ctx.guild.id)]) == 0:
                         self.bot.filter.pop(str(ctx.guild.id))
                         response += f"The filter is now empty\n"
                 except:
                     response += f"`{i}` is not in the filter\n"
-            await ctx.send(response)
         else:
-            await ctx.send("Please remove either one word, or multiple words separated by spaces")
+            response += "Please remove either one word, or multiple words separated by spaces"
+        
+        await ctx.send(response)
+
 
     @commands.command()
     @commands.guild_only()
     @isAllowed()
     @commands.has_permissions(manage_guild=True)
     async def addfilter(self, ctx, *, words=""):
+        for w in trashCharacters:
+            words = words.replace(w, " ")
+        words=' '.join(words.split())
+        words = words.lower()
+
+        response = ""
+        added = False
         if len(words) > 0:
             wordlist = words.split(" ")
             for i in wordlist:
+                if i in defaultFilter:
+                    response += f"`{i}` is in the default filter\n"
+                    continue
                 try:
+                    if i in self.bot.filter[str(ctx.guild.id)]:
+                        response += f"`{i}` already in filter\n"
+                        continue
                     self.bot.filter[str(ctx.guild.id)].append(i)
                 except:
                     self.bot.filter.update({str(ctx.guild.id) : [i]})
-            if len(wordlist) > 1:
-                await ctx.send("Words added")
-            else:
-                await ctx.send("Word added")
+                response += f"`{i}` added\n"
         else:
-            await ctx.send("Please add either one word, or multiple words separated by spaces")
+            response += "Please add either one word, or multiple words separated by spaces"
+
+        await ctx.send(response)
         
     @commands.command()
     @isAllowed()

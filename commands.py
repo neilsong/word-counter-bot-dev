@@ -637,10 +637,10 @@ class Commands(commands.Cog):
     @isAllowed()
     async def popdefaultfilter(self, ctx):
         for i in defaultFilter:
-            for u in self.bot.userWords:
+            for u in self.bot.userWords.keys():
                 try: self.bot.userWords[u].pop(i)
                 except: continue
-            for u in self.bot.serverWords:
+            for u in self.bot.serverWords.keys():
                 try: self.bot.serverWords[u].pop(i)
                 except: continue
             try: self.bot.serverWords[0].pop(i)

@@ -632,7 +632,20 @@ class Commands(commands.Cog):
         
         await ctx.send("Done")
         
-
+    @commands.command(hidden=True)
+    @isaBotAdmin()
+    @isAllowed()
+    async def popdefaultfilter(self, ctx):
+        for i in defaultFilter:
+            for u in self.bot.userWords:
+                try: self.bot.userWords[u].pop(word)
+                except: continue
+            for u in self.bot.serverWords:
+                try: self.bot.serverWords[u].pop(word)
+                except: continue
+            try: self.bot.serverWords[0].pop(word)
+            except: pass
+        await ctx.send("Done")
     
     @commands.command(hidden=True)
     @isaBotAdmin()

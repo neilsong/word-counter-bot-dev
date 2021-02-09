@@ -638,12 +638,12 @@ class Commands(commands.Cog):
     async def popdefaultfilter(self, ctx):
         for i in defaultFilter:
             for u in self.bot.userWords:
-                try: self.bot.userWords[u].pop(word)
+                try: self.bot.userWords[u].pop(i)
                 except: continue
             for u in self.bot.serverWords:
-                try: self.bot.serverWords[u].pop(word)
+                try: self.bot.serverWords[u].pop(i)
                 except: continue
-            try: self.bot.serverWords[0].pop(word)
+            try: self.bot.serverWords[0].pop(i)
             except: pass
         await ctx.send("Done")
     

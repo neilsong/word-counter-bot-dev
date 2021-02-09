@@ -631,10 +631,12 @@ class Commands(commands.Cog):
         self.bot.serverWords[0][word] += change
         
         await ctx.send("Done")
+        
 
     
     @commands.command(hidden=True)
     @isaBotAdmin()
+    @isAllowed()
     async def popword(self, ctx, word: str=None):
         # Pop a word from all collections
 

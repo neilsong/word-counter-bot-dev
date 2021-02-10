@@ -197,7 +197,7 @@ class Commands(commands.Cog):
             name=f"Top 10 Users of \"{word}\"")
         else:
             embed.set_author(
-            name=f"{user.name}'s Most Common Words", icon_url=ctx.author.avatar_url)
+            name=f"{user.name}'s Most Common Words", icon_url=user.avatar_url)
 
         embed.set_footer(
             text="These listings are accurate as of ", icon_url=self.bot.user.avatar_url)

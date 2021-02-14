@@ -294,13 +294,7 @@ class Commands(commands.Cog):
     #    if isinstance(exc, commands.BadArgument):
     #        return await ctx.send(exc)
 
-    # @commands.command()
-    # @isAllowed()
-    # async def readhistory(self, ctx):
-    #     async for msg in ctx.channel.history(limit=300):
-    #         msgcontent = msg.content.replace("\n", " ")
-    #         print("History: " + msgcontent)
-    #         await main.updateWord(message)
+
 
 
     @commands.command()

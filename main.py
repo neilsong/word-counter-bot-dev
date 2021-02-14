@@ -203,6 +203,16 @@ def listToString(s):
     str1 = " " 
     return (str1.join(s)) 
 
+#this command only works in this file
+@bot.command()
+@isAllowed()
+async def readhistory(ctx):
+    async for msg in ctx.channel.history(limit=300):
+        msgcontent = msg.content.replace("\n", " ")
+        print("History: " + msgcontent)
+        await updateWord(msg)
+
+
 @bot.event
 async def on_message(message):   
     if not bot.ready_for_commands or message.author.bot:

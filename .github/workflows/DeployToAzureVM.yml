@@ -7,20 +7,5 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Login via Az module
-      uses: azure/login@v1
-      with:
-        creds: ${{secrets.AZURE_CREDENTIALS}}
-        enable-AzPSSession: true 
-        
-    - name: Azure CLI script
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.17.1
-        inlineScript: |
-          az vm run-command invoke -g VM1_group -n VM1 --command-id RunShellScript --scripts \
-          'cd /home/azureuser/word-counter-bot-dev' \
-          'screen -X quit' \
-          'git pull' \
-          'screen -d -m /home/azureuser/word-counter-bot-dev/.github/workflows/execution.sh'
+    - name: GET DeployCommit Azure Function
+      run: curl ${{secrets.DEPLOYCOMMITURL}}

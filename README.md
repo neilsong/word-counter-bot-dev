@@ -1,5 +1,7 @@
 # word-counter-bot (Dev)
 
+[![DeployCommit](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml/badge.svg)](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml)
+
 Kanban: https://app.gitkraken.com/glo/board/X_1FdLw5GgAS4oFE  
 Release: https://github.com/neilsong/word-counter-bot
 ## Description
@@ -10,11 +12,11 @@ Currently, we are trying our best to deliver a stable beta release with all the 
 
 ## Features
 
-  1. Provide insight and analytics into the unique language of this server
-        - Leaderboard of most common words in the server
+  1. Provide insight and analytics into the unique language of a server
+        - Leaderboard of most common words
         - Your own personal leaderboard of most common words
 
-  2. (Next major feature) Create an AI model that will mimic your style to send a message you would probably send on command
+  2. (Next major feature) Create an AI model that will send a message or a response mimicking a user's style
 
   3. (Very far off) Create a web app that serves a dashboard with insights, charts, and analytics 
 

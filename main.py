@@ -210,17 +210,21 @@ def listToString(s):
 @isaBotAdmin()
 async def readhistory(ctx):
     f = codecs.open("serverMessages.txt", "w", "utf-8")
-    print('a')
     #open and read the file after the appending:
     for channel in ctx.guild.text_channels:
-        print('b')
-        messages = await channel.history().flatten()
-        for msg in messages:
+        print(channel.name)
+        #if channel.category.lower()=="bots":
+            #continue
+        async for msg in channel.history(limit=99999999999):#.flatten() to recive as an array
+
             msgcontent = msg.content.replace("\n", " ")
+            if not msgcontent:
+                continue
             if not msg.author.bot:
-                f.write(str(msg.author.id)+" "+msgcontent+'\n')
+                f.write(str(msg.author.id)+msgcontent+'\n')
+                await updateWord(msg)
             #print("History: " + msgcontent)
-            #await updateWord(msg)
+            
     f.close()
 
     #f = open("serverMessages.txt", "r")

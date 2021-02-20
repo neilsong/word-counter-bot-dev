@@ -7,8 +7,9 @@ import datetime
 import re
 import os
 import sys
+import codecs
 import config
-from decorator import *
+from decorator import * 
 
 bot_intents = discord.Intents.default()
 bot_intents.members = True
@@ -206,11 +207,24 @@ def listToString(s):
 #this command only works in this file
 @bot.command()
 @isAllowed()
+@isaBotAdmin()
 async def readhistory(ctx):
-    async for msg in ctx.channel.history(limit=300):
-        msgcontent = msg.content.replace("\n", " ")
-        print("History: " + msgcontent)
-        await updateWord(msg)
+    f = codecs.open("serverMessages.txt", "w", "utf-8")
+    print('a')
+    #open and read the file after the appending:
+    for channel in ctx.guild.text_channels:
+        print('b')
+
+        async for msg in channel.history(limit=300000000):
+            msgcontent = msg.content.replace("\n", " ")
+            if not msg.author.bot:
+                f.write(str(msg.author.id)+" "+msgcontent+'\n')
+            #print("History: " + msgcontent)
+            #await updateWord(msg)
+    f.close()
+
+    #f = open("serverMessages.txt", "r")
+    print("done")
 
 
 @bot.event

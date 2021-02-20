@@ -562,11 +562,12 @@ class Commands(commands.Cog):
         await ctx.send("Set new status")
 
 
-    @commands.command(hidden=True)
+    str="""@commands.command(hidden=True)
     @isaBotAdmin()
     @isAllowed()
     def talkToMe(self, ctx,word=None):
         if len(word)>0:
+            word=word"""
             
 
 

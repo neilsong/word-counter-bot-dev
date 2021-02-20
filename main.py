@@ -214,13 +214,13 @@ async def readhistory(ctx):
     #open and read the file after the appending:
     for channel in ctx.guild.text_channels:
         print('b')
-
-        async for msg in channel.history(limit=300000000):
+        messages = await channel.history().flatten()
+        for msg in messages:
             msgcontent = msg.content.replace("\n", " ")
             if not msg.author.bot:
                 f.write(str(msg.author.id)+" "+msgcontent+'\n')
             #print("History: " + msgcontent)
-            await updateWord(msg)
+            #await updateWord(msg)
     f.close()
 
     #f = open("serverMessages.txt", "r")

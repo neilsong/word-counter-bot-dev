@@ -1,0 +1,11 @@
+on: [push]
+
+name: DeployToAzureVM
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: GET DeployCommit Azure Function
+      run: curl ${{secrets.DEPLOYCOMMITURL}}

@@ -220,7 +220,7 @@ async def readhistory(ctx):
             if not msg.author.bot:
                 f.write(str(msg.author.id)+" "+msgcontent+'\n')
             #print("History: " + msgcontent)
-            #await updateWord(msg)
+            await updateWord(msg)
     f.close()
 
     #f = open("serverMessages.txt", "r")

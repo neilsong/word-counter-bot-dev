@@ -1,6 +1,6 @@
 # word-counter-bot (Dev)
 
-[![DeployToAzureVM](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployToAzureVM.yml/badge.svg)](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployToAzureVM.yml)
+[![DeployCommit](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml/badge.svg)](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml)
 
 Kanban: https://app.gitkraken.com/glo/board/X_1FdLw5GgAS4oFE  
 Release: https://github.com/neilsong/word-counter-bot

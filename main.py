@@ -305,7 +305,11 @@ async def restartdb(ctx):
 @isAllowed()
 async def restartudb(ctx):
     update_db.cancel()
-    update_db.start()
+    try:
+        update_db.start()
+    except:
+        update_db.cancel()
+        update_db.start()
     await ctx.send("Cancelled and restarted `update_db()`")
 
 

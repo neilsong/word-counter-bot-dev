@@ -8,6 +8,7 @@ import time
 import pprint
 import sys
 import re
+import requests 
 import copy
 from disputils import BotEmbedPaginator
 
@@ -561,13 +562,36 @@ class Commands(commands.Cog):
 
         await ctx.send("Set new status")
 
-
-    str="""@commands.command(hidden=True)
+    @commands.command(hidden=True)
     @isaBotAdmin()
+    async def setBackend(self,ctx,url=None):
+        global backendURL
+        backendURL=url
+        await ctx.send("Backend set to `"+url+"`.")
+
+    
+    @commands.command()
     @isAllowed()
-    def talkToMe(self, ctx,word=None):
-        if len(word)>0:
-            word=word"""
+    async def talk(self, ctx,word=None):
+        if not word==None:
+            URL=backendURL
+            #check if server is alive
+            if ".ngrok.io not found" in requests.get(url = URL).text:
+                return await ctx.send("Text generation backend offline. Ask anthony.")
+            URL+=""if URL[:-1]=="/"else"/"+"generate"
+            message=await ctx.send("Your request is being processed, this will take around 20 seconds.")
+
+            inputtxt=ctx.message.content[len("!talk "):]+'\n'
+            r = requests.get(url = URL, params = {'input':inputtxt})
+            await message.delete()
+
+            if "The server returned an invalid or incomplete HTTP response." not in r.text:
+                await ctx.send(r.text[len(inputtxt):])
+            else:
+                await ctx.send("Backend may have shut down during your request.")
+        else:
+            await ctx.send("Needs input text. ex:`!talk hello world`")
+
             
 
 

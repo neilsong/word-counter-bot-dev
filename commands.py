@@ -587,7 +587,7 @@ class Commands(commands.Cog):
             await message.delete()
 
             if "The server returned an invalid or incomplete HTTP response." not in r.text:
-                await ctx.send(r.text[len(inputtxt):])
+                await ctx.send(r.text[len(inputtxt):],allowed_mentions=discord.AllowedMentions.none())
             else:
                 await ctx.send("Backend may have shut down during your request.")
         else:

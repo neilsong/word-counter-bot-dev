@@ -573,7 +573,6 @@ class Commands(commands.Cog):
 
     
     @commands.command()
-    @isAllowed()
     async def talk(self, ctx,word=None):
         if not word==None:
             URL=backendURL

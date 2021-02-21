@@ -42,7 +42,7 @@ def addItem(dict, string, id):
             return False
         dict[str(id)].append(string)
     except:
-        dict({str(id) : [string]})
+        dict.update({str(id) : [string]})
     return True
 
 def removeItem(dict, string, id):

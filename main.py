@@ -180,6 +180,7 @@ async def updateWord(message):
         try: 
             if w in bot.filter[message.guild.id]: continue
         except: pass
+        if w == "": continue
         #print(w)
         #print("\n")    
         if message.guild.id not in bot.serverWords:

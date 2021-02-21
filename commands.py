@@ -267,17 +267,17 @@ class Commands(commands.Cog):
     @commands.command(aliases=["leaderboard", "high"])
     @commands.guild_only()
     @isAllowed()
-    async def top(self, ctx, word: str=None, isGlobal: str=""):
+    async def top(self, ctx, word: str=None, isGlobal: str="",):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word==None:
-            return await ctx.send(f"Please type a word to search for. Ex: `{get_prefix[0]}top lol`")
+            return await ctx.send(f"Please type a word to search for. Ex: `{get_prefix(bot, ctx.message)[0]}top lol`")
         try:
             if word in self.bot.filter[str(ctx.guild.id)]:
                 return await ctx.send("That word is filtered")
         except: pass
         if isGlobal and not isGlobal == "global":
-            return await ctx.send(f"If you are trying to get the global leaderboard, do `{get_prefix[0]}top lol global`")
+            return await ctx.send(f"If you are trying to get the global leaderboard, do `{get_prefix(bot, ctx.message)[0]}top lol global`")
         word=word.lower();
         await ctx.channel.trigger_typing()
 

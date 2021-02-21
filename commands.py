@@ -567,7 +567,9 @@ class Commands(commands.Cog):
     async def setBackend(self,ctx,url=None):
         global backendURL
         backendURL=url
-        await ctx.send("Backend set to `"+url+"`.")
+        if ".ngrok.io not found" in requests.get(url = backendURL).text:
+                await ctx.send("Backend set to `"+url+"`, but backend failed to respond.")
+        else: await ctx.send("Backend set to `"+url+"`. Backend responsive.")
 
     
     @commands.command()
@@ -577,11 +579,11 @@ class Commands(commands.Cog):
             URL=backendURL
             #check if server is alive
             if ".ngrok.io not found" in requests.get(url = URL).text:
-                return await ctx.send("Text generation backend offline. Ask anthony.")
+                return await ctx.send("Text generation backend offline or invalid. Ask anthony.")
             URL+=""if URL[:-1]=="/"else"/"+"generate"
             message=await ctx.send("Your request is being processed, this will take around 20 seconds.")
             await ctx.channel.trigger_typing()
-            inputtxt=ctx.message.content[len("!talk "):]+'\n'
+            inputtxt=ctx.message.content[len("!talk "):]
             r = requests.get(url = URL, params = {'input':inputtxt})
             await message.delete()
 

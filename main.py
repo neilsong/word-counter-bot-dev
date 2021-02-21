@@ -304,12 +304,7 @@ async def restartdb(ctx):
 @bot.command(hidden=True)
 @isAllowed()
 async def restartudb(ctx):
-    update_db.cancel()
-    try:
-        update_db.start()
-    except:
-        update_db.cancel()
-        update_db.start()
+    update_db.restart()
     await ctx.send("Cancelled and restarted `update_db()`")
 
 

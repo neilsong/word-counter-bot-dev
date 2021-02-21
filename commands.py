@@ -580,7 +580,7 @@ class Commands(commands.Cog):
                 return await ctx.send("Text generation backend offline. Ask anthony.")
             URL+=""if URL[:-1]=="/"else"/"+"generate"
             message=await ctx.send("Your request is being processed, this will take around 20 seconds.")
-
+            await ctx.channel.trigger_typing()
             inputtxt=ctx.message.content[len("!talk "):]+'\n'
             r = requests.get(url = URL, params = {'input':inputtxt})
             await message.delete()

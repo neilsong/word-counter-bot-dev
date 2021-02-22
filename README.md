@@ -13,8 +13,8 @@ Currently, we are trying our best to deliver a stable beta release with all the 
 ## Features
 
   1. Provide insight and analytics into the unique language of a server
-        - Leaderboard of most common words
-        - Your own personal leaderboard of most common words
+        - Leaderboards of users of a word
+        - Leaderboards of most common words
 
   2. (Next major feature) Create an AI model that will send a message or a response mimicking a user's style
 
@@ -29,19 +29,19 @@ Currently, we are trying our best to deliver a stable beta release with all the 
   3. (Optional) Setup Virtual Environment  
      
      ```sh
-     python3 -m venv venv
+     python3 -m venv .venv
      ```
      
   4. (Optional) Activate Virtual Environment
   
      ```sh
-     Linux/MacOS: source venv/bin/activate
+     Linux/MacOS: source .venv/bin/activate
      ```  
      ```sh
-     Windows (CMD): venv\Scripts\activate.bat
+     Windows (CMD): .venv\Scripts\activate.bat
      ```  
      ```sh
-     Windows (PS): venv\Scripts\Activate.ps1
+     Windows (PS): .venv\Scripts\Activate.ps1
      ```
                 
   5. Install dependencies  

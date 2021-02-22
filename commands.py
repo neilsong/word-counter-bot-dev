@@ -564,6 +564,7 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
+    @isAllowed()
     async def setBackend(self,ctx,url=None):
         global backendURL
         backendURL=url
@@ -571,7 +572,7 @@ class Commands(commands.Cog):
                 await ctx.send("Backend set to `"+url+"`, but backend failed to respond.")
         else: await ctx.send("Backend set to `"+url+"`. Backend responsive.")
 
-    
+    @isAllowed()
     @commands.command()
     async def talk(self, ctx,word=None):
         if not word==None:

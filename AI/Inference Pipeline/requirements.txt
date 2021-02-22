@@ -1,0 +1,4 @@
+gpt-2-simple
+tensorflow==1.15
+flask_ngrok
+flask

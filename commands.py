@@ -273,6 +273,8 @@ class Commands(commands.Cog):
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word==None:
             return await ctx.send(f"Please type a word to search for. Ex: `{get_prefix(bot, ctx.message)[0]}top lol`")
+        if word in defaultFilter:
+            return await ctx.send("That word is filtered by default")
         try:
             if word in self.bot.filter[str(ctx.guild.id)]:
                 return await ctx.send("That word is filtered")

@@ -24,9 +24,9 @@ Use on a cluster/instance with more than 10GB of RAM. Can run any GPT-2 model.
    mkdir -p ./checkpoint/run1/ && cp -r [PATH_TO_MODEL_DIR] ./checkpoint/run1/
    ```
 
-4. Run first-time setup. Replace `[NGROL_AUTH_TOKEN]` with the auth token.
+4. Run first-time setup. Replace `[NGROK_AUTH_TOKEN]` with the auth token.
    ```sh
-   ./setup.sh [NGROL_AUTH_TOKEN]
+   ./setup.sh [NGROK_AUTH_TOKEN]
    ```
 
 5. Run startup script

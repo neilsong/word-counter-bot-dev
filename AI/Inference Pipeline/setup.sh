@@ -7,6 +7,8 @@ if [ -z "$1" ]
     exit 1
 fi
 
+apt-get install unzip
+
 python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt

@@ -572,7 +572,6 @@ class Commands(commands.Cog):
                 await ctx.send("Backend set to `"+url+"`, but backend failed to respond.")
         else: await ctx.send("Backend set to `"+url+"`. Backend responsive.")
 
-    @isAllowed()
     @commands.command()
     async def talk(self, ctx,word=None):
         if not word==None:

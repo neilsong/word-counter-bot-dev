@@ -1,5 +1,6 @@
 from main import trashCharacters
 import collections
+import re
 
 def wordListToString(list):
     string = ""
@@ -128,3 +129,17 @@ async def leaderboard(self, ctx, word, isGlobal):
     embeds = await makeEmbed(self, ctx, leaderboard, "top" + isGlobal, word)
 
     return embeds
+
+async def ifmention(self, ctx, word):
+    ismention = re.search("^<@!\d{18}[>$]", word) or re.search("^<@\d{18}[>$]", word)
+    if not ismention:
+        return word
+    for c in ["<", "@", "!", ">"]:
+            word = word.replace(c, "")
+    try:
+        user = await ctx.guild.fetch_member(int(word))
+    except:
+        user = await self.bot.fetch_user(word)
+        return "@" + user.name
+    return user.nick
+    

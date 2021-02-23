@@ -22,7 +22,7 @@ defaultFilter = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'y
                 # hyperlink https & http
                 "https:", "http:",
                 # screenshot domain
-                'gyzao'
+                'gyazo'
                 ]
 trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
 default_prefix = ['!']

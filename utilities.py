@@ -107,7 +107,11 @@ async def leaderboard(self, ctx, word, isGlobal):
                 continue
         leaderboard = dict(collections.Counter(leaderboard).most_common(10))
         for u in leaderboard.copy():
-            user = await self.bot.fetch_user(u)
+            try:
+                user = await self.bot.fetch_user(u)
+            except:
+                leaderboard.pop(u)
+                continue
             leaderboard[user] = leaderboard.pop(u)
     else:
         async for user in ctx.guild.fetch_members(limit=None):

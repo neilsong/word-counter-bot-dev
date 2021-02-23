@@ -20,7 +20,9 @@ defaultFilter = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'y
                 # top level domains
                 'com', 'org', 'edu', 'net', 'gov', 'mil', 'int',
                 # hyperlink https & http
-                "https:", "http:"
+                "https:", "http:",
+                # screenshot domain
+                'gyzao'
                 ]
 trashCharacters=[".","/","\\","\"","]","[","|","_","+","{","}",",","= ","*","&","^","~","`","?", "$", " - "]
 default_prefix = ['!']

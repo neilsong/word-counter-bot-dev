@@ -142,6 +142,6 @@ async def ifmention(self, ctx, word):
         user = await self.bot.fetch_user(word)
         return "@" + user.name
     if not user.nick:
-        return user.name
-    return user.nick
+        return "@" + user.name
+    return "@" + user.nick
     

@@ -191,9 +191,11 @@ class Commands(commands.Cog):
             embed.set_author(
             name="Global Most Common Words")
         elif user == "top":
+            word = await ifmention(self, ctx, word)
             embed.set_author(
             name=f"Top Users of \"{word}\" in {ctx.guild.name}", icon_url=ctx.guild.icon_url)
         elif user == "topglobal":
+            word = await ifmention(self, ctx, word)
             embed.set_author(
             name=f"Top 10 Users of \"{word}\"")
         else:

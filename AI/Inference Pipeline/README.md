@@ -8,11 +8,14 @@ Container-based inference, model bundled into docker image. Use for models small
 
 ## Cluster Inference
 
-Use on a cluster/instance with more than 10GB of RAM. Can run any GPT-2 model.
+Use on a cluster/instance with more than 11GB of RAM (16GB to be safe). Can run any version of GPT-2.
 
 ## Steps for Cluster Inference Testing
 
-**__NOT__** COMPATIBLE WITH PYTHON 3.8 AND ABOVE.
+Notes:
+* **__NOT__** COMPATIBLE WITH PYTHON 3.8 AND ABOVE.
+* Requires pip 19 for tensorflow 1.15 which is required for this project
+* Each time a request for generation is called it takes around 20 seconds.
 
 1. Create an ngrok account at https://dashboard.ngrok.com/signup
 

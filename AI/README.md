@@ -10,4 +10,4 @@ A Colab Jupyter Notebook highly based off of the ["Train a GPT-2 Text-Generating
 
 ## Inference Pipeline
 
-Two types of inference pipelines for different GPT-2 model sizes. This bot is currently using the max GPT-2 size (1558M), so it is using cluster inference. More details in `./Inference Pipline/`
+Two types of inference pipelines for different GPT-2 model sizes. This bot is currently using the max GPT-2 size (1558M params), so it is using cluster inference. More details in `/Inference Pipeline/README.md`

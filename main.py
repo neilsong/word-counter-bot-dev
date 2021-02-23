@@ -158,13 +158,10 @@ async def on_ready():
 
 
 async def updateWord(message):
-    msgcontent = message.content.replace("\n", " ")
+    msgcontent=message.content.lower()
     for w in trashCharacters:
         msgcontent = msgcontent.replace(w, " ")
-    msgcontent=' '.join(msgcontent.split())
-    msgcontent=msgcontent.lower()
-    
-    result= msgcontent.split(" ")
+    result= msgcontent.split()
     #result = listToString(result).split("\n")
     #print(result
     # print(msgcontent)
@@ -179,7 +176,7 @@ async def updateWord(message):
             if not re.search("^<@!\d{18}[>$]", w):
                 w=w.replace("!", "")
         if w in defaultFilter: continue
-        try: 
+        try:
             if w in bot.filter[message.guild.id]: continue
         except: pass
         if w == "": continue

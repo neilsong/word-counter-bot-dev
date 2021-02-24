@@ -13,9 +13,9 @@ Use on a cluster/instance with more than 11GB of RAM (16GB to be safe). Can run 
 ## Steps for Cluster Inference Testing
 
 Notes:
-* **__NOT__** COMPATIBLE WITH PYTHON 3.8 AND ABOVE.
-* Requires pip 19 for tensorflow 1.15 which is required for this project
-* Each time a request for generation is called it takes around 20 seconds.
+* **__NOT__** COMPATIBLE WITH `python` 3.8 AND ABOVE.
+* Requires `pip` v.19 or later for `tensorflow` v1.15
+* Each generation request takes around 20 seconds.
 
 1. Create an ngrok account at https://dashboard.ngrok.com/signup
 
@@ -44,3 +44,8 @@ Notes:
 
 7. Detach from `screen`  
    <kbd>CTRL</kbd>+<kbd>A</kbd>, <kbd>CTRL</kbd>+<kbd>D</kbd>
+
+8. Send GET request
+   ```sh
+   curl "[NGROK_URL]/generate?input=[INPUT]"
+   ```

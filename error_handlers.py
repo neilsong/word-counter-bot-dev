@@ -26,7 +26,7 @@ class Error_Handlers(commands.Cog):
         elif isinstance(exc, discord.NotFound):
             return
 
-        elif isinstance(exc, commands.DisabledCommand):
+        elif isinstance(exc, commands.CheckFailure):
             return
 
         elif isinstance(exc, commands.MissingPermissions):

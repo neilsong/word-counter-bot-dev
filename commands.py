@@ -2,15 +2,11 @@ from discord import channel, message
 from discord.ext import commands
 import discord
 
-import collections
 import datetime
-import time
-import pprint
 import sys
 import re
 import requests 
-import copy
-from disputils import BotEmbedPaginator
+from disputils.pagination import BotEmbedPaginator
 
 from main import *
 from decorator import *
@@ -166,7 +162,7 @@ class Commands(commands.Cog):
             inline=False)
         embed.set_author(name="Word Counter Bot: Statistics", icon_url=self.bot.user.avatar_url)
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        embed.set_footer(text="These statistics are accurate as of ")
+        embed.set_footer(text="These statistics are accurate as of ", icon_url=self.bot.user.avatar_url)
 
         await ctx.send(embed=embed)
 

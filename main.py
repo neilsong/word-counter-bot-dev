@@ -44,6 +44,14 @@ bot = commands.Bot(
     fetch_offline_members=True
 )
 
+@bot.check
+def isAllowed(ctx):
+    try:
+        if str(ctx.message.channel.id) in ctx.bot.blacklist[str(ctx.guild.id)]:
+            return False
+        else: return True
+    except: return True
+
 bot.process = psutil.Process(os.getppid())
 bot.ready_for_commands = False
 bot.load_extension("commands")
@@ -166,10 +174,9 @@ async def updateWord(message):
     #print(result
     # print(msgcontent)
     # print(bot.userLastMsg.get(message.author.id,'')
-    if result[0]=="":
-        return
-    if bot.userLastMsg.get(message.author.id,'') == msgcontent:
-        return
+    if not result: return
+    if result[0]=="": return
+    if bot.userLastMsg.get(message.author.id,'') == msgcontent: return
     bot.userLastMsg.update({message.author.id : msgcontent})
     for w in result:
         if '!' in w:
@@ -198,15 +205,12 @@ async def updateWord(message):
             bot.serverWords[0].update({ w: 0, "__id": 0})
         bot.serverWords[0][w] += 1          
 
-
-
 def listToString(s):  
     str1 = " " 
     return (str1.join(s)) 
 
 #this command only works in this file
 @bot.command()
-@isAllowed()
 @isaBotAdmin()
 async def readhistory(ctx):
     f = codecs.open("serverMessages.txt", "w", "utf-8")
@@ -294,14 +298,12 @@ async def reload(ctx):
 
 @bot.command(hidden=True)
 @isaBotAdmin()
-@isAllowed()
 async def restartdb(ctx):
     await create_db()
     await ctx.send("Restarted db")
 
 
 @bot.command(hidden=True)
-@isAllowed()
 async def restartudb(ctx):
     update_db.restart()
     await ctx.send("Cancelled and restarted `update_db()`")

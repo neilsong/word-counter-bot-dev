@@ -1,6 +1,7 @@
 from main import trashCharacters
 import collections
 import re
+import discord
 
 def wordListToString(list):
     string = ""
@@ -144,4 +145,15 @@ async def ifmention(self, ctx, word):
     if not user.nick:
         return "@" + user.name
     return "@" + user.nick
-    
+
+def find_color(ctx):
+    # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
+
+    try:
+        if ctx.guild.me.color == discord.Color.default():
+            color = discord.Color.greyple()
+        else:
+            color = ctx.guild.me.color
+    except AttributeError:  #* If it's a DM channel
+        color = discord.Color.greyple()
+    return color

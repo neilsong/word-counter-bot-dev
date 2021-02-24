@@ -12,19 +12,6 @@ from main import *
 from decorator import *
 from utilities import *
 
-def find_color(ctx):
-    # Find the bot's rendered color. If default color or in a DM, return Discord's grey color
-
-    try:
-        if ctx.guild.me.color == discord.Color.default():
-            color = discord.Color.greyple()
-        else:
-            color = ctx.guild.me.color
-    except AttributeError:  #* If it's a DM channel
-        color = discord.Color.greyple()
-    return color
-
-
 
 class Commands(commands.Cog):
     # Commands for the Word Counter Bot
@@ -32,43 +19,38 @@ class Commands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+   
+
     @commands.command()
-    @isAllowed()
     @commands.guild_only()
     async def help(self, ctx):
 
         cmds = sorted([c for c in self.bot.commands if not c.hidden], key=lambda c: c.name)
         
         description = "I keep track of every word a user says. I'm a pretty simple bot to use. My prefix"
-        if len(self.bot.prefixes[str(ctx.guild.id)]) > 1:
-            description+="es are "
-            for i in self.bot.prefixes[str(ctx.guild.id)]:
-                if i == self.bot.prefixes[str(ctx.guild.id)][len(self.bot.prefixes[str(ctx.guild.id)])-1]:
-                    description += f"and `{i}`"
-                else:  
-                    description += f"`{i}`" 
-                    if len(self.bot.prefixes[str(ctx.guild.id)]) > 2:
-                        description += ", "
-                    else:
-                        description += " "
-        elif len(self.bot.prefixes[str(ctx.guild.id)]) == 1:
-            description += f" is `{self.bot.prefixes[str(ctx.guild.id)][0]}`"
-        else:
-            description += " is `!`"
+        prefixes = []
+        try:
+            prefixes = self.bot.prefixes[str(ctx.guild.id)]
+        except:
+            description += ": `!`"
+            return await ctx.send(description)
+        if len(prefixes) > 1:
+            description+="es: "
+            description += wordListToString(prefixes)
+        elif len(prefixes) == 1:
+            description += ": "
+            description += wordListToString(prefixes)
         description += "\n\nHere's a short list of my commands:"
         embed = discord.Embed(
             title="Word Counter Bot: Help Command",
             description= description,
             color=find_color(ctx))
-        embed.set_footer(
-            text="Note: I don't count words said in the past before I joined this server")
         for c in cmds:
             embed.add_field(name=c.name, value=c.help, inline=False)
  
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["info"])
-    @isAllowed()
     async def about(self, ctx):
         # Some basic info about this bot
 
@@ -104,7 +86,6 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    @isAllowed()
     async def stats(self, ctx):
         # View stats
 
@@ -203,7 +184,6 @@ class Commands(commands.Cog):
         return embed
 
     @commands.command()
-    @isAllowed()
     async def invite(self, ctx):
         # Sends an invite link
 
@@ -212,13 +192,14 @@ class Commands(commands.Cog):
                        "&permissions=67501120&scope=bot")
 
     @commands.command()
-    @isAllowed()
     async def count(self, ctx, user=None,):
         # Get the number of times a user has said any word
         # Format like this: `count <@mention user>`
         # If requester doesn't mention a user, the bot will get requester's count
         # If requester has global as argument, the bot will get the gobal count
         embeds = 0
+
+        await ctx.channel.trigger_typing()
 
         if(user=="server"):
             dict = []
@@ -265,10 +246,10 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["leaderboard", "high"])
     @commands.guild_only()
-    @isAllowed()
     async def top(self, ctx, word: str=None, isGlobal: str="",):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
+        await ctx.channel.trigger_typing()
         if word==None:
             return await ctx.send(f"Please type a word to search for. Ex: `{get_prefix(bot, ctx.message)[0]}top lol`")
         if word in defaultFilter:
@@ -299,23 +280,26 @@ class Commands(commands.Cog):
 
 
     @commands.command()
-    @isAllowed()
     @commands.guild_only()
     async def prefix(self, ctx):
         description = "My prefix"
-        if len(self.bot.prefixes[str(ctx.guild.id)]) > 1:
-            description+="es: "
-            description += wordListToString(self.bot.prefixes[str(ctx.guild.id)])
-        elif len(self.bot.prefixes[str(ctx.guild.id)]) == 1:
-            description += ": "
-            description += wordListToString(self.bot.prefixes[str(ctx.guild.id)])
-        else:
+        prefixes = []
+        try:
+            prefixes = self.bot.prefixes[str(ctx.guild.id)]
+        except:
             description += ": `!`"
+            return await ctx.send(description)
+        if len(prefixes) > 1:
+            description+="es: "
+            description += wordListToString(prefixes)
+        elif len(prefixes) == 1:
+            description += ": "
+            description += wordListToString(prefixes)
         await ctx.send(description)
 
     @commands.command()
     @commands.guild_only()
-    @isAllowed()
+    
     @commands.has_permissions(manage_guild=True)
     async def setprefix(self, ctx, *, prefixes=""):
         if len(prefixes) > 0:
@@ -330,7 +314,6 @@ class Commands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @isAllowed()
     @commands.has_permissions(manage_guild=True)
     async def removeblacklist(self, ctx, *, channels):
         response = ""
@@ -350,7 +333,6 @@ class Commands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @isAllowed()
     @commands.has_permissions(manage_guild=True)
     async def addblacklist(self, ctx, *, channels):
         response = ""
@@ -368,7 +350,6 @@ class Commands(commands.Cog):
         await ctx.send(response)
         
     @commands.command()
-    @isAllowed()
     @commands.guild_only()
     async def blacklist(self, ctx):
         blacklist = "Currently blacklisted channel"
@@ -380,7 +361,6 @@ class Commands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @isAllowed()
     @commands.has_permissions(manage_guild=True)
     async def removefilter(self, ctx, *, words=""):
         words = preprocessWords(words)
@@ -407,7 +387,6 @@ class Commands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @isAllowed()
     @commands.has_permissions(manage_guild=True)
     async def addfilter(self, ctx, *, words=""):
         words = preprocessWords(words)
@@ -429,7 +408,6 @@ class Commands(commands.Cog):
         await ctx.send(response)
         
     @commands.command()
-    @isAllowed()
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def filter(self, ctx):
@@ -446,7 +424,6 @@ class Commands(commands.Cog):
     # BOT ADMIN COMMANDS
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @isAllowed()
     async def edituser(self, ctx, user_id: int, word: str=None, count: int=0):
         # Edit a user's entry in all collections or add a new one
         if not user_id or not word or not count:
@@ -470,8 +447,8 @@ class Commands(commands.Cog):
         
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @isAllowed()
     async def popdefaultfilter(self, ctx):
+        await ctx.channel.trigger_typing()
         for i in defaultFilter:
             for u in self.bot.userWords.keys():
                 try: self.bot.userWords[u].pop(i)
@@ -486,10 +463,9 @@ class Commands(commands.Cog):
     
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @isAllowed()
     async def popword(self, ctx, word: str=None):
         # Pop a word from all collections
-
+        await ctx.channel.trigger_typing()
         for u in self.bot.userWords:
             try: self.bot.userWords[u].pop(word)
             except: continue
@@ -504,10 +480,9 @@ class Commands(commands.Cog):
     @commands.command(hidden=True)
     @isaBotAdmin()
     @commands.guild_only()
-    @isAllowed()
     async def popuser(self, ctx, user_id: int):
         # Pop a user from all collections
-
+        await ctx.channel.trigger_typing()
         try:
             for u, c in self.bot.userWords[user_id].items():
                 self.bot.serverWords[ctx.guild.id][u] -= c
@@ -521,7 +496,7 @@ class Commands(commands.Cog):
 
     # @commands.command(hidden=True)
     # @isaBotAdmin()
-    # @isAllowed()
+    # 
     # async def execute(self, ctx, *, query):
     #     """Execute a query in the database"""
 
@@ -535,7 +510,6 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["resetstatus"], hidden=True)
     @isaBotAdmin()
-    @isAllowed()
     async def restartstatus(self, ctx):
         await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Activity(
             name=f"any Words on {len(self.bot.guilds)} servers",
@@ -545,7 +519,6 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @isAllowed()
     async def setstatus(self, ctx, status):
         """Change the bot's presence"""
 
@@ -564,7 +537,6 @@ class Commands(commands.Cog):
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    @isAllowed()
     async def setBackend(self,ctx,url=None):
         global backendURL
         backendURL=url

@@ -218,7 +218,8 @@ defaultFilter = [
     "mil",
     "int",
     # hyperlink https & http
-    "https:", "http:",# screenshot domain 
+    "https:",
+    "http:",  # screenshot domain
     "gyazo",
 ]
 trashCharacters = [

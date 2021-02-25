@@ -28,13 +28,16 @@ Currently, we are trying our best to deliver a stable beta release with all the 
 
   2. Add your discord bot token, MongoDB connection string, and Discord user id to `config.py`
 
-  3. Install `poetry`
-     
+  3. Install `poetry`  
+     Linux/MacOS:
      ```sh
-     Linux/MacOS: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
      ```  
+     Windows (PS):
      ```PS
-     Windows (PS): (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
+      (Invoke-WebRequest -Uri `
+      https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py `
+      -UseBasicParsing).Content | python -
      ```
    
   4. Restart terminal or open a new shell and verify `poetry` installation

@@ -14,11 +14,13 @@ async def main(req: func.HttpRequest) -> func.HttpResponse:
     credentials = ManagedIdentityCredential()
 
     subscription_id = os.environ.get(
-        'AZURE_SUBSCRIPTION_ID', '11111111-1111-1111-1111-111111111111')
+        "AZURE_SUBSCRIPTION_ID", "11111111-1111-1111-1111-111111111111"
+    )
 
     response = await runcommand(credentials, subscription_id)
 
     return func.HttpResponse(response, mimetype="application/json")
+
 
 async def runcommand(credentials, subscription_id):
     """
@@ -26,20 +28,18 @@ async def runcommand(credentials, subscription_id):
     """
 
     run_command_parameters = {
-      'command_id': 'RunShellScript',
-      'script': [
-          'cd /home/azureuser/word-counter-bot-dev',
-          'screen -X quit',
-          'git pull',
-          'screen -d -m /home/azureuser/word-counter-bot-dev/.github/workflows/execution.sh'
-      ]
+        "command_id": "RunShellScript",
+        "script": [
+            "cd /home/azureuser/word-counter-bot-dev",
+            "screen -X quit",
+            "git pull",
+            "screen -d -m /home/azureuser/word-counter-bot-dev/.github/workflows/execution.sh",
+        ],
     }
     cm_client = ComputeManagementClient(credentials, subscription_id)
 
     command = cm_client.virtual_machines.begin_run_command(
-        "VM1_group",
-        "VM1",
-        run_command_parameters
+        "VM1_group", "VM1", run_command_parameters
     )
     result = command.result()
     return json.dumps(result.value[0].message)

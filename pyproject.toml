@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "word-counter-bot"
+version = "v0.3-alpha"
+description = "A Python Discord Bot for Word Counting, Linguistics Analytics, and Vocabulary Insights"
+authors = ["Neil Song, Anthony Wang"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+requests = "^2.25.1"
+psutil = "^5.8.0"
+motor = "^2.3.1"
+dnspython = "^2.1.0"
+"discord.py" = "^1.6.0"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | \.vscode
+  | \__pycache__
+  | \AI
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

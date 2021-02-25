@@ -2,6 +2,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/neilsong/word-counter-bot-dev)
 ![Uptime Robot ratio (30 days)](https://img.shields.io/uptimerobot/ratio/m787330426-de88de213c3ddaeee0f3c8dd)
 [![DeployCommit](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml/badge.svg)](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Kanban: https://app.gitkraken.com/glo/board/X_1FdLw5GgAS4oFE  
 Release: https://github.com/neilsong/word-counter-bot

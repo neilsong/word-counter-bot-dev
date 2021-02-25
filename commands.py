@@ -632,7 +632,7 @@ class Commands(commands.Cog):
             URL=backendURL
             #check if server is alive
             if ".ngrok.io not found" in requests.get(url = URL).text:
-                return await ctx.send("Text generation backend offline or invalid. Follow the instructions here to start your own backend `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`.")
+                return await ctx.send("Text generation backend offline or invalid. Follow the instructions here to start your own backend `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`")
             URL+=""if URL[:-1]=="/"else"/"+"generate"
             message=await ctx.send("Your request is being processed, this will take around 20 seconds.")
             await ctx.channel.trigger_typing()

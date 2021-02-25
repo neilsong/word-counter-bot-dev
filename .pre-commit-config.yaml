@@ -1,6 +1,9 @@
+fail_fast: true
 repos:
-  - repo: https://github.com/psf/black
-    rev: 20.8b1
+  - repo: local
     hooks:
-      - id: black
-        language_version: python3
+      - id: system
+        name: Black
+        entry: screen -d -m poetry run black .
+        pass_filenames: false
+        language: system

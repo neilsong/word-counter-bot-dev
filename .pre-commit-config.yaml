@@ -4,6 +4,5 @@ repos:
     hooks:
       - id: system
         name: Black
-        entry: screen -d -m poetry run black .
-        pass_filenames: false
+        entry: bash -c "$HOME/.poetry/bin/poetry run black ."
         language: system

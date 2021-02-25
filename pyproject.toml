@@ -6,7 +6,7 @@ authors = ["Neil Song, Anthony Wang"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.1"
 requests = "^2.25.1"
 psutil = "^5.8.0"
 motor = "^2.3.1"

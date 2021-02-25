@@ -28,34 +28,36 @@ Currently, we are trying our best to deliver a stable beta release with all the 
 
   2. Add your discord bot token, MongoDB connection string, and Discord user id to `config.py`
 
-  3. (Optional) Setup Virtual Environment  
+  3. Install `poetry`
      
      ```sh
-     python3 -m venv .venv
+     Linux/MacOS: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+     ```  
+     ```PS
+     Windows (PS): (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
      ```
-     
-  4. (Optional) Activate Virtual Environment
+   
+  4. Restart terminal or open a new shell and verify `poetry` installation
+     ```sh
+     poetry -V
+     ``` 
+
+  5. Install dependencies (Use `--no-dev` argument if only testing)
   
      ```sh
-     Linux/MacOS: source .venv/bin/activate
-     ```  
-     ```sh
-     Windows (CMD): .venv\Scripts\activate.bat
-     ```  
-     ```sh
-     Windows (PS): .venv\Scripts\Activate.ps1
+     poetry install
      ```
                 
-  5. Install dependencies  
+  6. (Dev only) Install `pre-commit` hooks
   
      ```sh
-     pip3 install -r requirements.txt
+     poetry run pre-commit install
      ```
 
-  6. Run bot  
+  7. Run bot  
   
      ```sh
-     python3 main.py
+     poetry run python main.py
      ```
    
 ## Contributors

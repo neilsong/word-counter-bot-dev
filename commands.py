@@ -33,7 +33,7 @@ class Commands(commands.Cog):
             prefixes = self.bot.prefixes[str(ctx.guild.id)]
         except:
             description += ": `!`"
-            return await ctx.send(description)
+            await ctx.send(description)
         if len(prefixes) > 1:
             description += "es: "
             description += wordListToString(prefixes)

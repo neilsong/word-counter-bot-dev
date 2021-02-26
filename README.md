@@ -63,6 +63,23 @@ Currently, we are trying our best to deliver a stable beta release with all the 
      ```sh
      poetry run python main.py
      ```
+
+## Notes
+
+ - GETTING THE BOT ON MORE SERVERS IS THE TOP PRIORITY.
+   - We're trying to get more training data and usage.
+   - We will start worrying about performance and sharding if the bot is on enough servers.
+ - Pull requests are always welcome. As always, feel free to open issues.
+ - If you want to contribute, take a look at `SCHEMAS`. It will help you get started a lot more quickly.
+ - `disputils` is bundled locally because I was too lazy to open an issue/PR about custom embed footers. If you want to, go ahead.
+   - Of course, all credit to https://github.com/LiBa001/disputils
+ - Training is manual because we use Google Colab and are poor.
+ - Automated inference is slow because we use Google Cloud Run and are poor.
+ - Anthony and I are high school students, so we are
+   - Poor
+   - Time-constrained
+   - Stressed
+   - Always online on Discord
    
 ## Contributors
 Neil Song - https://github.com/neilsong  

@@ -2,7 +2,6 @@ from discord.ext import commands, tasks
 import discord
 import motor.motor_asyncio
 import psutil
-from random import shuffle
 import datetime
 import re
 import os
@@ -10,242 +9,10 @@ import sys
 import codecs
 import config
 from decorator import *
+from constants import *
 
 bot_intents = discord.Intents.default()
 bot_intents.members = True
-backendURL = "http://5a1ad1e9fb71.ngrok.io"
-# nltk stopwords + custom words
-defaultFilter = [
-    "i",
-    "me",
-    "my",
-    "myself",
-    "we",
-    "our",
-    "ours",
-    "ourselves",
-    "you",
-    "you're",
-    "you've",
-    "you'll",
-    "you'd",
-    "your",
-    "yours",
-    "yourself",
-    "yourselves",
-    "he",
-    "him",
-    "his",
-    "himself",
-    "she",
-    "she's",
-    "her",
-    "hers",
-    "herself",
-    "it",
-    "it's",
-    "its",
-    "itself",
-    "they",
-    "them",
-    "their",
-    "theirs",
-    "themselves",
-    "what",
-    "which",
-    "who",
-    "whom",
-    "this",
-    "that",
-    "that'll",
-    "these",
-    "those",
-    "am",
-    "is",
-    "are",
-    "was",
-    "were",
-    "be",
-    "been",
-    "being",
-    "have",
-    "has",
-    "had",
-    "having",
-    "do",
-    "does",
-    "did",
-    "doing",
-    "a",
-    "an",
-    "the",
-    "and",
-    "but",
-    "if",
-    "or",
-    "because",
-    "as",
-    "until",
-    "while",
-    "of",
-    "at",
-    "by",
-    "for",
-    "with",
-    "about",
-    "against",
-    "between",
-    "into",
-    "through",
-    "during",
-    "before",
-    "after",
-    "above",
-    "below",
-    "to",
-    "from",
-    "up",
-    "down",
-    "in",
-    "out",
-    "on",
-    "off",
-    "over",
-    "under",
-    "again",
-    "further",
-    "then",
-    "once",
-    "here",
-    "there",
-    "when",
-    "where",
-    "why",
-    "how",
-    "all",
-    "any",
-    "both",
-    "each",
-    "few",
-    "more",
-    "most",
-    "other",
-    "some",
-    "such",
-    "no",
-    "nor",
-    "not",
-    "only",
-    "own",
-    "same",
-    "so",
-    "than",
-    "too",
-    "very",
-    "s",
-    "t",
-    "can",
-    "will",
-    "just",
-    "don",
-    "don't",
-    "should",
-    "should've",
-    "now",
-    "d",
-    "ll",
-    "m",
-    "o",
-    "re",
-    "ve",
-    "y",
-    "ain",
-    "aren",
-    "aren't",
-    "couldn",
-    "couldn't",
-    "didn",
-    "didn't",
-    "doesn",
-    "doesn't",
-    "hadn",
-    "hadn't",
-    "hasn",
-    "hasn't",
-    "haven",
-    "haven't",
-    "isn",
-    "isn't",
-    "ma",
-    "mightn",
-    "mightn't",
-    "mustn",
-    "mustn't",
-    "needn",
-    "needn't",
-    "shan",
-    "shan't",
-    "shouldn",
-    "shouldn't",
-    "wasn",
-    "wasn't",
-    "weren",
-    "weren't",
-    "won",
-    "won't",
-    "wouldn",
-    "wouldn't",
-    "u",
-    "ur",
-    "like",
-    "also",
-    "oh",
-    "js",
-    "im",
-    "yes",
-    "yeah",
-    "ye",
-    "dont",
-    "cant",
-    "can't",
-    "cannot",
-    # top level domains
-    "com",
-    "org",
-    "edu",
-    "net",
-    "gov",
-    "mil",
-    "int",
-    # hyperlink https & http
-    "https:",
-    "http:",  # screenshot domain
-    "gyazo",
-]
-trashCharacters = [
-    ".",
-    "/",
-    "\\",
-    '"',
-    "]",
-    "[",
-    "|",
-    "_",
-    "+",
-    "{",
-    "}",
-    ",",
-    "= ",
-    "*",
-    "&",
-    "^",
-    "~",
-    "`",
-    "?",
-    "$",
-    " - ",
-]
-default_prefix = ["!"]
 
 
 def get_prefix(bot, message):
@@ -281,56 +48,6 @@ bot.process = psutil.Process(os.getppid())
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")
-
-# DB Schema
-
-# db = users-db
-# collection = users
-# doc: {
-#   __id: discord-user-id
-#   word_1: count
-# }
-
-# db = servers-db
-# collection = servers
-# doc: {
-#   __id: discord-server-id
-#   word_1: count
-# }
-# global doc: {
-#   __id: 0
-#   word_1: count
-# }
-# prefixes doc: {
-#   __id: 'prefixes'
-#   discord-server-id: list of prefixes
-# }
-# blacklist doc: {
-#   __id: 'blacklist'
-#   discord-server-id: blacklist of channels
-# }
-# filter doc: {
-#   __id: 'filter'
-#   discord-server-id: list of words to be filtered
-# }
-
-# In-memory dict schemas
-# bot.userWords
-# {12345667890: {'hi': 1, '__id': 1234567890, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
-
-# bot.serverWords
-# {1234567890: {'hi': 1, '__id': 1234567890, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1},
-# 0: {'hi': 1, '__id': 0, 'YOOOOOOOOOO': 1, 'IT': 1, 'WORKS': 1, 'POGU': 1}}
-# __id : 0 represents global count
-
-# bot.prefixes
-# {'__id': 'prefixes', '1234567890': {'!', '#', '$'}}
-
-# bot.blacklist
-# {'__id': 'blacklist', '1234567890': {'0987654321'}}
-
-# bot.filter
-# {'__id': 'filter', '1234567890': {'word1', 'word2'}}
 
 
 async def create_db():
@@ -466,7 +183,8 @@ async def readhistory(ctx):
     # open and read the file after the appending:
     for channel in ctx.guild.text_channels:
         print(channel.name)
-        if "bots" in channel.category.lower():continue
+        if "bots" in channel.category.lower():
+            continue
         async for msg in channel.history(
             limit=99999999999
         ):  # .flatten() to recive as an array

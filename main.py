@@ -466,8 +466,7 @@ async def readhistory(ctx):
     # open and read the file after the appending:
     for channel in ctx.guild.text_channels:
         print(channel.name)
-        # if channel.category.lower()=="bots":
-        # continue
+        if "bots" in channel.category.lower():continue
         async for msg in channel.history(
             limit=99999999999
         ):  # .flatten() to recive as an array

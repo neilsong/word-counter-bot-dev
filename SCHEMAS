@@ -1,0 +1,94 @@
+DB Schema
+
+db = users-db
+collection = users
+doc: {
+  __id: [user-id]
+  [word]: [count]
+}
+
+<-------------------->
+
+db = servers-db
+collection = servers
+
+(Count) doc: {
+  __id: [server-id]
+  [word]: [count]
+}
+Global doc: {
+  __id: 0
+  [word]: [count]
+}
+
+Prefixes doc: {
+  __id: 'prefixes'
+  [server-id]: [prefixes-list]
+}
+Blacklist doc: {
+  __id: 'blacklist'
+  [server-id]: [channel-blacklist-list]
+}
+Filter doc: {
+  __id: 'filter'
+  [server-id]: [word-filter-list]
+}
+
+<---------------------------------------------------------------------------------------------------------->
+
+Runtinme Dict Schemas
+
+bot.userWords
+{ 
+    [user-id]: 
+        {
+            '__id': [user-id]
+            [word]: [count]
+        }
+}
+
+bot.serverWords
+{ 
+    [server-id]: 
+        {
+            '__id': [server-id]
+            [word]: [count]
+        },
+    0:
+        {
+            '__id': 0
+            [word]: [count]
+        }
+}
+
+__id : 0 represents global count
+
+<----------------------------------------->
+
+bot.prefixes
+{
+    '__id': 'prefixes'
+    [server-id]: 
+        {
+            [prefixes-list]
+        },
+}
+
+bot.blacklist
+{
+    '__id': 'blacklist'
+    [server-id]: 
+        {
+            [channel-blacklist-list]
+        },
+}
+
+
+bot.filter
+{
+    '__id': 'filter'
+    [server-id]: 
+        {
+            [word-filter-list]
+        },
+}

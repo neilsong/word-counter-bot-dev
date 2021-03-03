@@ -1,4 +1,3 @@
-from main import trashCharacters
 import collections
 import re
 import discord
@@ -65,6 +64,8 @@ def removeItem(dict, string, id):
 
 
 def preprocessWords(string):
+    from main import trashCharacters
+
     for w in trashCharacters:
         words = string.replace(w, " ")
     words = " ".join(words.split())
@@ -181,3 +182,27 @@ def find_color(ctx):
     except AttributeError:  # * If it's a DM channel
         color = discord.Color.greyple()
     return color
+
+
+def get_prefix(bot, message):
+    from constants import default_prefix
+
+    try:
+        return bot.prefixes[str(message.guild.id)]
+    except:
+        return default_prefix
+
+
+async def insert(**kwargs):
+    from db import queue
+
+    word = ""
+    try:
+        word = kwargs["word"]
+    except:
+        pass
+    if word:
+        task = (kwargs["state"], {"id": kwargs["id"], "word": word})
+    else:
+        task = (kwargs["state"], {"id": kwargs["id"]})
+    await queue.put(task)

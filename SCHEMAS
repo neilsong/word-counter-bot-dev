@@ -92,3 +92,24 @@ bot.filter
             [word-filter-list]
         },
 }
+
+<----------------------------------------->
+
+Asyncio Worker Queue (defined in db.py - no switch cases)
+
+states: {
+  0: prefixes
+  1: blacklist
+  2: filter
+  3: userWords
+  4: serverWords
+}
+
+task:  
+(
+  state,
+  {
+    'id': id,
+    'word': word
+  }
+)

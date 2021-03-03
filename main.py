@@ -1,6 +1,5 @@
 from discord.ext import commands, tasks
 import discord
-import motor.motor_asyncio
 import psutil
 import datetime
 import re
@@ -8,18 +7,15 @@ import os
 import sys
 import codecs
 import config
+import uvloop
 from decorator import *
 from constants import *
+from utilities import insert, get_prefix
 
+
+uvloop.install()
 bot_intents = discord.Intents.default()
 bot_intents.members = True
-
-
-def get_prefix(bot, message):
-    try:
-        return bot.prefixes[str(message.guild.id)]
-    except:
-        return default_prefix
 
 
 bot = commands.Bot(
@@ -50,44 +46,6 @@ bot.load_extension("commands")
 bot.load_extension("error_handlers")
 
 
-async def create_db():
-    # Create db in MongoDB if it doesn't already exist.
-    print("\nCreating or Fetching DB")
-    bot.collection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)["users-db"][
-        "users"
-    ]
-    bot.userWords = {}
-    bot.userLastMsg = {}
-
-    async for i in bot.collection.find({}, {"_id": 0}):
-        bot.userWords.update({i.get("__id"): dict(i)})
-
-    bot.serverCollection = motor.motor_asyncio.AsyncIOMotorClient(config.MONGO)[
-        "servers-db"
-    ]["servers"]
-    bot.serverWords = {}
-    bot.prefixes = {"__id": "prefixes"}
-    bot.blacklist = {"__id": "blacklist"}
-    bot.filter = {"__id": "filter"}
-    async for i in bot.serverCollection.find({}, {"_id": 0}):
-        if i.get("__id") == "prefixes":
-            bot.prefixes.update(dict(i))
-            continue
-        if i.get("__id") == "blacklist":
-            bot.blacklist.update(dict(i))
-            continue
-        if i.get("__id") == "filter":
-            bot.filter.update(dict(i))
-            continue
-        bot.serverWords.update({i.get("__id"): dict(i)})
-    print(
-        "\nNumber of Users: "
-        + str(len(bot.userWords))
-        + "\nNumber of Servers: "
-        + str(len(bot.serverWords) - 1)
-    )
-
-
 @bot.event
 async def on_connect():
     print("\nConnected to Discord")
@@ -95,6 +53,8 @@ async def on_connect():
 
 @bot.event
 async def on_ready():
+    from db import create_db, start_workers
+
     await create_db()
 
     print("\nLogged in as:")
@@ -108,7 +68,7 @@ async def on_ready():
     print("Users: " + str(len(bot.users)))
     print("-----------------\n")
 
-    update_db.start()
+    await start_workers()
     bot.ready_for_commands = True
     bot.started_at = datetime.datetime.utcnow()
     bot.app_info = await bot.application_info()
@@ -127,10 +87,7 @@ async def updateWord(message):
     for w in trashCharacters:
         msgcontent = msgcontent.replace(w, " ")
     result = msgcontent.split()
-    # result = listToString(result).split("\n")
-    # print(result
-    # print(msgcontent)
-    # print(bot.userLastMsg.get(message.author.id,'')
+
     if not result:
         return
     if result[0] == "":
@@ -158,21 +115,19 @@ async def updateWord(message):
         elif w not in bot.serverWords[message.guild.id]:
             bot.serverWords[message.guild.id].update({w: 0, "__id": message.guild.id})
         bot.serverWords[message.guild.id][w] += 1
+        await insert(state=4, id=message.guild.id, word=w)
         if message.author.id not in bot.userWords:
             bot.userWords.update({message.author.id: {w: 0, "__id": message.author.id}})
         elif w not in bot.userWords[message.author.id]:
             bot.userWords[message.author.id].update({w: 0, "__id": message.author.id})
         bot.userWords[message.author.id][w] += 1
+        await insert(state=3, id=message.author.id, word=w)
         if 0 not in bot.serverWords:
             bot.serverWords.update({0: {w: 0, "__id": 0}})
         elif w not in bot.serverWords[0]:
             bot.serverWords[0].update({w: 0, "__id": 0})
         bot.serverWords[0][w] += 1
-
-
-def listToString(s):
-    str1 = " "
-    return str1.join(s)
+        await insert(state=4, id=0, word=w)
 
 
 # this command only works in this file
@@ -309,6 +264,8 @@ except KeyboardInterrupt:
     print("Logging out")
     bot.loop.run_until_complete(bot.logout())
 finally:
-    update_db.cancel()
+    from db import cancel_workers
+
+    bot.loop.run_until_complete(cancel_workers())
     print("Closed")
     sys.exit(1)

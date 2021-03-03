@@ -8,10 +8,10 @@ import re
 import requests
 from disputils.pagination import BotEmbedPaginator
 
-from main import *
 from decorator import *
 from utilities import *
 from constants import *
+from main import *
 
 
 class Commands(commands.Cog):
@@ -306,7 +306,7 @@ class Commands(commands.Cog):
         await ctx.channel.trigger_typing()
         if word == None:
             return await ctx.send(
-                f"Please type a word to search for. Ex: `{get_prefix(bot, ctx.message)[0]}top lol`"
+                f"Please type a word to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
             )
         if word in defaultFilter:
             return await ctx.send("That word is filtered by default")
@@ -317,7 +317,7 @@ class Commands(commands.Cog):
             pass
         if isGlobal and not isGlobal == "global":
             return await ctx.send(
-                f"If you are trying to get the global leaderboard, do `{get_prefix(bot, ctx.message)[0]}top lol global`"
+                f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}top lol global`"
             )
         word = word.lower()
         await ctx.channel.trigger_typing()
@@ -363,6 +363,7 @@ class Commands(commands.Cog):
                 await ctx.send("Prefixes set")
             else:
                 await ctx.send("Prefix set")
+            await insert(state=0, id=str(ctx.guild.id))
         else:
             await ctx.send(
                 "Please set either a one-character prefix, or multiple one-character prefixes separated by spaces"
@@ -385,6 +386,7 @@ class Commands(commands.Cog):
                         response += f"The blacklist is now empty\n"
                 else:
                     response += f"<#{i}> not blacklisted\n"
+            await insert(state=1, id=str(ctx.guild.id))
         else:
             response += "Please provide either a channel, or multiple channels separated by spaces"
         await ctx.send(response)
@@ -403,7 +405,7 @@ class Commands(commands.Cog):
                     response += f"<#{i}> added\n"
                 else:
                     response += f"<#{i}> already blacklisted\n"
-
+            await insert(state=1, id=str(ctx.guild.id))
         else:
             response += "Please provide either a channel, or multiple channels separated by spaces"
         await ctx.send(response)
@@ -438,11 +440,11 @@ class Commands(commands.Cog):
                         response += f"The filter is now empty\n"
                 else:
                     response += f"`{i}` is not in the filter\n"
+            await insert(state=2, id=str(ctx.guild.id))
         else:
             response += (
                 "Please remove either one word, or multiple words separated by spaces"
             )
-
         await ctx.send(response)
 
     @commands.command()
@@ -462,6 +464,7 @@ class Commands(commands.Cog):
                     response += f"`{i}` added\n"
                 else:
                     response += f"`{i}` already in filter\n"
+            await insert(state=2, id=str(ctx.guild.id))
         else:
             response += (
                 "Please add either one word, or multiple words separated by spaces"

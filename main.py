@@ -1,4 +1,4 @@
-from discord.ext import commands, tasks
+from discord.ext import commands
 import discord
 import psutil
 import datetime
@@ -40,10 +40,15 @@ def isAllowed(ctx):
         return True
 
 
+# Loading extensions
 bot.process = psutil.Process(os.getppid())
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")
+bot.load_extension("management")
+bot.load_extension("info")
+bot.load_extension("admin")
+bot.defaultFilter = defaultFilter
 
 
 @bot.event
@@ -63,7 +68,7 @@ async def on_ready():
     print("-----------------")
     print(datetime.datetime.now().strftime("%m/%d/%Y %X"))
     print("-----------------")
-    print("Shards: " + str(bot.shard_count))
+    # print("Shards: " + str(bot.shard_count))
     print("Servers: " + str(len(bot.guilds)))
     print("Users: " + str(len(bot.users)))
     print("-----------------\n")
@@ -205,55 +210,6 @@ async def on_guild_remove(guild):
         pass
 
 
-@tasks.loop(minutes=2, loop=bot.loop)
-async def update_db():
-    # Update the MongoDB every 2 minutes
-    print("\nStart Updating")
-    for data in list(bot.userWords):
-        await bot.collection.update_one(
-            {"__id": data}, {"$set": bot.userWords[data]}, True
-        )
-    for data in list(bot.serverWords):
-        await bot.serverCollection.update_one(
-            {"__id": data}, {"$set": bot.serverWords[data]}, True
-        )
-    await bot.serverCollection.update_one(
-        {"__id": "prefixes"}, {"$set": bot.prefixes}, True
-    )
-    await bot.serverCollection.update_one(
-        {"__id": "blacklist"}, {"$set": bot.blacklist}, True
-    )
-    await bot.serverCollection.update_one(
-        {"__id": "filter"}, {"$set": bot.filter}, True
-    )
-    print("\nDone Updating")
-
-
-# Operational commands
-
-
-@bot.command(hidden=True)
-@isaBotAdmin()
-async def reload(ctx):
-    # Reload the bot
-    bot.reload_extension("commands")
-    bot.reload_extension("error_handlers")
-    await ctx.send("Reloaded extensions")
-
-
-@bot.command(hidden=True)
-@isaBotAdmin()
-async def restartdb(ctx):
-    await create_db()
-    await ctx.send("Restarted db")
-
-
-@bot.command(hidden=True)
-async def restartudb(ctx):
-    update_db.restart()
-    await ctx.send("Cancelled and restarted `update_db()`")
-
-
 try:
     bot.loop.run_until_complete(bot.start(config.TOKEN))
 except KeyboardInterrupt:
@@ -267,5 +223,5 @@ finally:
     from db import cancel_workers
 
     bot.loop.run_until_complete(cancel_workers())
-    print("Closed")
+    print("\nClosed")
     sys.exit(1)

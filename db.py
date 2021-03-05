@@ -1,6 +1,5 @@
 import motor.motor_asyncio
 import asyncio
-import random
 
 queue = asyncio.Queue()
 workers = []
@@ -52,7 +51,7 @@ async def worker(queue):
 
     while True:
         task = await queue.get()
-        print("Working on task: ", task)
+        # print("Working on task: ", task)
         state = task[0]
         if state == 0:
             await bot.serverCollection.update_one(
@@ -93,7 +92,7 @@ async def worker(queue):
                 True,
             )
         queue.task_done()
-        print("Task finished")
+        # print("Task finished")
 
 
 async def start_workers():
@@ -102,7 +101,7 @@ async def start_workers():
 
     # start the workers
     workers = [asyncio.create_task(worker(queue)) for _ in range(10)]
-    print("\nCreated Queue Workers\n")
+    print("Created Queue Workers\n")
 
 
 async def cancel_workers():
@@ -113,4 +112,4 @@ async def cancel_workers():
     print("Killing workers...")
     for w in workers:
         w.cancel()
-    print("Workers killed.")
+    print("Workers killed.\n")

@@ -113,3 +113,21 @@ task:
     'word': word
   }
 )
+
+<---------------------------------------------------------------------------------------------------------->
+
+File (.py) Schema
+
+commands cogs: {
+  commands.py - main commands (!count, !top, etc.)
+  info.py - bot metadata (!stats, !help, etc.)
+  management.py - server configuration (!blacklist, !filter, etc.)
+  admin.py - only bot admin commands (!popuser, !popword, etc.)
+  error_handler.py - custom error_handler cog
+}
+
+main.py - main process that controls bot mainframe
+db.py - database interface (concurrent workers on task queue)
+config.py - configuration settings for bot instance (database connection string, admins, etc.)
+decorator.py - command decorators
+utilities.py - custom methods called by commands regardless of context

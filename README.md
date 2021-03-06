@@ -58,7 +58,12 @@ Currently, we are trying our best to deliver a stable beta release with all the 
      poetry run pre-commit install
      ```
 
-  7. Run bot  
+  7. (Linux/MacOS Only) To enable `uvloop`, set `UVLOOP` to `True` in `config.py`
+     ```sh  
+     config.py: UVLOOP = true
+     ```
+
+  9. Run bot  
   
      ```sh
      poetry run python main.py

@@ -7,13 +7,16 @@ import os
 import sys
 import codecs
 import config
-import uvloop
+
+if config.UVLOOP:
+    import uvloop
 from decorator import *
 from constants import *
 from utilities import insert, get_prefix
 
 
-uvloop.install()
+if config.UVLOOP:
+    uvloop.install()
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 

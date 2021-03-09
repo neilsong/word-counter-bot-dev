@@ -11,7 +11,7 @@ from config import RUN_NAME
 tf.reset_default_graph()
 sess = gpt2.start_tf_sess(threads=4)
 gpt2.load_gpt2(sess, run_name=RUN_NAME)
-generate_count = 0
+# generate_count = 0
 
 app = FastAPI()
 
@@ -31,7 +31,7 @@ async def root():
 
 @app.get("/generate", response_class=HTMLResponse)
 async def generate(input: str = ""):
-    global sess, generate_count
+    global sess
 
     result = gpt2.generate(
         sess,
@@ -46,15 +46,13 @@ async def generate(input: str = ""):
         return_as_list=True,
     )[0]
 
-    generate_count += 1
-
-    if generate_count == 12:
-        # Prevent OOM
-        tf.reset_default_graph()
-        sess.close()
-        sess = gpt2.start_tf_sess(threads=1)
-        gpt2.load_gpt2(sess, run_name=RUN_NAME)
-        generate_count = 0
+    # if generate_count == 12:
+    #     # Prevent OOM
+    #     tf.reset_default_graph()
+    #     sess.close()
+    #     sess = gpt2.start_tf_sess(threads=1)
+    #     gpt2.load_gpt2(sess, run_name=RUN_NAME)
+    #     generate_count = 0
 
     return result
 

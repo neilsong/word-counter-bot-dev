@@ -138,7 +138,7 @@ MongoDB/
 .DS_Store
 app.pid
 
-./config.py
+config.py
 serverMessages.txt
 
 # GPT-2 Model

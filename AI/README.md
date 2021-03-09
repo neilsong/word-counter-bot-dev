@@ -16,7 +16,7 @@ A Colab Jupyter Notebook highly based off of the ["Train a GPT-2 Text-Generating
 Container-based inference, model bundled into docker image. Use for models smaller than 774M and smaller. Compared to https://github.com/minimaxir/gpt-2-cloud-run, this image uses `fastapi` instead of `starlette`. Go to that repo for additional information/documentation.
  - Cloud Run RAM limit is now 8GB
  - This image is optimized to use 774M on 8GB
-   - `generate_count` may differ if using a different configuration
+   - `generate_count` may have to be used if testing with a different configuration
 ## Colab Inference
 
 This exposes a HTTP API running on Colab through `ngrok`. Understand that this is most convenient for dev and testing purposes only since it is not a permanent solution. 

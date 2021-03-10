@@ -52,6 +52,15 @@ steps:
     - '--quiet'
   id: Deploy
   entrypoint: gcloud
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  args:
+    - scheduler
+    - jobs
+    - run 
+    - "gcrclean-myimage"
+    - '--project=$_PROJECT_ID'
+  id: Clean up
+  entrypoint: gcloud
 timeout: 1020s
 
 tags:

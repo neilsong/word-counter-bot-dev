@@ -1,4 +1,7 @@
 #! /bin/bash
+
+cd /
+ls -la
 output=$( git diff --name-only --diff-filter=ADMR HEAD^ "./AI/Cloud Run" )
 
 if ! [ -z "$output" ]

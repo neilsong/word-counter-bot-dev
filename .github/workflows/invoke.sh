@@ -1,6 +1,6 @@
 #! /bin/bash
 
-output=$( git diff --name-only --diff-filter=ADMR HEAD^ "./AI/Cloud Run" )
+output=$( git diff --name-only --diff-filter=ADMR HEAD^ "./AI/Cloud Run" | grep -v *.md )
 
 if ! [ -z "$output" ]
 then

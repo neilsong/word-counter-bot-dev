@@ -14,7 +14,7 @@ RUN pip3 install --upgrade pip && pip3 install tensorflow-cpu==1.15 gpt_2_simple
 COPY main.py /
 
 ENV GRACEFUL_TIMEOUT 250
-ENV TIMEOUT 250
+ENV TIMEOUT 250 
 ARG ARGRUN
 ENV ENVRUN=$ARGRUN
 

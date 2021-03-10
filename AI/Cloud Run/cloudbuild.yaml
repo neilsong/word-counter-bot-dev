@@ -1,5 +1,5 @@
 substitutions:
-  _RUN: dg03
+  _RUN: run1
   _LINK: https://drive.google.com/uc?id=1mTINbkOpqW2dXl9bgGt_zwR365BKhHyn
   _SERVICE_NAME: inference
   _LABELS: gcb-trigger-id=f4672807-a838-4990-a59c-bf8e18c1ef17

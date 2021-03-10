@@ -10,13 +10,14 @@ A Colab Jupyter Notebook highly based off of the ["Train a GPT-2 Text-Generating
 
 ## Inference Pipeline
 
-3 types of inference pipelines for different sized pre-trained GPT-2 models exposed via a text-generation API endpoint. The live bot is currently using the `LARGE` GPT-2 model (774M params) and Cloud Run Inference.
+3 types of inference pipelines for different sized pre-trained GPT-2 models exposed via a text-generation API endpoint. The live bot is currently using the `MEDIUM` GPT-2 model (355M params) and a Cloud Run inference with a Cloud Build CI/CD pipeline.
 ## Cloud Run Inference
 
-Container-based inference, model bundled into docker image. Use for models smaller than 774M and smaller. Compared to https://github.com/minimaxir/gpt-2-cloud-run, this image uses `fastapi` instead of `starlette`. Go to that repo for additional information/documentation.
+Container-based inference, model bundled into docker image. Use for models smaller than 355M and smaller. Compared to https://github.com/minimaxir/gpt-2-cloud-run, this image uses `fastapi` instead of `starlette`. Go to that repo for additional information/documentation.
  - Cloud Run RAM limit is now 8GB
- - This image is optimized to use 774M on 8GB
+ - This image is optimized to use 355M on 8GB
    - `generate_count` may have to be used if testing with a different configuration
+   - 774M runs OOM on 8GB
 ## Colab Inference
 
 This exposes a HTTP API running on Colab through `ngrok`. Understand that this is most convenient for dev and testing purposes only since it is not a permanent solution. 

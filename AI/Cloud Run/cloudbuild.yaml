@@ -58,7 +58,7 @@ steps:
     - jobs
     - run 
     - "gcrclean-myimage"
-    - '--project=$_PROJECT_ID'
+    - '--project=$PROJECT_ID'
   id: Clean up
   entrypoint: gcloud
 timeout: 1020s

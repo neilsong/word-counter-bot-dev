@@ -5,7 +5,8 @@ import gpt_2_simple as gpt2
 import tensorflow as tf
 import os
 import uvicorn
-from config import RUN_NAME
+
+RUN_NAME = str(os.environ.get("ENVRUN", "run1"))
 
 
 tf.reset_default_graph()

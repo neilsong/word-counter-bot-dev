@@ -1,5 +1,4 @@
 substitutions:
-  _IMAGE: inference
   _RUN: dg07
   _LINK: https://drive.google.com/uc?id=15FUEOkiT-WRfZhcvLvJj812d_7wgjDSv
   _SERVICE_NAME: inference
@@ -29,6 +28,8 @@ steps:
     - "AI/Cloud Run"
     - '-f'
     - "AI/Cloud Run/Dockerfile"
+    - '--build-arg'
+    - 'ARGRUN=$_RUN'
   id: Build
 - name: gcr.io/cloud-builders/docker
   args:

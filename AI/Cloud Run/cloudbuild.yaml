@@ -19,6 +19,7 @@ steps:
     pip3 install gdown \
     && gdown "$_LINK" \
     && tar -xf ./checkpoint_$_RUN.tar
+  id: Download Model
 - name: gcr.io/cloud-builders/docker
   args:
     - build
@@ -50,7 +51,7 @@ steps:
     - '--quiet'
   id: Deploy
   entrypoint: gcloud
-timeout: 700s
+timeout: 1020s
 
 tags:
   - gcp-cloud-build-deploy-cloud-run

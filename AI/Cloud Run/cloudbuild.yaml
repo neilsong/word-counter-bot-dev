@@ -1,6 +1,7 @@
 substitutions:
   _RUN: run1
   _LINK: https://drive.google.com/uc?id=1mTINbkOpqW2dXl9bgGt_zwR365BKhHyn
+  _FILE_SUFFIX: dg03
   _SERVICE_NAME: inference
   _LABELS: gcb-trigger-id=f4672807-a838-4990-a59c-bf8e18c1ef17
   _TRIGGER_ID: f4672807-a838-4990-a59c-bf8e18c1ef17
@@ -18,7 +19,7 @@ steps:
     cd "AI/Cloud Run"
     pip3 install gdown \
     && gdown "$_LINK" \
-    && tar -xf ./checkpoint_$_RUN.tar
+    && tar -xf ./checkpoint_$_FILE_SUFFIX.tar
   id: Download Model
 - name: gcr.io/cloud-builders/docker
   args:

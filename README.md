@@ -60,7 +60,7 @@ Currently, we are trying our best to deliver a stable beta release with all the 
 
   7. (Linux/MacOS Only) To enable `uvloop`, set `UVLOOP` to `True` in `config.py`
      ```sh  
-     config.py: UVLOOP = true
+     config.py: UVLOOP = True
      ```
 
   9. Run bot  

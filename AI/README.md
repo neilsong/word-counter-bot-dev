@@ -22,7 +22,7 @@ Container-based inference, model bundled into docker image. Use for models small
 
 This exposes a HTTP API running on Colab through `ngrok`. Understand that this is most convenient for dev and testing purposes only since it is not a permanent solution. 
  - All execution is done in Google Colab. 
- - Available at (TBA)
+ - Available at https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-?usp=sharing
  - No OOM considerations in place
 ## Cluster Inference
 

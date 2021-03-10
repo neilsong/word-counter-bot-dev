@@ -47,7 +47,7 @@ Notes:
    poetry run python3 main.py 
    ```
 
-9. Find `ngrok` backend url from std at the line
+9. Find `ngrok` backend url from `std` at the line
    ```sh
    Public URL: [NGROK_URL]
    ```

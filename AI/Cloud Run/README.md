@@ -1,6 +1,6 @@
 # Cloud Run Inference
 
-Our Cloud Build (and Deploy) is manually invoked by a GitHub action checking for changes in this directory of the repo on push. If you choose to replicate this, costs can be saved by setting a lifecycle rule on the automatically created artifacts bucket and using [GCR Cleaner](https://github.com/sethvargo/gcr-cleaner) to lifecyle revisions of images in GCR.
+Our Cloud Build (and Deploy) is invoked through webhook by the Github action, [DeployAI](https://github.com/neilsong/word-counter-bot-dev/blob/master/.github/workflows/DeployAI.yml), checking for changes in this directory of the repo on push. If you choose to replicate this, costs can be saved by setting a lifecycle rule on the automatically created artifacts bucket or using [GCR Cleaner](https://github.com/sethvargo/gcr-cleaner) to clean untagged images in GCR.
 
 There is no testing documentation for 2 reasons.  
  1. All substitutions (env_variables) are specified for our own CI/CD Pipeline with Cloud Build

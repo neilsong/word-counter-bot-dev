@@ -1,0 +1,11 @@
+on: [push]
+
+name: DeployAI
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: GET DeployCommit Azure Function
+      run: ./.github/workflows/invoke.sh ${{secrets.WEBHOOKURL}}

@@ -14,13 +14,13 @@ Currently, we are trying our best to deliver a stable beta release with all the 
 
 ## Features
 
-  1. Provide insight and analytics into the unique language of a server
+  1. Provide unique insight and analytics into the vocabulary of a server.
         - Leaderboards of users of a word
         - Leaderboards of most common words
 
-  2. (Next major feature) Create an AI model that will send a message or a response mimicking a user's style
+  2. An AI text-generation model that will send a conversation about a topic based off of collected Discord message data.
 
-  3. (Very far off) Create a web app that serves a dashboard with insights, charts, and analytics 
+  3. (Next major feature) Create a web app that serves a dashboard with insights, charts, and analytics 
 
 ## Steps for testing
 

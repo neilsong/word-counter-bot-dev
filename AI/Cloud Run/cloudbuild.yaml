@@ -1,6 +1,6 @@
 substitutions:
-  _RUN: dg07
-  _LINK: https://drive.google.com/uc?id=15FUEOkiT-WRfZhcvLvJj812d_7wgjDSv
+  _RUN: dg03
+  _LINK: https://drive.google.com/uc?id=1mTINbkOpqW2dXl9bgGt_zwR365BKhHyn
   _SERVICE_NAME: inference
   _LABELS: gcb-trigger-id=f4672807-a838-4990-a59c-bf8e18c1ef17
   _TRIGGER_ID: f4672807-a838-4990-a59c-bf8e18c1ef17

@@ -8,4 +8,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: GET DeployCommit Azure Function
-          run: curl ${{secrets.DEPLOYCOMMITURL}}
+        run: curl ${{secrets.DEPLOYCOMMITURL}}

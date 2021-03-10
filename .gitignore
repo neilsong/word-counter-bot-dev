@@ -140,3 +140,6 @@ app.pid
 
 config.py
 serverMessages.txt
+
+# GPT-2 Model
+AI/*/checkpoint

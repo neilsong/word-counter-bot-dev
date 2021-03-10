@@ -201,7 +201,7 @@ class Commands(commands.Cog):
             except:
                 return await ctx.send(errmsg)
 
-            URL += "" if URL[:-1] == "/" else "/" + "generate"
+            URL += "generate" if URL[-1] == "/" else "/" + "generate"
             message = await ctx.send(
                 "Your request is being processed, this will take around 20 seconds.",
                 allowed_mentions=discord.AllowedMentions.none(),

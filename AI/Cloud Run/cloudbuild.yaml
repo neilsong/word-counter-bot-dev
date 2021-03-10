@@ -1,5 +1,4 @@
 substitutions:
-  _BUCKET: word-counter-bot-ai-artifacts
   _IMAGE: inference
   _RUN: dg07
   _LINK: https://drive.google.com/uc?id=15FUEOkiT-WRfZhcvLvJj812d_7wgjDSv
@@ -12,7 +11,7 @@ substitutions:
 options:
   substitutionOption: ALLOW_LOOSE
 steps:
-- name: 'python:latest'
+- name: 'python:3.8-slim'
   entrypoint: 'bash'
   args: 
   - '-c'
@@ -50,8 +49,7 @@ steps:
     - '--quiet'
   id: Deploy
   entrypoint: gcloud
-images:
-- '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+timeout: 700s
 
 tags:
   - gcp-cloud-build-deploy-cloud-run

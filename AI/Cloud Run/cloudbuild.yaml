@@ -26,7 +26,7 @@ steps:
     - build
     - '--no-cache'
     - '-t'
-    - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+    - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME'
     - "AI/Cloud Run"
     - '-f'
     - "AI/Cloud Run/Dockerfile"
@@ -36,7 +36,7 @@ steps:
 - name: gcr.io/cloud-builders/docker
   args:
     - push
-    - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+    - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME'
   id: Push
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
   args:
@@ -45,7 +45,7 @@ steps:
     - update
     - $_SERVICE_NAME
     - '--platform=managed'
-    - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
+    - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:latest'
     - >-
       --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS
     - '--region=$_DEPLOY_REGION'

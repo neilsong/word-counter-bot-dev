@@ -7,5 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: GET DeployCommit Azure Function
-      run: ./.github/workflows/invoke.sh ${{secrets.WEBHOOKURL}}
+      - uses: actions/checkout@v2
+      - name: Invoke Cloud Build on Git Diff
+        run: ./.github/workflows/invoke.sh ${{secrets.WEBHOOKURL}}

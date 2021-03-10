@@ -58,8 +58,9 @@ Currently, we are trying our best to deliver a stable beta release with all the 
      poetry run pre-commit install
      ```
 
-  7. (Linux/MacOS Only) To enable `uvloop`, set `UVLOOP` to `True` in `config.py`
-     ```sh  
+  7. (Linux/MacOS Only) To enable `uvloop`, install `uvloop` and set `UVLOOP` to `True` in `config.py`
+     ```sh 
+     poetry add uvloop
      config.py: UVLOOP = True
      ```
 

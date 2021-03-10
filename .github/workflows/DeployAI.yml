@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        fetch-depth: 2
+        with:
+          fetch-depth: 2
       - name: Invoke Cloud Build on Git Diff
         run: ./.github/workflows/invoke.sh ${{secrets.WEBHOOKURL}}

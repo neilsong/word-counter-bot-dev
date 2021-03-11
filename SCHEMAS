@@ -110,7 +110,8 @@ task:
   state,
   {
     'id': id,
-    'word': word
+    'word': word,
+    'value': value
   }
 )
 

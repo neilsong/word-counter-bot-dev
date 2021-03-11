@@ -51,48 +51,40 @@ async def worker(queue):
 
     while True:
         task = await queue.get()
-        # print("Working on task: ", task)
+        print("Working on task: ", task)
         state = task[0]
         if state == 0:
             await bot.serverCollection.update_one(
                 {"__id": "prefixes"},
-                {"$set": {task[1]["id"]: bot.prefixes[task[1]["id"]]}},
+                {"$set": {task[1]["id"]: task[1]["value"]}},
                 True,
             )
         elif state == 1:
             await bot.serverCollection.update_one(
                 {"__id": "blacklist"},
-                {"$set": {task[1]["id"]: bot.blacklist[task[1]["id"]]}},
+                {"$set": {task[1]["id"]: task[1]["value"]}},
                 True,
             )
         elif state == 2:
             await bot.serverCollection.update_one(
                 {"__id": "filter"},
-                {"$set": {task[1]["id"]: bot.filter[task[1]["id"]]}},
+                {"$set": {task[1]["id"]: task[1]["value"]}},
                 True,
             )
         elif state == 3:
             await bot.collection.update_one(
                 {"__id": task[1]["id"]},
-                {
-                    "$set": {
-                        task[1]["word"]: bot.userWords[task[1]["id"]][task[1]["word"]]
-                    }
-                },
+                {"$set": {task[1]["word"]: task[1]["value"]}},
                 True,
             )
         elif state == 4:
             await bot.serverCollection.update_one(
                 {"__id": task[1]["id"]},
-                {
-                    "$set": {
-                        task[1]["word"]: bot.serverWords[task[1]["id"]][task[1]["word"]]
-                    }
-                },
+                {"$set": {task[1]["word"]: task[1]["value"]}},
                 True,
             )
         queue.task_done()
-        # print("Task finished")
+        print("Task finished")
 
 
 async def start_workers():

@@ -8,15 +8,10 @@ import sys
 import codecs
 import config
 
-if config.UVLOOP:
-    import uvloop
 from decorator import *
 from constants import *
 from utilities import insert, get_prefix
 
-
-if config.UVLOOP:
-    uvloop.install()
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 
@@ -123,19 +118,29 @@ async def updateWord(message):
         elif w not in bot.serverWords[message.guild.id]:
             bot.serverWords[message.guild.id].update({w: 0, "__id": message.guild.id})
         bot.serverWords[message.guild.id][w] += 1
-        await insert(state=4, id=message.guild.id, word=w)
+        await insert(
+            state=4,
+            id=message.guild.id,
+            word=w,
+            value=bot.serverWords[message.guild.id][w],
+        )
         if message.author.id not in bot.userWords:
             bot.userWords.update({message.author.id: {w: 0, "__id": message.author.id}})
         elif w not in bot.userWords[message.author.id]:
             bot.userWords[message.author.id].update({w: 0, "__id": message.author.id})
         bot.userWords[message.author.id][w] += 1
-        await insert(state=3, id=message.author.id, word=w)
+        await insert(
+            state=3,
+            id=message.author.id,
+            word=w,
+            value=bot.userWords[message.author.id][w],
+        )
         if 0 not in bot.serverWords:
             bot.serverWords.update({0: {w: 0, "__id": 0}})
         elif w not in bot.serverWords[0]:
             bot.serverWords[0].update({w: 0, "__id": 0})
         bot.serverWords[0][w] += 1
-        await insert(state=4, id=0, word=w)
+        await insert(state=4, id=0, word=w, value=bot.serverWords[0][w])
 
 
 # this command only works in this file

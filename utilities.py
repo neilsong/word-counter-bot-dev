@@ -202,7 +202,10 @@ async def insert(**kwargs):
     except:
         pass
     if word:
-        task = (kwargs["state"], {"id": kwargs["id"], "word": word})
+        task = (
+            kwargs["state"],
+            {"id": kwargs["id"], "word": word, "value": kwargs["value"]},
+        )
     else:
-        task = (kwargs["state"], {"id": kwargs["id"]})
+        task = (kwargs["state"], {"id": kwargs["id"], "value": kwargs["value"]})
     await queue.put(task)

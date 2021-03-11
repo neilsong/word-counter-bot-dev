@@ -38,7 +38,7 @@ class Management(commands.Cog):
                 await ctx.send("Prefixes set")
             else:
                 await ctx.send("Prefix set")
-            await insert(state=0, id=str(ctx.guild.id))
+            await insert(state=0, id=str(ctx.guild.id), value=prefixlist)
         else:
             await ctx.send(
                 "Please set either a one-character prefix, or multiple one-character prefixes separated by spaces"
@@ -68,7 +68,11 @@ class Management(commands.Cog):
                     response += f"<#{i}> added\n"
                 else:
                     response += f"<#{i}> already blacklisted\n"
-            await insert(state=1, id=str(ctx.guild.id))
+            await insert(
+                state=1,
+                id=str(ctx.guild.id),
+                value=self.bot.blacklist[str(ctx.guild.id)],
+            )
         else:
             response += "Please provide either a channel, or multiple channels separated by spaces"
         await ctx.send(response)
@@ -90,7 +94,13 @@ class Management(commands.Cog):
                         response += f"The blacklist is now empty\n"
                 else:
                     response += f"<#{i}> not blacklisted\n"
-            await insert(state=1, id=str(ctx.guild.id))
+            try:
+                value = self.bot.blacklist[str(ctx.guild.id)]
+                await insert(state=2, id=str(ctx.guild.id), value=value)
+            except:
+                await self.bot.serverCollection.update_one(
+                    {"__id": "blacklist"}, {"$unset": {str(ctx.guild.id): 1}}
+                )
         else:
             response += "Please provide either a channel, or multiple channels separated by spaces"
         await ctx.send(response)
@@ -123,7 +133,9 @@ class Management(commands.Cog):
                     response += f"`{i}` added\n"
                 else:
                     response += f"`{i}` already in filter\n"
-            await insert(state=2, id=str(ctx.guild.id))
+            await insert(
+                state=2, id=str(ctx.guild.id), value=self.bot.filter[str(ctx.guild.id)]
+            )
         else:
             response += (
                 "Please add either one word, or multiple words separated by spaces"
@@ -151,7 +163,13 @@ class Management(commands.Cog):
                         response += f"The filter is now empty\n"
                 else:
                     response += f"`{i}` is not in the filter\n"
-            await insert(state=2, id=str(ctx.guild.id))
+            try:
+                value = self.bot.filter[str(ctx.guild.id)]
+                await insert(state=2, id=str(ctx.guild.id), value=value)
+            except:
+                await self.bot.serverCollection.update_one(
+                    {"__id": "filter"}, {"$unset": {str(ctx.guild.id): 1}}
+                )
         else:
             response += (
                 "Please remove either one word, or multiple words separated by spaces"

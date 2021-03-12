@@ -39,7 +39,7 @@ def isAllowed(ctx):
         return True
 
 
-# Loading extensions
+# Write PPID
 bot.process = psutil.Process(os.getppid())
 f = codecs.open("pid", "w+", "utf-8")
 f.truncate(0)
@@ -47,6 +47,19 @@ f.close()
 f = codecs.open("pid", "w", "utf-8")
 f.write(str(os.getppid()))
 f.close()
+
+
+class GracefulExit(SystemExit):
+    code = 1
+
+
+# SIGINT Handler
+def raise_graceful_exit(sig, frame):
+    print("Handled Signal")
+    raise GracefulExit()
+
+
+# Loading extensions
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")
@@ -225,16 +238,19 @@ async def on_guild_remove(guild):
         pass
 
 
+signal.signal(signal.SIGINT, raise_graceful_exit)
+signal.signal(signal.SIGTERM, raise_graceful_exit)
 try:
     bot.loop.run_until_complete(bot.start(config.TOKEN))
-except KeyboardInterrupt:
+except GracefulExit:
+    pass
+finally:
     print("\nClosing")
     bot.loop.run_until_complete(bot.change_presence(status=discord.Status.invisible))
     for e in bot.extensions.copy():
         bot.unload_extension(e)
     print("Logging out")
     bot.loop.run_until_complete(bot.logout())
-finally:
     from db import cancel_workers
 
     bot.loop.run_until_complete(cancel_workers())

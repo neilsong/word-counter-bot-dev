@@ -83,8 +83,8 @@ async def worker(queue):
                 {"$set": {task[1]["word"]: task[1]["value"]}},
                 True,
             )
-        queue.task_done()
         print("Task finished")
+        queue.task_done()
 
 
 async def start_workers():
@@ -97,11 +97,11 @@ async def start_workers():
 
 
 async def cancel_workers():
-    print("Waiting for workers to complete remaining tasks...")
+    print("\nWaiting for workers to complete remaining tasks...")
     await queue.join()
 
     # Kill the workers, which are now idle
     print("Killing workers...")
     for w in workers:
         w.cancel()
-    print("Workers killed.\n")
+    print("Workers killed\n")

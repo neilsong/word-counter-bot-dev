@@ -11,7 +11,15 @@ import signal
 
 from decorator import *
 from constants import *
-from utilities import insert, get_prefix
+from utilities import (
+    insert,
+    get_prefix,
+    processTrash,
+    removeItem,
+    splitWords,
+    processWord,
+    processSpecial,
+)
 
 bot_intents = discord.Intents.default()
 bot_intents.members = True
@@ -55,7 +63,7 @@ class GracefulExit(SystemExit):
 
 # SIGINT Handler
 def raise_graceful_exit(sig, frame):
-    print("Handled Signal")
+    print("\nReceived Signal")
     raise GracefulExit()
 
 
@@ -106,10 +114,10 @@ async def on_ready():
 
 
 async def updateWord(message):
-    msgcontent = message.content.lower()
-    for w in trashCharacters:
-        msgcontent = msgcontent.replace(w, " ")
-    result = msgcontent.split()
+
+    msgcontent = await processSpecial(message)
+    msgcontent = processTrash(msgcontent)
+    result = splitWords(msgcontent)
 
     if not result:
         return
@@ -118,10 +126,8 @@ async def updateWord(message):
     if bot.userLastMsg.get(message.author.id, "") == msgcontent:
         return
     bot.userLastMsg.update({message.author.id: msgcontent})
+
     for w in result:
-        if "!" in w:
-            if not re.search("^<@!\d{18}[>$]", w):
-                w = w.replace("!", "")
         if w in defaultFilter:
             continue
         try:
@@ -131,43 +137,15 @@ async def updateWord(message):
             pass
         if w == "":
             continue
-        # print(w)
-        # print("\n")
-        if message.guild.id not in bot.serverWords:
-            bot.serverWords.update({message.guild.id: {w: 0, "__id": message.guild.id}})
-        elif w not in bot.serverWords[message.guild.id]:
-            bot.serverWords[message.guild.id].update({w: 0, "__id": message.guild.id})
-        bot.serverWords[message.guild.id][w] += 1
-        await insert(
-            state=4,
-            id=message.guild.id,
-            word=w,
-            value=bot.serverWords[message.guild.id][w],
-        )
-        if message.author.id not in bot.userWords:
-            bot.userWords.update({message.author.id: {w: 0, "__id": message.author.id}})
-        elif w not in bot.userWords[message.author.id]:
-            bot.userWords[message.author.id].update({w: 0, "__id": message.author.id})
-        bot.userWords[message.author.id][w] += 1
-        await insert(
-            state=3,
-            id=message.author.id,
-            word=w,
-            value=bot.userWords[message.author.id][w],
-        )
-        if 0 not in bot.serverWords:
-            bot.serverWords.update({0: {w: 0, "__id": 0}})
-        elif w not in bot.serverWords[0]:
-            bot.serverWords[0].update({w: 0, "__id": 0})
-        bot.serverWords[0][w] += 1
-        await insert(state=4, id=0, word=w, value=bot.serverWords[0][w])
+
+        await processWord(message, w)
 
 
 # this command only works in this file
 @bot.command()
 @isaBotAdmin()
 async def readhistory(ctx):
-    f = codecs.open("serverMessages.txt", "w", "utf-8")
+    f = codecs.open(f"serverMessages.txt", "w+", "utf-8")
     # open and read the file after the appending:
     for channel in ctx.guild.text_channels:
         print(channel.name)
@@ -204,10 +182,14 @@ async def on_message(message):
 
 @bot.event
 async def on_guild_channel_delete(channel):
+    removeItem(bot.blacklist, str(channel.id), str(channel.guild.id))
     try:
-        bot.blacklist.remove(channel.id)
+        value = bot.blacklist[str(channel.guild.id)]
+        await insert(state=1, id=str(channel.guild.id), value=value)
     except:
-        pass
+        await bot.serverCollection.update_one(
+            {"__id": "blacklist"}, {"$unset": {str(channel.guild.id): 1}}
+        )
 
 
 @bot.event
@@ -247,12 +229,13 @@ except GracefulExit:
 finally:
     print("\nClosing")
     bot.loop.run_until_complete(bot.change_presence(status=discord.Status.invisible))
-    for e in bot.extensions.copy():
-        bot.unload_extension(e)
-    print("Logging out")
-    bot.loop.run_until_complete(bot.logout())
     from db import cancel_workers
 
     bot.loop.run_until_complete(cancel_workers())
-    print("\nClosed")
-    sys.exit(1)
+    print("Unloading Extensions")
+    for e in bot.extensions.copy():
+        bot.unload_extension(e)
+    print("\nLogging out")
+    bot.loop.run_until_complete(bot.logout())
+    print("\nClosed\n")
+    sys.exit(0)

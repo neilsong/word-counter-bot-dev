@@ -21,10 +21,10 @@ class Management(commands.Cog):
             return await ctx.send(description)
         if len(prefixes) > 1:
             description += "es: "
-            description += wordListToString(prefixes)
+            description += await wordListToString(self, ctx, prefixes)
         elif len(prefixes) == 1:
             description += ": "
-            description += wordListToString(prefixes)
+            description += await wordListToString(self, ctx, prefixes)
         await ctx.send(description)
 
     @commands.command()
@@ -51,7 +51,9 @@ class Management(commands.Cog):
         if not str(ctx.guild.id) in self.bot.blacklist.keys():
             await ctx.send("There is no blacklist for this server")
             return
-        blacklist += channelListToString(self.bot.blacklist[str(ctx.guild.id)])
+        blacklist += await channelListToString(
+            self, ctx, self.bot.blacklist[str(ctx.guild.id)]
+        )
         await ctx.send(blacklist)
 
     @commands.command()
@@ -59,22 +61,24 @@ class Management(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def addblacklist(self, ctx, *, channels):
         response = ""
-        channels = (
-            channels.replace("<", "").replace("#", "").replace(">", "").split(" ")
-        )
+        channels = splitWords(channels)
         if len(channels) > 0:
             for i in channels:
+                if not re.search("^<#\d{18}>$", i):
+                    response += "Please provide a channel\n"
+                    continue
+                i = i.replace("<", "").replace("#", "").replace(">", "")
                 if addItem(self.bot.blacklist, i, ctx.guild.id):
                     response += f"<#{i}> added\n"
                 else:
                     response += f"<#{i}> already blacklisted\n"
-            await insert(
-                state=1,
-                id=str(ctx.guild.id),
-                value=self.bot.blacklist[str(ctx.guild.id)],
-            )
+            try:
+                value = self.bot.blacklist[str(ctx.guild.id)]
+                await insert(state=1, id=str(ctx.guild.id), value=value)
+            except:
+                pass
         else:
-            response += "Please provide either a channel, or multiple channels separated by spaces"
+            response += "Please provide either a channel, or multiple channels separated by spaces\n"
         await ctx.send(response)
 
     @commands.command()
@@ -96,7 +100,7 @@ class Management(commands.Cog):
                     response += f"<#{i}> not blacklisted\n"
             try:
                 value = self.bot.blacklist[str(ctx.guild.id)]
-                await insert(state=2, id=str(ctx.guild.id), value=value)
+                await insert(state=1, id=str(ctx.guild.id), value=value)
             except:
                 await self.bot.serverCollection.update_one(
                     {"__id": "blacklist"}, {"$unset": {str(ctx.guild.id): 1}}
@@ -113,26 +117,35 @@ class Management(commands.Cog):
         if not str(ctx.guild.id) in self.bot.filter.keys():
             await ctx.send("There is no filter for this server")
             return
-        filter += wordListToString(self.bot.filter[str(ctx.guild.id)])
+        filter += await wordListToString(self, ctx, self.bot.filter[str(ctx.guild.id)])
         await ctx.send(filter)
 
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def addfilter(self, ctx, *, words=""):
-        words = preprocessWords(words)
+        stringTuple = cleanSpecial(words)
+        words = splitWords(cleanTrash(stringTuple[0]))
+        words += stringTuple[1]
 
         response = ""
         if len(words) > 0:
-            wordlist = words.split(" ")
-            for i in wordlist:
+            for i in words:
                 if i in self.bot.defaultFilter:
                     response += f"`{i}` is in the default filter\n"
                     continue
                 if addItem(self.bot.filter, i, ctx.guild.id):
-                    response += f"`{i}` added\n"
+                    if testemoji(i):
+                        response += f"{i} added\n"
+                    else:
+                        ufi = await userfriendly(self, ctx, i)
+                        response += f"`{ufi}` added\n"
                 else:
-                    response += f"`{i}` already in filter\n"
+                    if testemoji(i):
+                        response += f"{i} is already in filter\n"
+                    else:
+                        ufi = await userfriendly(self, ctx, i)
+                        response += f"`{ufi}` is already in filter\n"
             await insert(
                 state=2, id=str(ctx.guild.id), value=self.bot.filter[str(ctx.guild.id)]
             )
@@ -147,22 +160,31 @@ class Management(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def removefilter(self, ctx, *, words=""):
-        words = preprocessWords(words)
+        stringTuple = cleanSpecial(words)
+        words = splitWords(cleanTrash(stringTuple[0]))
+        words += stringTuple[1]
 
         response = ""
         if len(words) > 0:
-            wordlist = words.split(" ")
-            for i in wordlist:
+            for i in words:
                 if i in self.bot.defaultFilter:
                     response += f"`{i}` is in the default filter\n"
                     continue
                 state = removeItem(self.bot.filter, i, ctx.guild.id)
                 if state > 0:
-                    response += f"`{i}` removed\n"
+                    if testemoji(i):
+                        response += f"{i} removed\n"
+                    else:
+                        ufi = await userfriendly(self, ctx, i)
+                        response += f"`{ufi}` removed\n"
                     if state > 1:
                         response += f"The filter is now empty\n"
                 else:
-                    response += f"`{i}` is not in the filter\n"
+                    if testemoji(i):
+                        response += f"{i} is not in the filter\n"
+                    else:
+                        ufi = await userfriendly(self, ctx, i)
+                        response += f"`{ufi}` is not in the filter\n"
             try:
                 value = self.bot.filter[str(ctx.guild.id)]
                 await insert(state=2, id=str(ctx.guild.id), value=value)

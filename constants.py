@@ -229,6 +229,10 @@ trashCharacters = [
     "?",
     "$",
     " - ",
+    "!",
+    "@",
+    "#",
+    ":",
 ]
 default_prefix = ["!"]
 rep = [

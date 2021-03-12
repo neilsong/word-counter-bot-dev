@@ -7,6 +7,7 @@ import os
 import sys
 import codecs
 import config
+import signal
 
 from decorator import *
 from constants import *
@@ -40,6 +41,12 @@ def isAllowed(ctx):
 
 # Loading extensions
 bot.process = psutil.Process(os.getppid())
+f = codecs.open("pid", "r+", "utf-8")
+f.truncate(0)
+f.close()
+f = codecs.open("pid", "w", "utf-8")
+f.write(str(os.getppid()))
+f.close()
 bot.ready_for_commands = False
 bot.load_extension("commands")
 bot.load_extension("error_handlers")

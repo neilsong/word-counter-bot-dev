@@ -143,3 +143,6 @@ serverMessages.txt
 
 # GPT-2 Model
 AI/*/checkpoint
+
+# Process ID
+pid

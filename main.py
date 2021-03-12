@@ -39,13 +39,13 @@ def isAllowed(ctx):
         return True
 
 
-# Write PPID
-bot.process = psutil.Process(os.getppid())
+# Write PID
+bot.process = psutil.Process(os.getpid())
 f = codecs.open("pid", "w+", "utf-8")
 f.truncate(0)
 f.close()
 f = codecs.open("pid", "w", "utf-8")
-f.write(str(os.getppid()))
+f.write(str(os.getpid()))
 f.close()
 
 

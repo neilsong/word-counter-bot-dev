@@ -1,4 +1,5 @@
-backendURL = ""
+backendURL = "https://inference-bh4nfikt2a-uc.a.run.app"
+custombackendURL = ""
 # nltk stopwords + custom words
 defaultFilter = [
     "i",

@@ -176,12 +176,13 @@ class Commands(commands.Cog):
     async def setBackend(self, ctx, url=None):
         if not ".ngrok.io" in url:
             return await ctx.send("Invalid url.")
-        global backendURL
-        backendURL = url
-        if ".ngrok.io not found" in requests.get(url=backendURL).text:
+        global custombackendURL
+        custombackendURL = url
+        if ".ngrok.io not found" in requests.get(url=custombackendURL).text:
             await ctx.send(
                 "Backend set to `" + url + "`, but backend failed to respond."
             )
+            custombackendURL = ""
         else:
             await ctx.send("Backend set to `" + url + "`. Backend responsive.")
 
@@ -192,21 +193,32 @@ class Commands(commands.Cog):
         for r in rep:
             gep[r[:3]] = r
         if not word == None:
-            URL = backendURL
-            # check if server is alive
-            errmsg = "Text generation backend offline or invalid. **Follow the instructions here to activate the !talk command:**\n `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`"
-            try:
-                if not "bruh" in requests.get(url=URL).text:
-                    return await ctx.send(errmsg)
-            except:
-                return await ctx.send(errmsg)
-
-            URL += "generate" if URL[-1] == "/" else "/" + "generate"
             message = await ctx.send(
-                "Your request is being processed, this will take around 20 seconds.",
+                "Your request is being processed, this will take around 45 seconds. (Around 1.5 minutes on cold start)",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
             await ctx.channel.trigger_typing()
+
+            customalive = False
+
+            if custombackendURL:
+                URL = custombackendURL
+                try:
+                    if "GPT" in requests.get(url=URL).text:
+                        customalive = True
+                except:
+                    pass
+
+            if not customalive:
+                URL = backendURL
+                errmsg = "Text generation backend offline or invalid. **Follow the instructions here to activate the !talk command:**\n `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`"
+                try:
+                    if not "GPT" in requests.get(url=URL).text:
+                        await ctx.send(errmsg)
+                except:
+                    await ctx.send(errmsg)
+
+            URL += "generate" if URL[-1] == "/" else "/" + "generate"
             inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
             r = requests.get(url=URL, params={"input": inputtxt})
             ans = r.text

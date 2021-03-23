@@ -22,6 +22,9 @@ Currently, we are trying our best to deliver a stable beta release with all the 
   2. An AI text-generation model that will send a conversation about a topic based off of collected Discord message data.
 
   3. (Next major feature) Create a web app that serves a dashboard with insights, charts, and analytics 
+      - Finish complete documentation + `!help` command
+      
+  4. (Very far off) Create a mobile app (React Native or Android) with same capabilities of web app
 
 ## Steps for testing
 

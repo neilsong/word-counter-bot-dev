@@ -11,5 +11,5 @@ done
 
 source $HOME/.profile
 
-poetry install --no-dev
+poetry install
 poetry run python3 main.py

@@ -38,7 +38,7 @@ Currently, we are trying our best to deliver a stable beta release with all the 
      ```sh
      curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
      ```  
-     Windows (PS):
+     Windows (PS): 
      ```PS
       (Invoke-WebRequest -Uri `
       https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py `

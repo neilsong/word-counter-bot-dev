@@ -1,5 +1,5 @@
 #! /bin/bash
-cd word-counter-bot-dev/
+cd /word-counter-bot-dev/
 
 pid=$( cat pid )
 

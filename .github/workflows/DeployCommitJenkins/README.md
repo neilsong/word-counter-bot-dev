@@ -1,5 +1,5 @@
 # Deploy Commit Jenkins
 
-Source code for using Jenkins to automate deployments of new commits onto VMs with Jenkins Pipelines
+Source code for using Jenkins to automate deployments of new commits onto VMs with Jenkins Multibranch Pipelines
 
-Triggered by commit on `master` (webhook)
+Triggered by commit on `master` (GitHub Webhook)

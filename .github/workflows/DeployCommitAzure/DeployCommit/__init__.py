@@ -31,7 +31,6 @@ async def runcommand(credentials, subscription_id):
         "command_id": "RunShellScript",
         "script": [
             "cd /home/azureuser/word-counter-bot-dev",
-            "screen -X quit",
             "git pull",
             "screen -d -m /home/azureuser/word-counter-bot-dev/.github/workflows/execution.sh",
         ],

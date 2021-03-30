@@ -4,8 +4,8 @@ pipeline {
     stage('Deploy') {
       steps {
         sh '''cd /word-counter-bot-dev && 
-sudo git pull && 
-sudo screen -d -m .github/workflows/execution.sh'''
+sudo -S git pull && 
+sudo -S screen -d -m .github/workflows/execution.sh'''
       }
     }
 

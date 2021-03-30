@@ -1,11 +1,11 @@
-on: [push]
+# on: [push]
 
-name: DeployCommit
+# name: DeployCommit
 
-jobs:
+# jobs:
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: GET DeployCommit Azure Function
-        run: curl ${{secrets.DEPLOYCOMMITURL}}
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: GET DeployCommit Azure Function
+#         run: curl ${{secrets.DEPLOYCOMMITURL}}

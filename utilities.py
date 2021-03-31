@@ -1,6 +1,7 @@
 import collections
 import re
 import discord
+from constants import emotes
 
 
 def addItem(dict, string, id):
@@ -54,8 +55,49 @@ def cleanSpecial(string):
         for i in channels:
             print(i)
             string = string.replace(i, "")
+    print("\nEmotes")
+
+    emoticons = []
+    # starting or individual emote - ":) ......" or ":)"
+    for i in emotes:
+        if len(string) >= len(i) + 1:
+            substr = string[: (len(i) + 1)]
+            if substr == i + " ":
+                print(i)
+                emoticons.append(i)
+                string = string[(len(i) + 1) :]
+        if len(string) >= len(i):
+            substr = string[: len(i)]
+            if substr == i:
+                print(i)
+                emoticons.append(i)
+                string = string[(len(i)) :]
+
+    # middle - ".... :) ..."
+    for i in emotes:
+        while string.find(f" {i} ") != -1:
+            print(i)
+            emoticons.append(i)
+            string = string.replace(f" {i} ", "", 1)
+
+    # end - ".... :)"
+    for i in emotes:
+        if len(string) >= len(i) + 1:
+            substr = string[(len(string) - len(i) - 1) :]
+            if substr == " " + i:
+                print(i)
+                emoticons.append(i)
+                string = string[: (len(string) - len(i) - 1)]
+        if len(string) >= len(i):
+            substr = string[(len(string) - len(i)) :]
+            if substr == i:
+                print(i)
+                emoticons.append(i)
+                string = string[: (len(string) - len(i))]
+
     print("\n")
-    return (string, emojis + mentions + rolementions + channels)
+
+    return (string, emojis + mentions + rolementions + channels + emoticons)
 
 
 def splitWords(string):
@@ -168,7 +210,49 @@ async def processSpecial(message):
             print(i)
             await processWord(message, i)
             msgcontent = msgcontent.replace(i, "")
+
+    print("\nEmotes")
+
+    # starting or individual emote - ":) ......" or ":)"
+
+    for i in emotes:
+        if len(msgcontent) >= len(i) + 1:
+            substr = msgcontent[: (len(i) + 1)]
+            if substr == i + " ":
+                print(i)
+                await processWord(message, i)
+                msgcontent = msgcontent[(len(i) + 1) :]
+        if len(msgcontent) >= len(i):
+            substr = msgcontent[: len(i)]
+            if substr == i:
+                print(i)
+                await processWord(message, i)
+                msgcontent = msgcontent[(len(i)) :]
+
+    # middle - ".... :) ..."
+    for i in emotes:
+        while f" {i} " in msgcontent:
+            print(i)
+            await processWord(message, i)
+            msgcontent = msgcontent.replace(f" {i} ", "", 1)
+
+    # end - ".... :)"
+    for i in emotes:
+        if len(msgcontent) >= len(i) + 1:
+            substr = msgcontent[(len(msgcontent) - len(i) - 1) :]
+            if substr == " " + i:
+                print(i)
+                await processWord(message, i)
+                msgcontent = msgcontent[: (len(msgcontent) - len(i) - 1)]
+        if len(msgcontent) >= len(i):
+            substr = msgcontent[(len(msgcontent) - len(i)) :]
+            if substr == i:
+                print(i)
+                await processWord(message, i)
+                msgcontent = msgcontent[: (len(msgcontent) - len(i))]
+
     print("\n")
+
     return msgcontent
 
 

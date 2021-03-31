@@ -57,7 +57,9 @@ class Commands(commands.Cog):
             )
         elif user == "topglobal":
             word = await userfriendlyembed(self, ctx, word)
-            embed.set_author(name=f'Top 10 Users of "{word}"')
+            embed.set_author(
+                name=f'Top {str(len(words)) + " " if len(words) > 1 else ""}User{"s" if len(words) > 1 else ""} of "{word}"'
+            )
         else:
             embed.set_author(
                 name=f"{user.name}'s Most Common Words", icon_url=user.avatar_url
@@ -129,18 +131,12 @@ class Commands(commands.Cog):
 
     @commands.command(aliases=["leaderboard", "high"])
     @commands.guild_only()
-    async def top(
-        self,
-        ctx,
-        word: str = None,
-        isGlobal: str = "",
-    ):
+    async def top(self, ctx, *, word: str = None):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
-        await ctx.channel.trigger_typing()
         if word == None:
             return await ctx.send(
-                f"Please type a word to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
+                f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
             )
         if word in defaultFilter:
             return await ctx.send("That word is filtered by default")
@@ -149,24 +145,94 @@ class Commands(commands.Cog):
                 return await ctx.send("That word is filtered")
         except:
             pass
-        if isGlobal and not isGlobal == "global":
-            return await ctx.send(
-                f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}top lol global`"
-            )
+        # Emote space tester
+        if " " in word:
+            hasemote = False
+            hasmultiple = False
+            from constants import emotes
+
+            for i in emotes:
+                if i == word:
+                    if hasemote:
+                        hasmultiple = True
+                    else:
+                        hasemote = True
+            if hasmultiple:
+                return await ctx.send(
+                    f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
+                )
+            elif not hasemote:
+                words = word.split()
+                if words[1] == "global":
+                    return await ctx.send(
+                        f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                    )
+                else:
+                    return await ctx.send(
+                        f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
+                    )
+
         word = word.lower()
         await ctx.channel.trigger_typing()
 
         embeds = 0
-        embeds = await leaderboard(self, ctx, word, isGlobal)
+        embeds = await leaderboard(self, ctx, word, "")
 
         if isinstance(embeds, list):
             paginator = BotEmbedPaginator(ctx, embeds)
             await paginator.run()
 
-    # @count.error
-    # async def count_error(self, ctx, exc):
-    #    if isinstance(exc, commands.BadArgument):
-    #        return await ctx.send(exc)
+    @commands.command(aliases=["leaderboardglobal", "highglobal"])
+    @commands.guild_only()
+    async def topglobal(self, ctx, *, word: str = None):
+        # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
+        # Note: If a user said any words on another server that this bot is also on, those will be taken into account
+        if word == None:
+            return await ctx.send(
+                f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+            )
+        if word in defaultFilter:
+            return await ctx.send("That word is filtered by default")
+        try:
+            if word in self.bot.filter[str(ctx.guild.id)]:
+                return await ctx.send("That word is filtered")
+        except:
+            pass
+        if " " in word:
+            hasemote = False
+            hasmultiple = False
+            from constants import emotes
+
+            for i in emotes:
+                if i == word:
+                    if hasemote:
+                        hasmultiple = True
+                    else:
+                        hasemote = True
+            if hasmultiple:
+                return await ctx.send(
+                    f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                )
+            elif not hasemote:
+                words = word.split()
+                if words[1] == "global":
+                    return await ctx.send(
+                        f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                    )
+                else:
+                    return await ctx.send(
+                        f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                    )
+
+        word = word.lower()
+        await ctx.channel.trigger_typing()
+
+        embeds = 0
+        embeds = await leaderboard(self, ctx, word, "global")
+
+        if isinstance(embeds, list):
+            paginator = BotEmbedPaginator(ctx, embeds)
+            await paginator.run()
 
     # ----------------------------------------------------------------------------------------------------------------------------------------------------------
     # ----------------------------------------------------------------------------------------------------------------------------------------------------------

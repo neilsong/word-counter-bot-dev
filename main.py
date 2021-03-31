@@ -130,11 +130,6 @@ async def updateWord(message):
     for w in result:
         if w in defaultFilter:
             continue
-        try:
-            if w in bot.filter[message.guild.id]:
-                continue
-        except:
-            pass
         if w == "":
             continue
 

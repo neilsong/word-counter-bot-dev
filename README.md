@@ -1,6 +1,6 @@
 # word-counter-bot (Dev)
 ![GitHub top language](https://img.shields.io/github/languages/top/neilsong/word-counter-bot-dev)
-[![DeployCommit](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml/badge.svg)](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployCommit.yml)
+[![Build Status](http://35.223.181.228:4040/buildStatus/icon?job=word-counter-bot-dev%2Fmaster&build=0&subject=DeployCommit&color=32c954)](http://35.223.181.228:4040/job/word-counter-bot-dev/job/master/0/)
 [![DeployAI](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployAI.yml/badge.svg)](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/DeployAI.yml)
 [![Lint](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/black.yml/badge.svg)](https://github.com/neilsong/word-counter-bot-dev/actions/workflows/black.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

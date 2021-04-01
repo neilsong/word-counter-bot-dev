@@ -8,6 +8,7 @@ import sys
 import codecs
 import config
 import signal
+from random import randrange
 
 from decorator import *
 from constants import *
@@ -171,6 +172,17 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.valid:
         await bot.invoke(ctx)
+
+    # April Fool's on Brian
+    elif message.author.id == "619657805166805024" and (
+        "mad" in message.content.lower()
+        or "bad" in message.content.lower()
+        or "mom" in message.content.lower()
+    ):
+        from constants import yoMama
+
+        rindex = randrange(len(yoMama) - 1)
+        return await ctx.send(yoMama[rindex])
     elif message.guild is not None:
         await updateWord(message)
 

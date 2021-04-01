@@ -173,7 +173,7 @@ async def on_message(message):
     if ctx.valid:
         await bot.invoke(ctx)
     # April Fool's on Brian
-    elif message.author.id == 619657805166805024 and (
+    elif (
         "mad" in message.content.lower()
         or "bad" in message.content.lower()
         or "mom" in message.content.lower()

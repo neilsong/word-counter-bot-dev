@@ -183,6 +183,12 @@ async def on_message(message):
 
         rindex = randrange(len(yoMama) - 1)
         return await ctx.send(yoMama[rindex])
+    elif (
+        "uwu" in message.content.lower()
+    ):
+        uwu = message.content.replace('r', 'w') + " uwu"
+        return await ctx.send(uwu)
+
     elif message.guild is not None:
         await updateWord(message)
 
@@ -235,7 +241,8 @@ except GracefulExit:
     pass
 finally:
     print("\nClosing")
-    bot.loop.run_until_complete(bot.change_presence(status=discord.Status.invisible))
+    bot.loop.run_until_complete(
+        bot.change_presence(status=discord.Status.invisible))
     from db import cancel_workers
 
     bot.loop.run_until_complete(cancel_workers())

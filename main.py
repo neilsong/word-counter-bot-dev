@@ -186,7 +186,7 @@ async def on_message(message):
     elif (
         "uwu" in message.content.lower()
     ):
-        uwu = message.content.replace('r', 'w') + "uwu"
+        uwu = message.content.replace('r', 'w') + " uwu"
         return await ctx.send(uwu)
 
     elif message.guild is not None:

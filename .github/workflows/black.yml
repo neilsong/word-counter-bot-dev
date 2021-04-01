@@ -1,13 +1,27 @@
 name: Lint
 
-on: [push, pull_request]
+on: push
 
 jobs:
-  lint:
+  run-linter:
+    name: Run linter
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: psf/black@stable
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
         with:
-          args: ". --check"
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        run: pip install black
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v1
+        with:
+          black: true
+          auto_fix: true
+          git_email: "lint-action@wcbdev.com"

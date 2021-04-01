@@ -55,14 +55,8 @@ Currently, we are trying our best to deliver a stable beta release with all the 
      ```sh
      poetry install
      ```
-                
-  6. (Dev only) Install `pre-commit` hooks
-  
-     ```sh
-     poetry run pre-commit install
-     ```
 
-  7. Run bot  
+  6. Run bot  
   
      ```sh
      poetry run python main.py

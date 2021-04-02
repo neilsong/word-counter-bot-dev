@@ -66,4 +66,5 @@ async def generate(input: str = ""):
 
     return result
 
+
 uvicorn.run(app, port=8000)

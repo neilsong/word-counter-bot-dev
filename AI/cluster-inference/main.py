@@ -3,7 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 import gpt_2_simple as gpt2
 import tensorflow as tf
-from config import *
+import psutil
+import codecs
+import os
+import uvicorn
+
+f = codecs.open("pid", "w+", "utf-8")
+f.truncate(0)
+f.close()
+f = codecs.open("pid", "w", "utf-8")
+f.write(str(os.getpid()))
+f.close()
+
 
 app = FastAPI()
 
@@ -16,7 +27,7 @@ app.add_middleware(
 )
 
 tf.reset_default_graph()
-sess = gpt2.start_tf_sess(threads=1)
+sess = gpt2.start_tf_sess(threads=4)
 gpt2.load_gpt2(sess, run_name="run1")
 generate_count = 0
 
@@ -45,23 +56,14 @@ async def generate(input: str = ""):
 
     generate_count += 1
 
-    if generate_count == 8:
+    if generate_count == 12:
         # Reload model to prevent Graph/Session from going OOM
         tf.reset_default_graph()
         sess.close()
-        sess = gpt2.start_tf_sess(threads=1)
+        sess = gpt2.start_tf_sess(threads=4)
         gpt2.load_gpt2(sess, run_name="run1")
         generate_count = 0
 
     return result
 
-
-import nest_asyncio
-from pyngrok import ngrok
-import uvicorn
-
-ngrok.set_auth_token(NGROK_AUTH_TOKEN)
-ngrok_tunnel = ngrok.connect(8000)
-print("Public URL:", ngrok_tunnel.public_url)
-nest_asyncio.apply()
 uvicorn.run(app, port=8000)

@@ -16,7 +16,7 @@ steps:
   args: 
   - '-c'
   - |
-    cd "AI/Cloud Run"
+    cd "AI/cloud-run"
     pip3 install gdown \
     && gdown "$_LINK" \
     && tar -xf ./checkpoint_$_FILE_SUFFIX.tar
@@ -27,9 +27,9 @@ steps:
     - '--no-cache'
     - '-t'
     - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME'
-    - "AI/Cloud Run"
+    - "AI/cloud-run"
     - '-f'
-    - "AI/Cloud Run/Dockerfile"
+    - "AI/cloud-run/Dockerfile"
     - '--build-arg'
     - 'ARGRUN=$_RUN'
   id: Build

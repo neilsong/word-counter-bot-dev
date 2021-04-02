@@ -7,12 +7,11 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "3.6.0 - 3.7.10"
-nest-asyncio = "^1.5.1"
 gpt-2-simple = "^0.7.2"
 fastapi = "^0.63.0"
-pyngrok = "^5.0.3"
 uvicorn = "^0.13.4"
 tensorflow = "1.15.2"
+psutil = "^5.8.0"
 
 [tool.poetry.dev-dependencies]
 

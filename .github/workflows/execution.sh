@@ -1,6 +1,6 @@
 #! /bin/bash
-cd /word-counter-bot-dev/
 
+cd /word-counter-bot-dev/"$1"
 pid=$( cat pid )
 
 kill -INT $pid

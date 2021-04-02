@@ -173,10 +173,7 @@ async def on_message(message):
     if ctx.valid:
         await bot.invoke(ctx)
     # April Fool's on Brian
-    elif (
-        "mom" in message.content.lower()
-        or "mother" in message.content.lower()
-    ):
+    elif "mom" in message.content.lower() or "mother" in message.content.lower():
         from constants import yoMama
 
         rindex = randrange(len(yoMama) - 1)

@@ -50,7 +50,7 @@ Currently, we are trying our best to deliver a stable beta release with all the 
      poetry -V
      ``` 
 
-  5. Install dependencies (Use `--no-dev` argument if only testing)
+  5. Install dependencies
   
      ```sh
      poetry install

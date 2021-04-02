@@ -16,7 +16,7 @@ f.write(str(os.getpid()))
 f.close()
 
 
-app = FastAPI()
+app = FastAPI() 
 
 app.add_middleware(
     CORSMiddleware,

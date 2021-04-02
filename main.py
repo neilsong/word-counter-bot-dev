@@ -9,7 +9,7 @@ import codecs
 import config
 import signal
 from random import randrange
-
+from TextToOwO.owo import text_to_owo
 from decorator import *
 from constants import *
 from utilities import (
@@ -184,7 +184,7 @@ async def on_message(message):
         rindex = randrange(len(yoMama) - 1)
         return await ctx.send(yoMama[rindex])
     elif "uwu" in message.content.lower():
-        uwu = message.content.replace("r", "w") + " uwu"
+        uwu = text_to_owo(message.content)
         return await ctx.send(uwu)
 
     elif message.guild is not None:

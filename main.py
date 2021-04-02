@@ -8,8 +8,6 @@ import sys
 import codecs
 import config
 import signal
-from random import randrange
-from TextToOwO.owo import text_to_owo
 from decorator import *
 from constants import *
 from utilities import (
@@ -172,15 +170,6 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.valid:
         await bot.invoke(ctx)
-    # April Fool's on Brian
-    elif "mom" in message.content.lower() or "mother" in message.content.lower():
-        from constants import yoMama
-
-        rindex = randrange(len(yoMama) - 1)
-        return await ctx.send(yoMama[rindex])
-    elif "uwu" in message.content.lower():
-        uwu = text_to_owo(message.content)
-        return await ctx.send(uwu)
 
     elif message.guild is not None:
         await updateWord(message)

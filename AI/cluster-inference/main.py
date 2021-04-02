@@ -6,7 +6,7 @@ import tensorflow as tf
 import psutil
 import codecs
 import os
-import uvicorn 
+import uvicorn
 
 f = codecs.open("pid", "w+", "utf-8")
 f.truncate(0)

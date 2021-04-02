@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Deploy') {
       steps {
-        sh '''cd /word-counter-bot-dev/AI/cluster-inference && 
+        sh '''cd /word-counter-bot-dev && 
 sudo -S git pull && 
 sudo -S screen -d -m .github/workflows/execution.sh "AI/cluster-inference"'''
       }

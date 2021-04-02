@@ -174,9 +174,7 @@ async def on_message(message):
         await bot.invoke(ctx)
     # April Fool's on Brian
     elif (
-        "mad" in message.content.lower()
-        or "bad" in message.content.lower()
-        or "mom" in message.content.lower()
+        "mom" in message.content.lower()
         or "mother" in message.content.lower()
     ):
         from constants import yoMama

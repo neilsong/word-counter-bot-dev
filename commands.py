@@ -274,7 +274,7 @@ class Commands(commands.Cog):
                         customalive = True
                 except:
                     pass
-            
+
             backendalive = False
 
             if not customalive:
@@ -283,10 +283,11 @@ class Commands(commands.Cog):
                 try:
                     if not "GPT" in requests.get(url=URL).text:
                         await message.edit(errmsg)
-                    else: backendalive = True
+                    else:
+                        backendalive = True
                 except:
                     await message.edit(errmsg)
-            
+
             backupalive = False
 
             if not backendalive:
@@ -295,18 +296,22 @@ class Commands(commands.Cog):
                 try:
                     if not "GPT" in requests.get(url=URL).text:
                         await message.edit(errmsg)
-                    else: backupalive = False
+                    else:
+                        backupalive = False
                 except:
                     await message.edit(errmsg)
 
             alive = backupalive or backendalive or customalive
-            
-            if alive: 
+
+            if alive:
                 URL += "generate" if URL[-1] == "/" else "/" + "generate"
                 inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
                 r = requests.get(url=URL, params={"input": inputtxt})
                 ans = r.text
-                if "The server returned an invalid or incomplete HTTP response." not in ans:
+                if (
+                    "The server returned an invalid or incomplete HTTP response."
+                    not in ans
+                ):
                     ans = ans.split("\n")
                     out = []
                     for msg in ans:
@@ -319,7 +324,9 @@ class Commands(commands.Cog):
                         allowed_mentions=discord.AllowedMentions.none(),
                     )
                 else:
-                    await message.edit("Backend may have shut down during your request.")
+                    await message.edit(
+                        "Backend may have shut down during your request."
+                    )
         else:
             await ctx.send("Needs input text. ex:`!talk hello world`")
 

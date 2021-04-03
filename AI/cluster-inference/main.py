@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 tf.reset_default_graph()
-sess = gpt2.start_tf_sess(threads=4)
+sess = gpt2.start_tf_sess(threads=8)
 gpt2.load_gpt2(sess, run_name="run1")
 generate_count = 0
 
@@ -44,7 +44,7 @@ async def generate(input: str = ""):
     result = gpt2.generate(
         sess,
         run_name="run1",
-        length=420,
+        length=100,
         temperature=0.9,
         prefix=input,
         top_p=100,
@@ -60,7 +60,7 @@ async def generate(input: str = ""):
         # Reload model to prevent Graph/Session from going OOM
         tf.reset_default_graph()
         sess.close()
-        sess = gpt2.start_tf_sess(threads=4)
+        sess = gpt2.start_tf_sess(threads=8)
         gpt2.load_gpt2(sess, run_name="run1")
         generate_count = 0
 

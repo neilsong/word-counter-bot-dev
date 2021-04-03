@@ -44,7 +44,7 @@ async def generate(input: str = ""):
     result = gpt2.generate(
         sess,
         run_name="run1",
-        length=100,
+        length=300,
         temperature=0.9,
         prefix=input,
         top_p=100,

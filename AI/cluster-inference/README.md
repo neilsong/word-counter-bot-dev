@@ -43,3 +43,7 @@ Notes:
     ```sh
     curl "[IP]:8000/generate?input=[INPUT]"
     ```
+
+# Current Configuration
+
+Since the server that we have has sub-optimal performance, it is currently configured as backup to Cloud Run (ironic) with 774M.

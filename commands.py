@@ -274,36 +274,54 @@ class Commands(commands.Cog):
                         customalive = True
                 except:
                     pass
+            
+            backendalive = False
 
             if not customalive:
                 URL = backendURL
+                errmsg = "Cloud Run Endpoint is offline - using backup cluster. This might take a while (~2.5 min)"
+                try:
+                    if not "GPT" in requests.get(url=URL).text:
+                        await message.edit(errmsg)
+                    else: backendalive = True
+                except:
+                    await message.edit(errmsg)
+            
+            backupalive = False
+
+            if not backendalive:
+                URL = backupURL
                 errmsg = "Text generation backend offline or invalid. **Follow the instructions here to activate the !talk command:**\n `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`"
                 try:
                     if not "GPT" in requests.get(url=URL).text:
-                        await ctx.send(errmsg)
+                        await message.edit(errmsg)
+                    else: backupalive = False
                 except:
-                    await ctx.send(errmsg)
+                    await message.edit(errmsg)
 
-            URL += "generate" if URL[-1] == "/" else "/" + "generate"
-            inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
-            r = requests.get(url=URL, params={"input": inputtxt})
-            ans = r.text
-            if "The server returned an invalid or incomplete HTTP response." not in ans:
-                ans = ans.split("\n")
-                out = []
-                for msg in ans:
-                    try:
-                        out.append("<@" + gep[msg[:3]] + ">" + msg[3:])
-                    except:
-                        out.append(msg)
-                await message.edit(
-                    content=("\n".join(out)[:2000]),
-                    allowed_mentions=discord.AllowedMentions.none(),
-                )
-            else:
-                await message.edit("Backend may have shut down during your request.")
+            alive = backupalive or backendalive or customalive
+            
+            if alive: 
+                URL += "generate" if URL[-1] == "/" else "/" + "generate"
+                inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
+                r = requests.get(url=URL, params={"input": inputtxt})
+                ans = r.text
+                if "The server returned an invalid or incomplete HTTP response." not in ans:
+                    ans = ans.split("\n")
+                    out = []
+                    for msg in ans:
+                        try:
+                            out.append("<@" + gep[msg[:3]] + ">" + msg[3:])
+                        except:
+                            out.append(msg)
+                    await message.edit(
+                        content=("\n".join(out)[:2000]),
+                        allowed_mentions=discord.AllowedMentions.none(),
+                    )
+                else:
+                    await message.edit("Backend may have shut down during your request.")
         else:
-            await message.edit("Needs input text. ex:`!talk hello world`")
+            await ctx.send("Needs input text. ex:`!talk hello world`")
 
 
 def setup(bot):

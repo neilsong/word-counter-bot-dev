@@ -13,6 +13,7 @@ from constants import *
 from main import *
 import aiohttp
 
+
 class Commands(commands.Cog):
     # Commands for the Word Counter Bot
 
@@ -320,11 +321,12 @@ class Commands(commands.Cog):
                 r = ""
                 if backupalive:
                     from config import AUTH_KEY
-                    params = [('input', inputtxt), ('auth', AUTH_KEY)]
+
+                    params = [("input", inputtxt), ("auth", AUTH_KEY)]
                     async with session.get(URL, params=params) as res:
                         r = await res.text()
                 else:
-                    params = [('input', inputtxt)]
+                    params = [("input", inputtxt)]
                     async with session.get(URL, params=params) as res:
                         r = await res.text()
                 ans = r

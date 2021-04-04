@@ -39,7 +39,7 @@ async def root():
 
 
 @app.get("/generate", response_class=HTMLResponse)
-async def generate(input: str = "", auth: str=""):
+async def generate(input: str = "", auth: str = ""):
     global sess, generate_count
 
     if auth != AUTH_KEY:

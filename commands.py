@@ -308,7 +308,10 @@ class Commands(commands.Cog):
                 inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
                 if backupalive:
                     from config import AUTH_KEY
-                    r = requests.get(url=URL, params={"input": inputtxt, "auth": AUTH_KEY})
+
+                    r = requests.get(
+                        url=URL, params={"input": inputtxt, "auth": AUTH_KEY}
+                    )
                 else:
                     r = requests.get(url=URL, params={"input": inputtxt})
                 ans = r.text

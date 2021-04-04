@@ -282,11 +282,11 @@ class Commands(commands.Cog):
                 errmsg = "Cloud Run Endpoint is offline - using backup cluster. This might take a while (~2.5 min)"
                 try:
                     if not "GPT" in requests.get(url=URL).text:
-                        await message.edit(errmsg)
+                        await message.edit(content=errmsg)
                     else:
                         backendalive = True
                 except:
-                    await message.edit(errmsg)
+                    await message.edit(content=errmsg)
 
             backupalive = False
 
@@ -295,11 +295,11 @@ class Commands(commands.Cog):
                 errmsg = "Text generation backend offline or invalid. **Follow the instructions here to activate the !talk command:**\n `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`"
                 try:
                     if not "GPT" in requests.get(url=URL).text:
-                        await message.edit(errmsg)
+                        await message.edit(content=errmsg)
                     else:
-                        backupalive = False
+                        backupalive = True
                 except:
-                    await message.edit(errmsg)
+                    await message.edit(content=errmsg)
 
             alive = backupalive or backendalive or customalive
 

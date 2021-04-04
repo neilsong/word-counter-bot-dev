@@ -306,7 +306,11 @@ class Commands(commands.Cog):
             if alive:
                 URL += "generate" if URL[-1] == "/" else "/" + "generate"
                 inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
-                r = requests.get(url=URL, params={"input": inputtxt})
+                if backupalive:
+                    from config import AUTH_KEY
+                    r = requests.get(url=URL, params={"input": inputtxt, "auth": AUTH_KEY})
+                else:
+                    r = requests.get(url=URL, params={"input": inputtxt})
                 ans = r.text
                 if (
                     "The server returned an invalid or incomplete HTTP response."

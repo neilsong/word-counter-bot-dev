@@ -34,14 +34,19 @@ Notes:
    poetry install
    ```
 
-5. Start the `fastapi` server on port 8000
+5. Set up request authentication by setting `AUTH_KEY` in `config.py` to an authentication key. Also add this auth key to the bot's `config.py`
+   ```sh
+   (config.py) AUTH_KEY = [AUTH_KEY]
+   ```
+
+6. Start the `fastapi` server on port 8000
    ```sh
    poetry run python3 main.py 
    ```
    
-6.  Send GET request
+7.  Send GET request
     ```sh
-    curl "[IP]:8000/generate?input=[INPUT]"
+    curl "[IP]:8000/generate?input=[INPUT]&auth=[AUTH_KEY]"
     ```
 
 # Current Configuration

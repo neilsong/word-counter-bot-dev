@@ -7,6 +7,7 @@ import psutil
 import codecs
 import os
 import uvicorn
+from config import AUTH_KEY
 
 f = codecs.open("pid", "w+", "utf-8")
 f.truncate(0)
@@ -38,8 +39,11 @@ async def root():
 
 
 @app.get("/generate", response_class=HTMLResponse)
-async def generate(input: str = ""):
+async def generate(input: str = "", auth: str=""):
     global sess, generate_count
+
+    if auth != AUTH_KEY:
+        return "Invalid auth token provided"
 
     result = gpt2.generate(
         sess,

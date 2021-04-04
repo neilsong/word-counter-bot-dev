@@ -231,6 +231,6 @@ finally:
     for e in bot.extensions.copy():
         bot.unload_extension(e)
     print("\nLogging out")
-    bot.loop.run_until_complete(bot.logout())
+    bot.loop.run_until_complete(bot.close())
     print("\nClosed\n")
     sys.exit(0)

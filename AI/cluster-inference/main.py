@@ -3,7 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 import gpt_2_simple as gpt2
 import tensorflow as tf
-from config import *
+import psutil
+import codecs
+import os
+import uvicorn
+from config import AUTH_KEY
+
+f = codecs.open("pid", "w+", "utf-8")
+f.truncate(0)
+f.close()
+f = codecs.open("pid", "w", "utf-8")
+f.write(str(os.getpid()))
+f.close()
+
 
 app = FastAPI()
 
@@ -16,7 +28,7 @@ app.add_middleware(
 )
 
 tf.reset_default_graph()
-sess = gpt2.start_tf_sess(threads=1)
+sess = gpt2.start_tf_sess(threads=8)
 gpt2.load_gpt2(sess, run_name="run1")
 generate_count = 0
 
@@ -27,13 +39,16 @@ async def root():
 
 
 @app.get("/generate", response_class=HTMLResponse)
-async def generate(input: str = ""):
+async def generate(input: str = "", auth: str = ""):
     global sess, generate_count
+
+    if auth != AUTH_KEY:
+        return "Invalid auth token provided"
 
     result = gpt2.generate(
         sess,
         run_name="run1",
-        length=420,
+        length=300,
         temperature=0.9,
         prefix=input,
         top_p=100,
@@ -45,23 +60,15 @@ async def generate(input: str = ""):
 
     generate_count += 1
 
-    if generate_count == 8:
+    if generate_count == 12:
         # Reload model to prevent Graph/Session from going OOM
         tf.reset_default_graph()
         sess.close()
-        sess = gpt2.start_tf_sess(threads=1)
+        sess = gpt2.start_tf_sess(threads=8)
         gpt2.load_gpt2(sess, run_name="run1")
         generate_count = 0
 
     return result
 
 
-import nest_asyncio
-from pyngrok import ngrok
-import uvicorn
-
-ngrok.set_auth_token(NGROK_AUTH_TOKEN)
-ngrok_tunnel = ngrok.connect(8000)
-print("Public URL:", ngrok_tunnel.public_url)
-nest_asyncio.apply()
 uvicorn.run(app, port=8000)

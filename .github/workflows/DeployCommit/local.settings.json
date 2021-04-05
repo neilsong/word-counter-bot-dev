@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AZURE_SUBSCRIPTION_ID": "91dc1c37-962f-48ad-9203-a217ad38fe6e",
+    "AzureWebJobs.DeployCommit.Disabled": "false"
+  }
+}

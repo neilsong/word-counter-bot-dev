@@ -5,13 +5,13 @@ import discord
 import datetime
 import sys
 import re
-import requests
 from disputils.pagination import BotEmbedPaginator
 
 from decorator import *
 from utilities import *
 from constants import *
 from main import *
+import aiohttp
 
 
 class Commands(commands.Cog):
@@ -304,16 +304,20 @@ class Commands(commands.Cog):
     @commands.command(hidden=True)
     async def setBackend(self, ctx, url=None):
         if not ".ngrok.io" in url:
-            return await ctx.send("Invalid url.")
+            return await ctx.send("Invalid URL.")
         global custombackendURL
+        session = aiohttp.ClientSession()
         custombackendURL = url
-        if ".ngrok.io not found" in requests.get(url=custombackendURL).text:
-            await ctx.send(
-                "Backend set to `" + url + "`, but backend failed to respond."
-            )
-            custombackendURL = ""
-        else:
-            await ctx.send("Backend set to `" + url + "`. Backend responsive.")
+        async with session.get(url) as res:
+            r = res.text()
+            if ".ngrok.io not found" in r:
+                await ctx.send(
+                    "Backend set to `" + url + "`, but backend failed to respond."
+                )
+                custombackendURL = ""
+            else:
+                await ctx.send("Backend set to `" + url + "`. Backend responsive.")
+        await session.close()
 
     @commands.command()
     async def talk(self, ctx, word=None):
@@ -322,51 +326,95 @@ class Commands(commands.Cog):
         for r in rep:
             gep[r[:3]] = r
         if not word == None:
+            session = aiohttp.ClientSession()
             message = await ctx.send(
                 "Your request is being processed, this will take around 45 seconds. (Around 1.5 minutes on cold start)",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
             await ctx.channel.trigger_typing()
+            URL = ""
 
             customalive = False
 
             if custombackendURL:
-                URL = custombackendURL
-                try:
-                    if "GPT" in requests.get(url=URL).text:
-                        customalive = True
-                except:
-                    pass
+                async with session.get(custombackendURL) as r:
+                    URL = custombackendURL
+                    response = await r.text()
+                    try:
+                        if "GPT" in response:
+                            customalive = True
+                    except:
+                        pass
+
+            backendalive = False
 
             if not customalive:
-                URL = backendURL
-                errmsg = "Text generation backend offline or invalid. **Follow the instructions here to activate the !talk command:**\n `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`"
-                try:
-                    if not "GPT" in requests.get(url=URL).text:
-                        await ctx.send(errmsg)
-                except:
-                    await ctx.send(errmsg)
-
-            URL += "generate" if URL[-1] == "/" else "/" + "generate"
-            inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
-            r = requests.get(url=URL, params={"input": inputtxt})
-            ans = r.text
-            if "The server returned an invalid or incomplete HTTP response." not in ans:
-                ans = ans.split("\n")
-                out = []
-                for msg in ans:
+                async with session.get(backendURL) as r:
+                    URL = backendURL
+                    errmsg = "Cloud Run Endpoint is offline - using backup cluster. This might take a while (~2.5 min)"
+                    response = await r.text()
                     try:
-                        out.append("<@" + gep[msg[:3]] + ">" + msg[3:])
+                        if not "GPT" in response:
+                            await message.edit(content=errmsg)
+                        else:
+                            backendalive = True
                     except:
-                        out.append(msg)
-                await message.edit(
-                    content=("\n".join(out)[:2000]),
-                    allowed_mentions=discord.AllowedMentions.none(),
-                )
-            else:
-                await message.edit("Backend may have shut down during your request.")
+                        await message.edit(content=errmsg)
+
+            backupalive = False
+
+            if not backendalive:
+                async with session.get(backupURL) as r:
+                    URL = backupURL
+                    errmsg = "Text generation backend offline or invalid. **Follow the instructions here to activate the !talk command:**\n `https://colab.research.google.com/drive/1kHkTNKqObPwNCIx4Gtb_Jk7-EO4tthD-`"
+                    response = await r.text()
+                    try:
+                        if not "GPT" in response:
+                            await message.edit(content=errmsg)
+                        else:
+                            backupalive = True
+                    except:
+                        await message.edit(content=errmsg)
+
+            alive = backupalive or backendalive or customalive
+
+            if alive:
+                URL += "generate" if URL[-1] == "/" else "/" + "generate"
+                inputtxt = str(ctx.author.id)[:3] + ctx.message.content[len("!talk ") :]
+                r = ""
+                if backupalive:
+                    from config import AUTH_KEY
+
+                    params = [("input", inputtxt), ("auth", AUTH_KEY)]
+                    async with session.get(URL, params=params) as res:
+                        r = await res.text()
+                else:
+                    params = [("input", inputtxt)]
+                    async with session.get(URL, params=params) as res:
+                        r = await res.text()
+                ans = r
+                if (
+                    "The server returned an invalid or incomplete HTTP response."
+                    not in ans
+                ):
+                    ans = ans.split("\n")
+                    out = []
+                    for msg in ans:
+                        try:
+                            out.append("<@" + gep[msg[:3]] + ">" + msg[3:])
+                        except:
+                            out.append(msg)
+                    await message.edit(
+                        content=("\n".join(out)[:2000]),
+                        allowed_mentions=discord.AllowedMentions.none(),
+                    )
+                else:
+                    await message.edit(
+                        "Backend may have shut down during your request."
+                    )
+            await session.close()
         else:
-            await message.edit("Needs input text. ex:`!talk hello world`")
+            await ctx.send("Needs input text. ex:`!talk hello world`")
 
 
 def setup(bot):

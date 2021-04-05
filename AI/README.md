@@ -26,5 +26,5 @@ This exposes a HTTP API running on Colab through `ngrok`. Understand that this i
  - No OOM considerations in place
 ## Cluster Inference
 
-Use on a cluster/instance with more than 11GB of RAM (16GB to be safe). Can run any version of GPT-2.
+Use on a cluster/instance with more than 16GB of RAM (32GB to be safe). Can run any version of GPT-2.
  - Main benefit of GPU utilization

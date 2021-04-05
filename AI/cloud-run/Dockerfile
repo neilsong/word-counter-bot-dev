@@ -2,7 +2,7 @@ FROM python:3.7.3-slim-stretch
 
 # Copy local code to the container image.
 WORKDIR /
-COPY checkpoint /checkpoint
+COPY checkpoint /checkpoint 
 
 # Install production dependencies.
 RUN pip3 install --upgrade pip && pip3 install tensorflow-cpu==1.15 gpt_2_simple uvicorn fastapi

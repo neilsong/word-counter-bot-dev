@@ -10,5 +10,5 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 2
-      - name: Invoke Cloud Build on Git Diff
-        run: ./.github/workflows/invoke.sh "${{secrets.WEBHOOKURL}}"
+      - name: Invoke Cloud Build and Jenkins Build on Git Diff
+        run: ./.github/workflows/invoke.sh "${{secrets.WEBHOOKURL}}" "${{secrets.JENKINSURL}}"

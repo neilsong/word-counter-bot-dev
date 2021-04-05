@@ -1,0 +1,13 @@
+pipeline {
+  agent any
+  stages {
+    stage('Deploy') {
+      steps {
+        sh '''cd /word-counter-bot-dev && 
+sudo -S git pull && 
+sudo -S screen -d -m .github/workflows/execution.sh "AI/cluster-inference"'''
+      }
+    }
+
+  }
+}

@@ -4,6 +4,7 @@ import discord
 from constants import emotes
 import datetime
 
+
 def addItem(dict, string, id):
     try:
         if string in dict[str(id)]:
@@ -444,17 +445,29 @@ async def channelListToString(self, ctx, list):
         string += ": " f"<#{list[0]}>"
     return string
 
+
 def isbotchannel(channel):
-    if "bot " in channel or "bots " in channel or "spam " in channel or "bot-" in channel or "bots-" in channel or "spam-" in channel or "bot" == channel or "bots" == channel or "spam" == channel:
+    if (
+        "bot " in channel
+        or "bots " in channel
+        or "spam " in channel
+        or "bot-" in channel
+        or "bots-" in channel
+        or "spam-" in channel
+        or "bot" == channel
+        or "bots" == channel
+        or "spam" == channel
+    ):
         return True
     return False
+
 
 def isbotcommand(i, channelmessages):
     msg = channelmessages[i]
     origtime = msg.created_at
     delta = origtime + datetime.timedelta(seconds=+3)
     botcommand = False
-    for j in range(i-1, 0, -1):
+    for j in range(i - 1, 0, -1):
         nxtmsg = channelmessages[j]
         if nxtmsg.created_at > delta:
             break

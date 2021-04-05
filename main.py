@@ -135,8 +135,6 @@ async def updateWord(message):
         await processWord(message, w)
 
 
-
-
 @bot.event
 async def on_message(message):
     if not bot.ready_for_commands or message.author.bot:

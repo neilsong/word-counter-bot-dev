@@ -48,7 +48,8 @@ async def create_db():
         + "\nNumber of Servers: "
         + str(len(bot.serverWords) - 1)
     )
-    
+
+
 async def worker(queue):
     from main import bot
 
@@ -86,7 +87,7 @@ async def worker(queue):
                 {"$set": {task[1]["word"]: task[1]["value"]}},
                 True,
             )
-        elif state ==5:
+        elif state == 5:
             await bot.serverCollection.update_one(
                 {"__id": "readHistory"},
                 {"$set": {task[1]["id"]: task[1]["value"]}},

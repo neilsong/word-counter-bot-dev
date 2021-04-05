@@ -160,7 +160,7 @@ async def on_guild_channel_delete(channel):
 
 
 @bot.event
-async def on_guild_join(guild):
+async def on_guild_join(self, guild):
     await bot.change_presence(
         status=discord.Status.dnd,
         activity=discord.Activity(
@@ -168,6 +168,8 @@ async def on_guild_join(guild):
             type=discord.ActivityType.watching,
         ),
     )
+    from utilities import readhistoryonjoin
+    await readhistoryonjoin(self, guild)
 
 
 @bot.event

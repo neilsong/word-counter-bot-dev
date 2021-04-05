@@ -476,14 +476,17 @@ def isbotcommand(i, channelmessages):
             break
     return botcommand
 
+
 async def readhistoryonjoin(self, guild):
     import os
     import codecs
+
     path = os.path.join(
         os.path.abspath(os.getcwd()), "serverdump", str(guild.id) + ".txt"
     )
     with codecs.open(path, "w+", "utf-8") as f:
         from main import updateWord
+
         for channel in guild.text_channels:
             print(channel.name)
             if isbotchannel(str(channel.name).lower()) or isbotchannel(
@@ -495,15 +498,11 @@ async def readhistoryonjoin(self, guild):
                 msg = channelmessages[i]
                 msgcontent = msg.content.replace("\n", " ")
 
-                if (
-                    not msgcontent
-                    or msg.author.bot
-                    or isbotcommand(i, channelmessages)
-                ):
+                if not msgcontent or msg.author.bot or isbotcommand(i, channelmessages):
                     continue
 
                 f.write(str(msg.author.id) + msgcontent + "\n")
-                
+
                 await updateWord(msg)
 
     self.bot.readHistory[str(guild.id)] = True

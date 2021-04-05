@@ -169,6 +169,7 @@ async def on_guild_join(self, guild):
         ),
     )
     from utilities import readhistoryonjoin
+
     await readhistoryonjoin(self, guild)
 
 

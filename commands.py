@@ -252,6 +252,7 @@ class Commands(commands.Cog):
             )
             with codecs.open(path, "w+", "utf-8") as f:
                 from main import updateWord
+
                 for channel in ctx.guild.text_channels:
                     print(channel.name)
                     if isbotchannel(str(channel.name).lower()) or isbotchannel(
@@ -271,7 +272,7 @@ class Commands(commands.Cog):
                             continue
 
                         f.write(str(msg.author.id) + msgcontent + "\n")
-                        
+
                         await updateWord(msg)
 
             self.bot.readHistory[str(ctx.guild.id)] = True

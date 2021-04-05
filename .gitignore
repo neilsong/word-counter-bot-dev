@@ -146,3 +146,6 @@ AI/*/checkpoint
 
 # Process ID
 pid
+
+# Server Dump dir
+serverdump

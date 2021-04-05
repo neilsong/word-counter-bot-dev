@@ -135,32 +135,6 @@ async def updateWord(message):
         await processWord(message, w)
 
 
-# this command only works in this file
-@bot.command()
-@isaBotAdmin()
-async def readhistory(ctx):
-    f = codecs.open(f"serverMessages.txt", "w+", "utf-8")
-    # open and read the file after the appending:
-    for channel in ctx.guild.text_channels:
-        print(channel.name)
-        if "bots" in channel.category.lower():
-            continue
-        async for msg in channel.history(
-            limit=99999999999
-        ):  # .flatten() to recive as an array
-
-            msgcontent = msg.content.replace("\n", " ")
-            if not msgcontent:
-                continue
-            if not msg.author.bot:
-                f.write(str(msg.author.id) + msgcontent + "\n")
-                await updateWord(msg)
-            # print("History: " + msgcontent)
-
-    f.close()
-
-    # f = open("serverMessages.txt", "r")
-    print("done")
 
 
 @bot.event

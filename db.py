@@ -27,16 +27,20 @@ async def create_db():
     bot.prefixes = {"__id": "prefixes"}
     bot.blacklist = {"__id": "blacklist"}
     bot.filter = {"__id": "filter"}
+    bot.readHistory = {"__id": "readHistory"}
     async for i in bot.serverCollection.find({}, {"_id": 0}):
         if i.get("__id") == "prefixes":
             bot.prefixes.update(dict(i))
             continue
-        if i.get("__id") == "blacklist":
+        elif i.get("__id") == "blacklist":
             bot.blacklist.update(dict(i))
             continue
-        if i.get("__id") == "filter":
+        elif i.get("__id") == "filter":
             bot.filter.update(dict(i))
             continue
+        elif i.get("__id") == "readHistory":
+            bot.readHistory.update(dict(i))
+
         bot.serverWords.update({i.get("__id"): dict(i)})
     print(
         "\nNumber of Users: "
@@ -44,8 +48,7 @@ async def create_db():
         + "\nNumber of Servers: "
         + str(len(bot.serverWords) - 1)
     )
-
-
+    
 async def worker(queue):
     from main import bot
 
@@ -81,6 +84,12 @@ async def worker(queue):
             await bot.serverCollection.update_one(
                 {"__id": task[1]["id"]},
                 {"$set": {task[1]["word"]: task[1]["value"]}},
+                True,
+            )
+        elif state ==5:
+            await bot.serverCollection.update_one(
+                {"__id": "readHistory"},
+                {"$set": {task[1]["id"]: task[1]["value"]}},
                 True,
             )
         print("Task finished")

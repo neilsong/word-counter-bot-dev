@@ -238,6 +238,69 @@ class Commands(commands.Cog):
     # ----------------------------------------------------------------------------------------------------------------------------------------------------------
     # AI Commands
 
+    @commands.command()
+    @commands.has_permissions(manage_guild=True)
+    async def readhistory(self, ctx):
+        aRead = False
+        try:
+            aRead = self.bot.readHistory[str(ctx.guild.id)]
+        except: pass
+        if not aRead:
+            path = os.path.join(os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt")
+            with codecs.open(path, "w+", "utf-8") as f:
+
+                for channel in ctx.guild.text_channels:
+                    print(channel.name)
+                    if isbotchannel(str(channel.name).lower()) or isbotchannel(str(channel.category).lower()):
+                        continue
+                    channelmessages = await channel.history(
+                        limit=99999999999
+                    ).flatten()
+                    for i in range(len(channelmessages)):
+                        msg = channelmessages[i]
+                        msgcontent = msg.content.replace("\n", " ")
+
+                        if not msgcontent or msg.author.bot or isbotcommand(i, channelmessages):
+                            continue
+ 
+                        f.write(str(msg.author.id) + msgcontent + "\n")
+                        await updateWord(msg)
+
+            self.bot.readHistory[str(ctx.guild.id)] = True
+            
+            await insert(
+                state=5, id=str(ctx.guild.id), value=True
+            )
+
+            print("done")
+        else:
+            await ctx.send("History already read. `readhistory` is only allowed once per server.")
+
+    @commands.command()
+    @isaBotAdmin()
+    async def serverdump(self, ctx):
+        path = os.path.join(os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt")
+        
+        with codecs.open(path, "w+", "utf-8") as f:
+
+            for channel in ctx.guild.text_channels:
+                print(channel.name)
+                if isbotchannel(str(channel.name).lower()) or isbotchannel(str(channel.category).lower()):
+                    continue
+                channelmessages = await channel.history(
+                    limit=99999999999
+                ).flatten()
+                for i in range(len(channelmessages)):
+                    msg = channelmessages[i]
+                    msgcontent = msg.content.replace("\n", " ")
+
+                    if not msgcontent or msg.author.bot or isbotcommand(i, channelmessages):
+                        continue
+
+                    f.write(str(msg.author.id) + msgcontent + "\n")
+
+        await ctx.send("done")
+
     @commands.command(hidden=True)
     async def setBackend(self, ctx, url=None):
         if not ".ngrok.io" in url:

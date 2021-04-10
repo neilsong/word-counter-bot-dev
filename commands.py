@@ -278,7 +278,7 @@ class Commands(commands.Cog):
             self.bot.readHistory[str(ctx.guild.id)] = True
 
             await insert(state=5, id=str(ctx.guild.id), value=True)
-            
+
             await dataclean(ctx.guild)
 
             print("done")

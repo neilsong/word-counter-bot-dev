@@ -156,7 +156,7 @@ class Admin(commands.Cog):
         await cancel_workers()
         await start_workers()
         await ctx.send("Restarted db workers")
-    
+
     @commands.command()
     @isaBotAdmin()
     async def serverdump(self, ctx):
@@ -187,7 +187,6 @@ class Admin(commands.Cog):
                     f.write(str(msg.author.id) + msgcontent + "\n")
         await dataclean(ctx.guild)
         await ctx.send("done")
-
 
 
 def setup(bot):

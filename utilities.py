@@ -516,7 +516,7 @@ async def readhistoryonjoin(self, guild):
 async def dataclean(guild):
     from asyncio.subprocess import PIPE, STDOUT
 
-    cmd = "sudo dataclean " + str(guild.id)
+    cmd = "sudo ./dataclean " + str(guild.id)
 
     print("Starting data clean")
     process = await asyncio.create_subprocess_shell(

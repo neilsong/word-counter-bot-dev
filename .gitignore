@@ -149,3 +149,12 @@ pid
 
 # Server Dump dir
 serverdump
+
+# Cleaned server dump dir
+cleaned
+
+# Data clean CPP executable
+dataclean
+# Windows executables
+dataclean.exe
+dataclean.obj

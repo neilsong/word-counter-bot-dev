@@ -278,43 +278,14 @@ class Commands(commands.Cog):
             self.bot.readHistory[str(ctx.guild.id)] = True
 
             await insert(state=5, id=str(ctx.guild.id), value=True)
+            
+            await dataclean(ctx.guild)
 
             print("done")
         else:
             await ctx.send(
                 "History already read. `readhistory` is only allowed once per server."
             )
-
-    @commands.command()
-    @isaBotAdmin()
-    async def serverdump(self, ctx):
-        path = os.path.join(
-            os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt"
-        )
-
-        with codecs.open(path, "w+", "utf-8") as f:
-
-            for channel in ctx.guild.text_channels:
-                print(channel.name)
-                if isbotchannel(str(channel.name).lower()) or isbotchannel(
-                    str(channel.category).lower()
-                ):
-                    continue
-                channelmessages = await channel.history(limit=99999999999).flatten()
-                for i in range(len(channelmessages)):
-                    msg = channelmessages[i]
-                    msgcontent = msg.content.replace("\n", " ")
-
-                    if (
-                        not msgcontent
-                        or msg.author.bot
-                        or isbotcommand(i, channelmessages)
-                    ):
-                        continue
-
-                    f.write(str(msg.author.id) + msgcontent + "\n")
-
-        await ctx.send("done")
 
     @commands.command(hidden=True)
     async def setBackend(self, ctx, url=None):

@@ -58,7 +58,7 @@ class Info(commands.Cog):
         tadmins = ADMINS.copy()
         for i in range(0, len(tadmins)):
             tadmins[i] = await self.bot.fetch_user(tadmins[i])
-        tadmins = wordListToString(tadmins)
+        tadmins = wordListToString(ctx, tadmins)
         tadmins = tadmins.replace("`", "")
         embed.add_field(name="Admins", value=tadmins)
         embed.add_field(name="Server Count", value=len(self.bot.guilds))

@@ -2,6 +2,8 @@ from discord.ext import commands
 import discord
 from utilities import *
 from decorator import *
+import os
+import codecs
 
 
 class Admin(commands.Cog):
@@ -154,6 +156,38 @@ class Admin(commands.Cog):
         await cancel_workers()
         await start_workers()
         await ctx.send("Restarted db workers")
+    
+    @commands.command()
+    @isaBotAdmin()
+    async def serverdump(self, ctx):
+        path = os.path.join(
+            os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt"
+        )
+
+        with codecs.open(path, "w+", "utf-8") as f:
+
+            for channel in ctx.guild.text_channels:
+                print(channel.name)
+                if isbotchannel(str(channel.name).lower()) or isbotchannel(
+                    str(channel.category).lower()
+                ):
+                    continue
+                channelmessages = await channel.history(limit=99999999999).flatten()
+                for i in range(len(channelmessages)):
+                    msg = channelmessages[i]
+                    msgcontent = msg.content.replace("\n", " ")
+
+                    if (
+                        not msgcontent
+                        or msg.author.bot
+                        or isbotcommand(i, channelmessages)
+                    ):
+                        continue
+
+                    f.write(str(msg.author.id) + msgcontent + "\n")
+        await dataclean(ctx.guild)
+        await ctx.send("done")
+
 
 
 def setup(bot):

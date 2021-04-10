@@ -3,6 +3,7 @@ import re
 import discord
 from constants import emotes
 import datetime
+import asyncio
 
 
 def addItem(dict, string, id):
@@ -510,3 +511,12 @@ async def readhistoryonjoin(self, guild):
     await insert(state=5, id=str(guild.id), value=True)
 
     print("done")
+
+async def dataclean(guild):
+    from asyncio.subprocess import PIPE, STDOUT
+    cmd = 'sudo dataclean ' + str(guild.id)
+    
+    print("Starting data clean")
+    process = await asyncio.create_subprocess_shell(cmd, stdin = PIPE, stdout = PIPE, stderr = STDOUT)
+    await process.wait()
+    print("Data clean finished")

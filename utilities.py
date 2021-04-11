@@ -307,7 +307,7 @@ async def leaderboard(self, ctx, word, isGlobal):
     if isGlobal == "global":
         for u, c in self.bot.userWords.items():
             try:
-                leaderboard.update({u: c[word]})
+                leaderboard.update({u: mentiontop(c, word)})
             except:
                 continue
         leaderboard = dict(collections.Counter(leaderboard).most_common(10))
@@ -321,7 +321,7 @@ async def leaderboard(self, ctx, word, isGlobal):
     else:
         async for user in ctx.guild.fetch_members(limit=None):
             try:
-                leaderboard.update({user: self.bot.userWords[user.id][word]})
+                leaderboard.update({user: mentiontop(self.bot.userWords[user.id], word)})
             except:
                 continue
         leaderboard = {
@@ -338,6 +338,17 @@ async def leaderboard(self, ctx, word, isGlobal):
     embeds = await makeEmbed(self, ctx, leaderboard, "top" + isGlobal, word)
 
     return embeds
+
+def mentiontop(dict, word):
+    isdesktopmention = re.search("<@!\d{18}>", word)
+    if isdesktopmention:
+        return dict[word] + dict[word.replace('!', '')]
+    
+    ismobilemention = re.search("<@\d{18}>", word)
+    if ismobilemention:
+        return dict[word] + dict[word[:2] + '!' + word[2:]]
+    
+    return dict[word]
 
 
 async def userfriendlyembed(self, ctx, word):

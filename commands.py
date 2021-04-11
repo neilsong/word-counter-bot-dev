@@ -386,10 +386,22 @@ class Commands(commands.Cog):
                     ans = ans.split("\n")
                     out = []
                     for msg in ans:
+                        pmsg = msg
                         try:
-                            out.append("<@" + gep[msg[:3]] + ">" + msg[3:])
+                            pmsg = ("<@" + gep[msg[:3]] + ">" + msg[3:])
                         except:
-                            out.append(msg)
+                            pass
+                        
+                        # try:
+                        #     # amsg = pmsg.split()
+                        #     # amsg[:] = list(map(lambda word: "[FILTERED]" if True in map(lambda filterw: filterw in word.lower(), bot.filter[str(ctx.guild.id)]) else word, amsg))
+                        #     # out.append(' '.join(amsg))
+
+                        #     # replace with regex for [FILTERED] on [word] till puntuaction
+
+                        # except:
+                        #     pass
+
                     await message.edit(
                         content=("\n".join(out)[:2000]),
                         allowed_mentions=discord.AllowedMentions.none(),

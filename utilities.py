@@ -321,7 +321,9 @@ async def leaderboard(self, ctx, word, isGlobal):
     else:
         async for user in ctx.guild.fetch_members(limit=None):
             try:
-                leaderboard.update({user: mentiontop(self.bot.userWords[user.id], word)})
+                leaderboard.update(
+                    {user: mentiontop(self.bot.userWords[user.id], word)}
+                )
             except:
                 continue
         leaderboard = {
@@ -339,15 +341,16 @@ async def leaderboard(self, ctx, word, isGlobal):
 
     return embeds
 
+
 def mentiontop(dict, word):
     isdesktopmention = re.search("<@!\d{18}>", word)
     if isdesktopmention:
-        return dict[word] + dict[word.replace('!', '')]
-    
+        return dict[word] + dict[word.replace("!", "")]
+
     ismobilemention = re.search("<@\d{18}>", word)
     if ismobilemention:
-        return dict[word] + dict[word[:2] + '!' + word[2:]]
-    
+        return dict[word] + dict[word[:2] + "!" + word[2:]]
+
     return dict[word]
 
 

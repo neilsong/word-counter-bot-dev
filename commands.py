@@ -388,10 +388,10 @@ class Commands(commands.Cog):
                     for msg in ans:
                         pmsg = msg
                         try:
-                            pmsg = ("<@" + gep[msg[:3]] + ">" + msg[3:])
+                            pmsg = "<@" + gep[msg[:3]] + ">" + msg[3:]
                         except:
                             pass
-                        
+
                         # try:
                         #     # amsg = pmsg.split()
                         #     # amsg[:] = list(map(lambda word: "[FILTERED]" if True in map(lambda filterw: filterw in word.lower(), bot.filter[str(ctx.guild.id)]) else word, amsg))

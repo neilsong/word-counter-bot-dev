@@ -503,30 +503,40 @@ async def readhistoryonjoin(guild):
         from main import updateWord
 
         for channel in guild.text_channels:
-            print(channel.name)
+            print(channel.name, end='')
             if isbotchannel(str(channel.name).lower()) or isbotchannel(
                 str(channel.category).lower()
             ):
                 continue
-            channelmessages = await channel.history(limit=99999999999).flatten()
-            for i in range(len(channelmessages)):
-                msg = channelmessages[i]
-                msgcontent = msg.content.replace("\n", " ")
+            try:
+                channelmessages = await channel.history(limit=99999999999).flatten()
+                for i in range(len(channelmessages)):
+                    msg = channelmessages[i]
+                    msgcontent = msg.content.replace("\n", " ")
 
-                if not msgcontent or msg.author.bot or isbotcommand(i, channelmessages):
-                    continue
+                    if (
+                        not msgcontent
+                        or msg.author.bot
+                        or isbotcommand(i, channelmessages)
+                    ):
+                        continue
 
-                f.write(str(msg.author.id) + msgcontent + "\n")
-
-                await updateWord(msg)
+                    f.write(str(msg.author.id) + msgcontent + "\n")
+                    await updateWord(msg)
+                    
+                print(" - success")
+            except:
+                print(" - error")
 
     from main import bot
 
     bot.readHistory[str(guild.id)] = True
 
     await insert(state=5, id=str(guild.id), value=True)
+    
+    await dataclean(guild)
 
-    print("done")
+    print("Done reading history for new server")
 
 
 async def dataclean(guild):

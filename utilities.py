@@ -503,7 +503,7 @@ async def readhistoryonjoin(guild):
         from main import updateWord
 
         for channel in guild.text_channels:
-            print(channel.name, end='')
+            print(channel.name, end="")
             if isbotchannel(str(channel.name).lower()) or isbotchannel(
                 str(channel.category).lower()
             ):
@@ -523,7 +523,7 @@ async def readhistoryonjoin(guild):
 
                     f.write(str(msg.author.id) + msgcontent + "\n")
                     await updateWord(msg)
-                    
+
                 print(" - success")
             except:
                 print(" - error")
@@ -533,7 +533,7 @@ async def readhistoryonjoin(guild):
     bot.readHistory[str(guild.id)] = True
 
     await insert(state=5, id=str(guild.id), value=True)
-    
+
     await dataclean(guild)
 
     print("Done reading history for new server")

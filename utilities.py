@@ -55,7 +55,7 @@ def cleanSpecial(string):
     # print("\nChannels")
     if len(channels):
         for i in channels:
-             #print(i)
+            # print(i)
             string = string.replace(i, "")
     # print("\nEmotes")
 
@@ -87,7 +87,7 @@ def cleanSpecial(string):
         if len(string) >= len(i) + 1:
             substr = string[(len(string) - len(i) - 1) :]
             if substr == " " + i:
-                 #print(i)
+                # print(i)
                 emoticons.append(i)
                 string = string[: (len(string) - len(i) - 1)]
         if len(string) >= len(i):
@@ -227,7 +227,7 @@ async def processSpecial(message):
         if len(msgcontent) >= len(i):
             substr = msgcontent[: len(i)]
             if substr == i:
-               #  print(i)
+                #  print(i)
                 await processWord(message, i)
                 msgcontent = msgcontent[(len(i)) :]
 
@@ -521,6 +521,7 @@ async def readhistoryonjoin(guild):
                 await updateWord(msg)
 
     from main import bot
+
     bot.readHistory[str(guild.id)] = True
 
     await insert(state=5, id=str(guild.id), value=True)

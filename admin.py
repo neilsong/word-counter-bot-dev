@@ -192,7 +192,7 @@ class Admin(commands.Cog):
                     print(" - error")
 
         await dataclean(ctx.guild)
-        await resp.edit(content="Done")
+        await resp.edit(content="Done\n")
 
 
 def setup(bot):

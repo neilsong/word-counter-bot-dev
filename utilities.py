@@ -137,7 +137,12 @@ async def insert(**kwargs):
 def processTrash(string):
     if string == "":
         return string
+
     from main import trashCharacters
+    from constants import hyperlinkcomp
+
+    for i in hyperlinkcomp:
+        string = string.replace(i, '')
 
     for w in trashCharacters:
         if string[0] == w:
@@ -536,7 +541,7 @@ async def readhistoryonjoin(guild):
 
     await dataclean(guild)
 
-    print("Done reading history for new server")
+    print("Done reading history for new server\n")
 
 
 async def dataclean(guild):

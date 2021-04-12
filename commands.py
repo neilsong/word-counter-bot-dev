@@ -288,7 +288,7 @@ class Commands(commands.Cog):
 
             await dataclean(ctx.guild)
 
-            await resp.edit(content="Done")
+            await resp.edit(content="Done\n")
         else:
             await ctx.send(
                 "History already read. `readhistory` is only allowed once per server."

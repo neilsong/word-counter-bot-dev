@@ -196,6 +196,16 @@ defaultFilter = [
     "cant",
     "can't",
     "cannot",
+    "get",
+    "got",
+    "well",
+    "thats",
+    "wut",
+    "wat",
+    "bc",
+    "know",
+    "even",
+    "cuz",
     # top level domains
     "com",
     "org",
@@ -204,10 +214,15 @@ defaultFilter = [
     "gov",
     "mil",
     "int",
-    # hyperlink https & http
-    "https:",
-    "http:",  # screenshot domain
+
+    # screenshot domain
     "gyazo",
+]
+hyperlinkcomp = [
+    # hyperlink https, http, and www
+    "https:",
+    "http:",  
+    "www.",
 ]
 trashCharacters = [
     ".",

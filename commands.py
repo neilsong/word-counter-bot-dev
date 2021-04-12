@@ -247,6 +247,7 @@ class Commands(commands.Cog):
         except:
             pass
         if not aRead:
+            resp = await ctx.send("Reading history...")
             path = os.path.join(
                 os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt"
             )
@@ -281,7 +282,7 @@ class Commands(commands.Cog):
 
             await dataclean(ctx.guild)
 
-            print("done")
+            await resp.edit(content="Done")
         else:
             await ctx.send(
                 "History already read. `readhistory` is only allowed once per server."

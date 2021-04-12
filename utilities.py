@@ -34,28 +34,28 @@ def cleanSpecial(string):
     emojis = re.findall("<:(?:\S).*:\d{18}>", string)
     if len(emojis):
         for i in emojis:
-            print(i)
+            # print(i)
             string = string.replace(i, "")
 
     mentions = re.findall("<@!?\d{18}>", string)
     # print("\nMentions")
     if len(mentions):
         for i in mentions:
-            print(i)
+            # print(i)
             string = string.replace(i, "")
 
     rolementions = re.findall("<@&\d{18}>", string)
     # print("\nRole Mentions")
     if len(rolementions):
         for i in rolementions:
-            print(i)
+            # print(i)
             string = string.replace(i, "")
 
     channels = re.findall("<#\d{18}>", string)
     # print("\nChannels")
     if len(channels):
         for i in channels:
-            print(i)
+             #print(i)
             string = string.replace(i, "")
     # print("\nEmotes")
 
@@ -65,20 +65,20 @@ def cleanSpecial(string):
         if len(string) >= len(i) + 1:
             substr = string[: (len(i) + 1)]
             if substr == i + " ":
-                print(i)
+                # print(i)
                 emoticons.append(i)
                 string = string[(len(i) + 1) :]
         if len(string) >= len(i):
             substr = string[: len(i)]
             if substr == i:
-                print(i)
+                # print(i)
                 emoticons.append(i)
                 string = string[(len(i)) :]
 
     # middle - ".... :) ..."
     for i in emotes:
         while string.find(f" {i} ") != -1:
-            print(i)
+            # print(i)
             emoticons.append(i)
             string = string.replace(f" {i} ", "", 1)
 
@@ -87,17 +87,17 @@ def cleanSpecial(string):
         if len(string) >= len(i) + 1:
             substr = string[(len(string) - len(i) - 1) :]
             if substr == " " + i:
-                print(i)
+                 #print(i)
                 emoticons.append(i)
                 string = string[: (len(string) - len(i) - 1)]
         if len(string) >= len(i):
             substr = string[(len(string) - len(i)) :]
             if substr == i:
-                print(i)
+                # print(i)
                 emoticons.append(i)
                 string = string[: (len(string) - len(i))]
 
-    print("\n")
+    # print("\n")
 
     return (string, emojis + mentions + rolementions + channels + emoticons)
 
@@ -185,7 +185,7 @@ async def processSpecial(message):
     emojis = re.findall("<:(?:\S).*:\d{18}>", msgcontent)
     if len(emojis):
         for i in emojis:
-            print(i)
+            # print(i)
             await processWord(message, i)
             msgcontent = msgcontent.replace(i, "")
 
@@ -193,7 +193,7 @@ async def processSpecial(message):
     # print("\nMentions")
     if len(mentions):
         for i in mentions:
-            print(i)
+            # print(i)
             await processWord(message, i)
             msgcontent = msgcontent.replace(i, "")
 
@@ -201,7 +201,7 @@ async def processSpecial(message):
     # print("\nRole Mentions")
     if len(rolementions):
         for i in rolementions:
-            print(i)
+            # print(i)
             await processWord(message, i)
             msgcontent = msgcontent.replace(i, "")
 
@@ -209,7 +209,7 @@ async def processSpecial(message):
     # print("\nChannels")
     if len(channels):
         for i in channels:
-            print(i)
+            # print(i)
             await processWord(message, i)
             msgcontent = msgcontent.replace(i, "")
 
@@ -221,20 +221,20 @@ async def processSpecial(message):
         if len(msgcontent) >= len(i) + 1:
             substr = msgcontent[: (len(i) + 1)]
             if substr == i + " ":
-                print(i)
+                # print(i)
                 await processWord(message, i)
                 msgcontent = msgcontent[(len(i) + 1) :]
         if len(msgcontent) >= len(i):
             substr = msgcontent[: len(i)]
             if substr == i:
-                print(i)
+               #  print(i)
                 await processWord(message, i)
                 msgcontent = msgcontent[(len(i)) :]
 
     # middle - ".... :) ..."
     for i in emotes:
         while f" {i} " in msgcontent:
-            print(i)
+            # print(i)
             await processWord(message, i)
             msgcontent = msgcontent.replace(f" {i} ", "", 1)
 
@@ -243,17 +243,17 @@ async def processSpecial(message):
         if len(msgcontent) >= len(i) + 1:
             substr = msgcontent[(len(msgcontent) - len(i) - 1) :]
             if substr == " " + i:
-                print(i)
+                # print(i)
                 await processWord(message, i)
                 msgcontent = msgcontent[: (len(msgcontent) - len(i) - 1)]
         if len(msgcontent) >= len(i):
             substr = msgcontent[(len(msgcontent) - len(i)) :]
             if substr == i:
-                print(i)
+                # print(i)
                 await processWord(message, i)
                 msgcontent = msgcontent[: (len(msgcontent) - len(i))]
 
-    print("\n")
+    # print("\n")
 
     return msgcontent
 
@@ -492,7 +492,7 @@ def isbotcommand(i, channelmessages):
     return botcommand
 
 
-async def readhistoryonjoin(self, guild):
+async def readhistoryonjoin(guild):
     import os
     import codecs
 
@@ -520,7 +520,8 @@ async def readhistoryonjoin(self, guild):
 
                 await updateWord(msg)
 
-    self.bot.readHistory[str(guild.id)] = True
+    from main import bot
+    bot.readHistory[str(guild.id)] = True
 
     await insert(state=5, id=str(guild.id), value=True)
 

@@ -55,7 +55,7 @@ async def worker(queue):
 
     while True:
         task = await queue.get()
-        print("Working on task: ", task)
+        # print("Working on task: ", task)
         state = task[0]
         if state == 0:
             await bot.serverCollection.update_one(
@@ -93,7 +93,7 @@ async def worker(queue):
                 {"$set": {task[1]["id"]: task[1]["value"]}},
                 True,
             )
-        print("Task finished")
+        # print("Task finished")
         queue.task_done()
 
 

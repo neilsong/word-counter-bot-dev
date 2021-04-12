@@ -30,7 +30,7 @@ def removeItem(dict, string, id):
 
 
 def cleanSpecial(string):
-    print("\nEmojis")
+    # print("\nEmojis")
     emojis = re.findall("<:(?:\S).*:\d{18}>", string)
     if len(emojis):
         for i in emojis:
@@ -38,26 +38,26 @@ def cleanSpecial(string):
             string = string.replace(i, "")
 
     mentions = re.findall("<@!?\d{18}>", string)
-    print("\nMentions")
+    # print("\nMentions")
     if len(mentions):
         for i in mentions:
             print(i)
             string = string.replace(i, "")
 
     rolementions = re.findall("<@&\d{18}>", string)
-    print("\nRole Mentions")
+    # print("\nRole Mentions")
     if len(rolementions):
         for i in rolementions:
             print(i)
             string = string.replace(i, "")
 
     channels = re.findall("<#\d{18}>", string)
-    print("\nChannels")
+    # print("\nChannels")
     if len(channels):
         for i in channels:
             print(i)
             string = string.replace(i, "")
-    print("\nEmotes")
+    # print("\nEmotes")
 
     emoticons = []
     # starting or individual emote - ":) ......" or ":)"
@@ -181,7 +181,7 @@ async def processWord(message, w):
 
 async def processSpecial(message):
     msgcontent = message.content.lower()
-    print("\nEmojis")
+    # print("\nEmojis")
     emojis = re.findall("<:(?:\S).*:\d{18}>", msgcontent)
     if len(emojis):
         for i in emojis:
@@ -190,7 +190,7 @@ async def processSpecial(message):
             msgcontent = msgcontent.replace(i, "")
 
     mentions = re.findall("<@!?\d{18}>", msgcontent)
-    print("\nMentions")
+    # print("\nMentions")
     if len(mentions):
         for i in mentions:
             print(i)
@@ -198,7 +198,7 @@ async def processSpecial(message):
             msgcontent = msgcontent.replace(i, "")
 
     rolementions = re.findall("<@&\d{18}>", msgcontent)
-    print("\nRole Mentions")
+    # print("\nRole Mentions")
     if len(rolementions):
         for i in rolementions:
             print(i)
@@ -206,14 +206,14 @@ async def processSpecial(message):
             msgcontent = msgcontent.replace(i, "")
 
     channels = re.findall("<#\d{18}>", msgcontent)
-    print("\nChannels")
+    # print("\nChannels")
     if len(channels):
         for i in channels:
             print(i)
             await processWord(message, i)
             msgcontent = msgcontent.replace(i, "")
 
-    print("\nEmotes")
+    # print("\nEmotes")
 
     # starting or individual emote - ":) ......" or ":)"
 

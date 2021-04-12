@@ -239,7 +239,7 @@ class Commands(commands.Cog):
     # AI Commands
 
     @commands.command()
-    @commands.has_permissions(manage_guild=True)
+    # @commands.has_permissions(manage_guild=True)
     async def readhistory(self, ctx):
         aRead = False
         try:

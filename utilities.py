@@ -142,7 +142,7 @@ def processTrash(string):
     from constants import hyperlinkcomp
 
     for i in hyperlinkcomp:
-        string = string.replace(i, '')
+        string = string.replace(i, "")
 
     for w in trashCharacters:
         if string[0] == w:

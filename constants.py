@@ -214,14 +214,13 @@ defaultFilter = [
     "gov",
     "mil",
     "int",
-
     # screenshot domain
     "gyazo",
 ]
 hyperlinkcomp = [
     # hyperlink https, http, and www
     "https:",
-    "http:",  
+    "http:",
     "www.",
 ]
 trashCharacters = [

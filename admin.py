@@ -168,7 +168,7 @@ class Admin(commands.Cog):
         with codecs.open(path, "w+", "utf-8") as f:
 
             for channel in ctx.guild.text_channels:
-                print(channel.name, end='')
+                print(channel.name, end="")
                 if isbotchannel(str(channel.name).lower()) or isbotchannel(
                     str(channel.category).lower()
                 ):
@@ -190,7 +190,7 @@ class Admin(commands.Cog):
                     print(" - success")
                 except:
                     print(" - error")
-                    
+
         await dataclean(ctx.guild)
         await resp.edit(content="Done")
 

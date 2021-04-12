@@ -255,13 +255,15 @@ class Commands(commands.Cog):
                 from main import updateWord
 
                 for channel in ctx.guild.text_channels:
-                    print(channel.name, end='')
+                    print(channel.name, end="")
                     if isbotchannel(str(channel.name).lower()) or isbotchannel(
                         str(channel.category).lower()
                     ):
                         continue
                     try:
-                        channelmessages = await channel.history(limit=99999999999).flatten()
+                        channelmessages = await channel.history(
+                            limit=99999999999
+                        ).flatten()
                         for i in range(len(channelmessages)):
                             msg = channelmessages[i]
                             msgcontent = msg.content.replace("\n", " ")
@@ -275,7 +277,7 @@ class Commands(commands.Cog):
 
                             f.write(str(msg.author.id) + msgcontent + "\n")
                             await updateWord(msg)
-                            
+
                         print(" - success")
                     except:
                         print(" - error")

@@ -160,6 +160,7 @@ class Admin(commands.Cog):
     @commands.command()
     @isaBotAdmin()
     async def serverdump(self, ctx):
+        resp = await ctx.send("Dumping Server...")
         path = os.path.join(
             os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt"
         )
@@ -167,26 +168,31 @@ class Admin(commands.Cog):
         with codecs.open(path, "w+", "utf-8") as f:
 
             for channel in ctx.guild.text_channels:
-                print(channel.name)
+                print(channel.name, end='')
                 if isbotchannel(str(channel.name).lower()) or isbotchannel(
                     str(channel.category).lower()
                 ):
                     continue
-                channelmessages = await channel.history(limit=99999999999).flatten()
-                for i in range(len(channelmessages)):
-                    msg = channelmessages[i]
-                    msgcontent = msg.content.replace("\n", " ")
+                try:
+                    channelmessages = await channel.history(limit=99999999999).flatten()
+                    for i in range(len(channelmessages)):
+                        msg = channelmessages[i]
+                        msgcontent = msg.content.replace("\n", " ")
 
-                    if (
-                        not msgcontent
-                        or msg.author.bot
-                        or isbotcommand(i, channelmessages)
-                    ):
-                        continue
+                        if (
+                            not msgcontent
+                            or msg.author.bot
+                            or isbotcommand(i, channelmessages)
+                        ):
+                            continue
 
-                    f.write(str(msg.author.id) + msgcontent + "\n")
+                        f.write(str(msg.author.id) + msgcontent + "\n")
+                    print(" - success")
+                except:
+                    print(" - error")
+                    
         await dataclean(ctx.guild)
-        await ctx.send("done")
+        await resp.edit(content="Done")
 
 
 def setup(bot):

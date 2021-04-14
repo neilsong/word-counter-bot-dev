@@ -405,6 +405,7 @@ class Commands(commands.Cog):
                         detect = False
                         tremove = []
                         from constants import punctuation
+
                         for i in range(0, len(pmsg)):
                             build += pmsg[i]
                             if pmsg[i] in punctuation:
@@ -414,15 +415,18 @@ class Commands(commands.Cog):
                             if detect:
                                 tremove.append(i)
                             try:
-                                if not detect and build in self.bot.filter[str(ctx.guild.id)]:
+                                if (
+                                    not detect
+                                    and build in self.bot.filter[str(ctx.guild.id)]
+                                ):
                                     detect = True
                             except:
                                 pass
                         try:
                             for i in tremove:
-                                pmsg = pmsg[:i] + pmsg[(i+1):]
+                                pmsg = pmsg[:i] + pmsg[(i + 1) :]
                             for i in self.bot.filter[str(ctx.guild.id)]:
-                                pmsg = pmsg.replace(i, '[FILTERED]')
+                                pmsg = pmsg.replace(i, "[FILTERED]")
                         except:
                             pass
                         out.append(pmsg)

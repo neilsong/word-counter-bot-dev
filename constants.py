@@ -251,7 +251,7 @@ trashCharacters = [
     ":",
     ";",
     ">",
-    "<"
+    "<",
 ]
 punctuation = [
     ".",
@@ -283,7 +283,7 @@ punctuation = [
     ")",
     ";",
     "<",
-    ">"
+    ">",
 ]
 default_prefix = ["!"]
 rep = [

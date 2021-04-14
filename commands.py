@@ -321,7 +321,7 @@ class Commands(commands.Cog):
         if not word == None:
             session = aiohttp.ClientSession()
             message = await ctx.send(
-                "Your request is being processed, this will take around 45 seconds. (Around 1.5 minutes on cold start)",
+                "Your request is being processed, this will take around 1-2 minutes",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
             await ctx.channel.trigger_typing()
@@ -396,18 +396,36 @@ class Commands(commands.Cog):
                         pmsg = msg
                         try:
                             pmsg = "<@" + gep[msg[:3]] + ">" + msg[3:]
+                            if msg == ans[len(ans) - 1]:
+                                pmsg += "\n[END]"
+                        except:
+                            pmsg = "[END]"
+
+                        build = ""
+                        detect = False
+                        tremove = []
+                        from constants import punctuation
+                        for i in range(0, len(pmsg)):
+                            build += pmsg[i]
+                            if pmsg[i] in punctuation:
+                                build = ""
+                                detect = False
+                                continue
+                            if detect:
+                                tremove.append(i)
+                            try:
+                                if not detect and build in self.bot.filter[str(ctx.guild.id)]:
+                                    detect = True
+                            except:
+                                pass
+                        try:
+                            for i in tremove:
+                                pmsg = pmsg[:i] + pmsg[(i+1):]
+                            for i in self.bot.filter[str(ctx.guild.id)]:
+                                pmsg = pmsg.replace(i, '[FILTERED]')
                         except:
                             pass
-
-                        # try:
-                        #     # amsg = pmsg.split()
-                        #     # amsg[:] = list(map(lambda word: "[FILTERED]" if True in map(lambda filterw: filterw in word.lower(), bot.filter[str(ctx.guild.id)]) else word, amsg))
-                        #     # out.append(' '.join(amsg))
-
-                        #     # replace with regex for [FILTERED] on [word] till puntuaction
-
-                        # except:
-                        #     pass
+                        out.append(pmsg)
 
                     await message.edit(
                         content=("\n".join(out)[:2000]),

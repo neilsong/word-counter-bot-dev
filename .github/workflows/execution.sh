@@ -2,7 +2,9 @@
 
 cd /word-counter-bot-dev/"$1"
 
-if ! [ -z $(git log -1 --pretty=%B | grep -o "Fix code style issues with Black") ]
+format_commit_msg=$( git log -1 --pretty=%B | grep -o "Fix code style issues with Black" )
+
+if ! [ -z "$format_commit_msg" ]
 then exit 0
 fi
 
@@ -10,8 +12,10 @@ pid=$( cat pid )
 
 kill -INT $pid
 
-while ! [ -z $( ps -ef | grep "$pid" | grep -v grep | awk '{print $2}' ) ]
-do sleep 0.2
+status=$( ps -ef | grep "$pid" | grep -v grep | awk '{print $2}' )
+
+while ! [ -z "$status" ]
+do sleep 0.2 & status=$( ps -ef | grep "$pid" | grep -v grep | awk '{print $2}' )
 done
 
 source $HOME/.profile

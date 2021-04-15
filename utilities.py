@@ -316,21 +316,30 @@ async def leaderboard(self, ctx, word, isGlobal):
                 leaderboard.update({u: val})
             else:
                 continue
-        leaderboard = dict(collections.Counter(leaderboard).most_common(10))
-        for u in leaderboard.copy():
+        cleaderboard = {
+            k: v
+            for k, v in sorted(
+                leaderboard.items(), key=lambda item: item[1], reverse=True
+            )
+        }
+        leaderboard = {}
+        count = 0
+        for u in cleaderboard.copy():
             try:
                 user = await self.bot.fetch_user(u)
             except:
-                leaderboard.pop(u)
+                cleaderboard.pop(u)
                 continue
-            leaderboard[user] = leaderboard.pop(u)
+            leaderboard[user] = cleaderboard.pop(u)
+            count += 1
+            if count == 10:
+                break
     else:
         async for user in ctx.guild.fetch_members(limit=None):
-            try:
-                leaderboard.update(
-                    {user: mentiontop(self.bot.userWords[user.id], word)}
-                )
-            except:
+            val = mentiontop(self.bot.userWords[user.id], word)
+            if val != "None":
+                leaderboard.update({user: val})
+            else:
                 continue
         leaderboard = {
             k: v

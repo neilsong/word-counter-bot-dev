@@ -328,7 +328,6 @@ async def leaderboard(self, ctx, word, isGlobal):
             try:
                 user = await self.bot.fetch_user(u)
             except:
-                cleaderboard.pop(u)
                 continue
             leaderboard[user] = cleaderboard.pop(u)
             count += 1
@@ -336,7 +335,8 @@ async def leaderboard(self, ctx, word, isGlobal):
                 break
     else:
         async for user in ctx.guild.fetch_members(limit=None):
-            val = mentiontop(self.bot.userWords[user.id], word)
+            if user.bot or str(user.id) not in self.bot.userWords: continue
+            val = mentiontop(self.bot.userWords[str(user.id)], word)
             if val != "None":
                 leaderboard.update({user: val})
             else:
@@ -383,7 +383,10 @@ def mentiontop(dict, word):
             pass
         return "None" if val == 0 else val
 
-    return dict[word]
+    try:
+        return dict[word]
+    except:
+        return "None"
 
 
 async def userfriendlyembed(self, ctx, word):

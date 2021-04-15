@@ -311,8 +311,8 @@ async def leaderboard(self, ctx, word, isGlobal):
     leaderboard = {}
     if isGlobal == "global":
         for u, c in self.bot.userWords.items():
-            val = mentiontop(c,word)
-            if val != 'None':
+            val = mentiontop(c, word)
+            if val != "None":
                 leaderboard.update({u: val})
             else:
                 continue
@@ -360,7 +360,7 @@ def mentiontop(dict, word):
             val += dict[word.replace("!", "")]
         except:
             pass
-        return 'None' if val == 0 else val
+        return "None" if val == 0 else val
 
     ismobilemention = re.search("<@\d{18}>", word)
     if ismobilemention:
@@ -372,8 +372,8 @@ def mentiontop(dict, word):
             val += dict[word[:2] + "!" + word[2:]]
         except:
             pass
-        return 'None' if val == 0 else val
-        
+        return "None" if val == 0 else val
+
     return dict[word]
 
 

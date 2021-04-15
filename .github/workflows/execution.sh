@@ -10,7 +10,7 @@ fi
 
 pid=$( cat pid )
 
-kill -INT $pid
+sudo -S kill -INT $pid
 
 status=$( ps -ef | grep "$pid" | grep -v grep | awk '{print $2}' )
 

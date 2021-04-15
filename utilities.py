@@ -311,9 +311,10 @@ async def leaderboard(self, ctx, word, isGlobal):
     leaderboard = {}
     if isGlobal == "global":
         for u, c in self.bot.userWords.items():
-            try:
-                leaderboard.update({u: mentiontop(c, word)})
-            except:
+            val = mentiontop(c,word)
+            if val != 'None':
+                leaderboard.update({u: val})
+            else:
                 continue
         leaderboard = dict(collections.Counter(leaderboard).most_common(10))
         for u in leaderboard.copy():
@@ -348,14 +349,31 @@ async def leaderboard(self, ctx, word, isGlobal):
 
 
 def mentiontop(dict, word):
+    val = 0
     isdesktopmention = re.search("<@!\d{18}>", word)
     if isdesktopmention:
-        return dict[word] + dict[word.replace("!", "")]
+        try:
+            val += dict[word]
+        except:
+            pass
+        try:
+            val += dict[word.replace("!", "")]
+        except:
+            pass
+        return 'None' if val == 0 else val
 
     ismobilemention = re.search("<@\d{18}>", word)
     if ismobilemention:
-        return dict[word] + dict[word[:2] + "!" + word[2:]]
-
+        try:
+            val += dict[word]
+        except:
+            pass
+        try:
+            val += dict[word[:2] + "!" + word[2:]]
+        except:
+            pass
+        return 'None' if val == 0 else val
+        
     return dict[word]
 
 

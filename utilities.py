@@ -335,7 +335,8 @@ async def leaderboard(self, ctx, word, isGlobal):
                 break
     else:
         async for user in ctx.guild.fetch_members(limit=None):
-            if user.bot or user.id not in self.bot.userWords: continue
+            if user.bot or user.id not in self.bot.userWords:
+                continue
             val = mentiontop(self.bot.userWords[user.id], word)
             if val != "None":
                 leaderboard.update({user: val})

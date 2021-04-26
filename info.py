@@ -59,10 +59,11 @@ class Info(commands.Cog):
         sadmins = ''
         for i in range(0, len(tadmins)):
             tadmins[i] = await self.bot.fetch_user(tadmins[i])
-            tadmins[i] = f"{tadmins[i].name}#{tadmins[i].discriminator} "
+            tadmins[i] = f"{tadmins[i].name}#{tadmins[i].discriminator}"
             if i is len(tadmins) - 1:
                 tadmins[i] = tadmins[i][:-1]
-        embed.add_field(name="Admins", value=tadmins)
+        sadmins = ', '.join(tadmins)
+        embed.add_field(name="Admins", value=sadmins)
         embed.add_field(name="Server Count", value=len(self.bot.guilds))
         embed.add_field(name="User Count", value=len(self.bot.users))
         embed.add_field(

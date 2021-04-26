@@ -62,7 +62,7 @@ class Info(commands.Cog):
             tadmins[i] = f"{tadmins[i].name}#{tadmins[i].discriminator}"
             if i is len(tadmins) - 1:
                 tadmins[i] = tadmins[i][:-1]
-        sadmins = ', '.join(tadmins)
+        sadmins = ", ".join(tadmins)
         embed.add_field(name="Admins", value=sadmins)
         embed.add_field(name="Server Count", value=len(self.bot.guilds))
         embed.add_field(name="User Count", value=len(self.bot.users))

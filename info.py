@@ -56,10 +56,12 @@ class Info(commands.Cog):
         from config import ADMINS
 
         tadmins = ADMINS.copy()
+        sadmins = ''
         for i in range(0, len(tadmins)):
             tadmins[i] = await self.bot.fetch_user(tadmins[i])
-        tadmins = wordListToString(self, ctx, tadmins)
-        tadmins = tadmins.replace("`", "")
+            tadmins[i] = f"{tadmins[i].name}#{tadmins[i].discriminator} "
+            if i is len(tadmins) - 1:
+                tadmins[i] = tadmins[i][:-1]
         embed.add_field(name="Admins", value=tadmins)
         embed.add_field(name="Server Count", value=len(self.bot.guilds))
         embed.add_field(name="User Count", value=len(self.bot.users))

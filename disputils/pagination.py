@@ -7,7 +7,7 @@ from .abc import Dialog
 
 
 class EmbedPaginator(Dialog):
-    """ Represents an interactive menu containing multiple embeds. """
+    """Represents an interactive menu containing multiple embeds."""
 
     def __init__(
         self,
@@ -37,7 +37,7 @@ class EmbedPaginator(Dialog):
 
     @property
     def formatted_pages(self) -> List[discord.Embed]:
-        """ The embeds with formatted footers to act as pages. """
+        """The embeds with formatted footers to act as pages."""
 
         pages = deepcopy(self.pages)  # copy by value not reference
         for page in pages:

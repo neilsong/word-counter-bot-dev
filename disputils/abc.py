@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class Dialog(ABC):
-    """ Abstract base class defining a general embed dialog interaction. """
+    """Abstract base class defining a general embed dialog interaction."""
 
     def __init__(self, *args, **kwargs):
         self._embed: Optional[Embed] = None

@@ -56,7 +56,7 @@ class Info(commands.Cog):
         from config import ADMINS
 
         tadmins = ADMINS.copy()
-        sadmins = ''
+        sadmins = ""
         for i in range(0, len(tadmins)):
             tadmins[i] = await self.bot.fetch_user(tadmins[i])
             tadmins[i] = f"{tadmins[i].name}#{tadmins[i].discriminator}"

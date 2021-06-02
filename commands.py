@@ -89,7 +89,7 @@ class Commands(commands.Cog):
             try:
                 dict = self.bot.serverWords[ctx.guild.id]
             except:
-                return await ctx.send(f"I haven't logged anything in this server yet.")
+                return await send(ctx, f"I haven't logged anything in this server yet.")
 
             embeds = await count(dict, "server", ctx, self)
 
@@ -98,7 +98,7 @@ class Commands(commands.Cog):
             try:
                 dict = self.bot.serverWords[0]
             except:
-                return await ctx.send(f"I haven't logged anything yet.")
+                return await send(ctx, f"I haven't logged anything yet.")
 
             embeds = await count(dict, "global", ctx, self)
         else:
@@ -106,20 +106,20 @@ class Commands(commands.Cog):
                 try:
                     user = self.bot.get_user(int(re.sub("[^0-9]", "", user)))
                 except:
-                    return await ctx.send("Not a valid user.")
+                    return await send(ctx, "Not a valid user.")
 
             if user is None:
                 user = ctx.author
             elif user == self.bot.user:
-                return await ctx.send("Man, why would I count my own words?")
+                return await send(ctx, "Man, why would I count my own words?")
             elif user.bot:
-                return await ctx.send("I don't count words said by bots.")
+                return await send(ctx, "I don't count words said by bots.")
 
             dict = []
             try:
                 dict = self.bot.userWords[user.id]
             except:
-                return await ctx.send(
+                return await send(ctx, 
                     f"{user.mention} hasn't said anything that I have logged yet."
                 )
 
@@ -127,6 +127,8 @@ class Commands(commands.Cog):
 
         if isinstance(embeds, list):
             paginator = BotEmbedPaginator(ctx, embeds)
+            if testSend(ctx):
+                await ctx.send(historyInProgress(ctx))
             await paginator.run()
 
     @commands.command(aliases=["leaderboard", "high"])
@@ -135,14 +137,14 @@ class Commands(commands.Cog):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word == None:
-            return await ctx.send(
+            return await send(ctx, 
                 f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
             )
         if word in defaultFilter:
-            return await ctx.send("That word is filtered by default")
+            return await send(ctx, "That word is filtered by default")
         try:
             if word in self.bot.filter[str(ctx.guild.id)]:
-                return await ctx.send("That word is filtered")
+                return await send(ctx, "That word is filtered")
         except:
             pass
         # Emote space tester
@@ -158,17 +160,17 @@ class Commands(commands.Cog):
                     else:
                         hasemote = True
             if hasmultiple:
-                return await ctx.send(
+                return await send(ctx, 
                     f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
                 )
             elif not hasemote:
                 words = word.split()
                 if words[1] == "global":
-                    return await ctx.send(
+                    return await send(ctx, 
                         f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
                     )
                 else:
-                    return await ctx.send(
+                    return await send(ctx, 
                         f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
                     )
 
@@ -180,6 +182,8 @@ class Commands(commands.Cog):
 
         if isinstance(embeds, list):
             paginator = BotEmbedPaginator(ctx, embeds)
+            if testSend(ctx):
+                await ctx.send(historyInProgress(ctx))
             await paginator.run()
 
     @commands.command(aliases=["leaderboardglobal", "highglobal"])
@@ -188,14 +192,14 @@ class Commands(commands.Cog):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word == None:
-            return await ctx.send(
+            return await send(ctx, 
                 f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
             )
         if word in defaultFilter:
-            return await ctx.send("That word is filtered by default")
+            return await send(ctx, "That word is filtered by default")
         try:
             if word in self.bot.filter[str(ctx.guild.id)]:
-                return await ctx.send("That word is filtered")
+                return await send(ctx, "That word is filtered")
         except:
             pass
         if " " in word:
@@ -210,17 +214,17 @@ class Commands(commands.Cog):
                     else:
                         hasemote = True
             if hasmultiple:
-                return await ctx.send(
+                return await send(ctx, 
                     f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
                 )
             elif not hasemote:
                 words = word.split()
                 if words[1] == "global":
-                    return await ctx.send(
+                    return await send(ctx, 
                         f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
                     )
                 else:
-                    return await ctx.send(
+                    return await send(ctx, 
                         f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
                     )
 
@@ -232,6 +236,8 @@ class Commands(commands.Cog):
 
         if isinstance(embeds, list):
             paginator = BotEmbedPaginator(ctx, embeds)
+            if testSend(ctx):
+                await ctx.send(historyInProgress)
             await paginator.run()
 
     # ----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -241,21 +247,27 @@ class Commands(commands.Cog):
     @commands.command()
     # @commands.has_permissions(manage_guild=True)
     async def readhistory(self, ctx):
-        aRead = False
+        aRead = 0
         try:
             aRead = self.bot.readHistory[str(ctx.guild.id)]
         except:
             pass
-        if not aRead:
-            resp = await ctx.send("Reading history...")
+        if aRead == 1:
+            await ctx.send(historyInProgress(ctx))
+        elif aRead == 0:
+            resp = await send(ctx, "Reading history...")
+
             path = os.path.join(
                 os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt"
             )
             with codecs.open(path, "w+", "utf-8") as f:
                 from main import updateWord
 
+                self.bot.readHistory[str(ctx.guild.id)] = 1
+
                 for channel in ctx.guild.text_channels:
-                    print(channel.name, end="")
+                    print('#'+channel.name, end="")
+                    self.bot.readHistoryChannel[str(ctx.guild.id)] = str(channel.id)
                     if isbotchannel(str(channel.name).lower()) or isbotchannel(
                         str(channel.category).lower()
                     ):
@@ -282,34 +294,34 @@ class Commands(commands.Cog):
                     except:
                         print(" - error")
 
-            self.bot.readHistory[str(ctx.guild.id)] = True
+            self.bot.readHistory[str(ctx.guild.id)] = 2
 
-            await insert(state=5, id=str(ctx.guild.id), value=True)
+            await insert(state=5, id=str(ctx.guild.id), value=2)
 
             await dataclean(ctx.guild)
 
             await resp.edit(content="Done\n")
         else:
-            await ctx.send(
-                "History already read. `readhistory` is only allowed once per server."
+            await send(ctx, 
+                f"History already read. `readhistory` is only allowed once per server."
             )
 
     @commands.command(hidden=True)
     async def setBackend(self, ctx, url=None):
         if not ".ngrok.io" in url:
-            return await ctx.send("Invalid URL.")
+            return await send(ctx, "Invalid URL.")
         global custombackendURL
         session = aiohttp.ClientSession()
         custombackendURL = url
         async with session.get(url) as res:
             r = res.text()
             if ".ngrok.io not found" in r:
-                await ctx.send(
+                await send(ctx, 
                     "Backend set to `" + url + "`, but backend failed to respond."
                 )
                 custombackendURL = ""
             else:
-                await ctx.send("Backend set to `" + url + "`. Backend responsive.")
+                await send(ctx, "Backend set to `" + url + "`. Backend responsive.")
         await session.close()
 
     @commands.command()
@@ -320,7 +332,7 @@ class Commands(commands.Cog):
             gep[r[:3]] = r
         if not word == None:
             session = aiohttp.ClientSession()
-            message = await ctx.send(
+            message = await send(ctx, 
                 "Your request is being processed, this will take around 1-2 minutes",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
@@ -441,7 +453,7 @@ class Commands(commands.Cog):
                     )
             await session.close()
         else:
-            await ctx.send("Needs input text. ex:`!talk hello world`")
+            await send(ctx, "Needs input text. ex:`!talk hello world`")
 
 
 def setup(bot):

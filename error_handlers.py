@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+from utilities import *
 
 
 class Error_Handlers(commands.Cog):
@@ -12,7 +13,7 @@ class Error_Handlers(commands.Cog):
     async def on_command_error(self, ctx, exception):
         exc = exception
         if isinstance(exc, commands.NotOwner):
-            return await ctx.send("You are not an admin of this bot.")
+            return await send(ctx, "You are not an admin of this bot.")
 
         elif isinstance(exc, commands.NoPrivateMessage):
             return
@@ -30,12 +31,12 @@ class Error_Handlers(commands.Cog):
             return
 
         elif isinstance(exc, commands.MissingPermissions):
-            return await ctx.send(
+            return await send(ctx, 
                 "You don't have the permissions to execute this command."
             )
 
         else:
-            return await ctx.send(
+            return await send(ctx, 
                 f"```Command: {ctx.command.qualified_name}\n{exc}```An unknown error occured "
                 "and I wasn't able to complete that command. Sorry!"
             )

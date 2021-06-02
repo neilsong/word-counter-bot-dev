@@ -18,14 +18,14 @@ class Management(commands.Cog):
             prefixes = self.bot.prefixes[str(ctx.guild.id)]
         except:
             description += ": `!`"
-            return await ctx.send(description)
+            return await send(ctx, description)
         if len(prefixes) > 1:
             description += "es: "
             description += await wordListToString(self, ctx, prefixes)
         elif len(prefixes) == 1:
             description += ": "
             description += await wordListToString(self, ctx, prefixes)
-        await ctx.send(description)
+        await send(ctx, description)
 
     @commands.command()
     @commands.guild_only()
@@ -35,12 +35,12 @@ class Management(commands.Cog):
             prefixlist = prefixes.split(" ")
             self.bot.prefixes.update({str(ctx.guild.id): prefixlist})
             if len(prefixlist) > 1:
-                await ctx.send("Prefixes set")
+                await send(ctx, "Prefixes set")
             else:
-                await ctx.send("Prefix set")
+                await send(ctx, "Prefix set")
             await insert(state=0, id=str(ctx.guild.id), value=prefixlist)
         else:
-            await ctx.send(
+            await send(ctx, 
                 "Please set either a one-character prefix, or multiple one-character prefixes separated by spaces"
             )
 
@@ -49,12 +49,12 @@ class Management(commands.Cog):
     async def blacklist(self, ctx):
         blacklist = "Currently blacklisted channel"
         if not str(ctx.guild.id) in self.bot.blacklist.keys():
-            await ctx.send("There is no blacklist for this server")
+            await send(ctx, "There is no blacklist for this server")
             return
         blacklist += await channelListToString(
             self, ctx, self.bot.blacklist[str(ctx.guild.id)]
         )
-        await ctx.send(blacklist)
+        await send(ctx, blacklist)
 
     @commands.command()
     @commands.guild_only()
@@ -79,7 +79,7 @@ class Management(commands.Cog):
                 pass
         else:
             response += "Please provide either a channel, or multiple channels separated by spaces\n"
-        await ctx.send(response)
+        await send(ctx, response)
 
     @commands.command()
     @commands.guild_only()
@@ -107,7 +107,7 @@ class Management(commands.Cog):
                 )
         else:
             response += "Please provide either a channel, or multiple channels separated by spaces"
-        await ctx.send(response)
+        await send(ctx, response)
 
     @commands.command()
     @commands.guild_only()
@@ -115,10 +115,10 @@ class Management(commands.Cog):
     async def filter(self, ctx):
         filter = "Current filter: "
         if not str(ctx.guild.id) in self.bot.filter.keys():
-            await ctx.send("There is no filter for this server")
+            await send(ctx, "There is no filter for this server")
             return
         filter += await wordListToString(self, ctx, self.bot.filter[str(ctx.guild.id)])
-        await ctx.send(filter)
+        await send(ctx, filter)
 
     @commands.command()
     @commands.guild_only()
@@ -154,7 +154,7 @@ class Management(commands.Cog):
                 "Please add either one word, or multiple words separated by spaces"
             )
 
-        await ctx.send(response)
+        await send(ctx, response)
 
     @commands.command()
     @commands.guild_only()
@@ -196,7 +196,7 @@ class Management(commands.Cog):
             response += (
                 "Please remove either one word, or multiple words separated by spaces"
             )
-        await ctx.send(response)
+        await send(ctx, response)
 
 
 def setup(bot):

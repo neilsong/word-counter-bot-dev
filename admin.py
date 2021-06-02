@@ -15,7 +15,7 @@ class Admin(commands.Cog):
     async def edituser(self, ctx, user_id: int, word: str = None, count: int = 0):
         # Edit a user's entry in all collections or add a new one
         if not user_id or not word or not count:
-            return ctx.send("Parameters: user_id, word, count")
+            return await send(ctx, "Parameters: user_id, word, count")
 
         change = 0
         try:
@@ -33,7 +33,7 @@ class Admin(commands.Cog):
         self.bot.serverWords[ctx.guild.id][word] += change
         self.bot.serverWords[0][word] += change
 
-        await ctx.send("Done")
+        await send(ctx, "Done")
 
     @commands.command(hidden=True)
     @isaBotAdmin()
@@ -55,7 +55,7 @@ class Admin(commands.Cog):
             except:
                 pass
             await self.bot.collection.update_many({}, {"$unset": {i: 1}})
-        await ctx.send("Done")
+        await send(ctx, "Done")
 
     @commands.command(hidden=True)
     @isaBotAdmin()
@@ -77,7 +77,7 @@ class Admin(commands.Cog):
         except:
             pass
         await self.bot.collection.update_many({}, {"$unset": {word: 1}})
-        await ctx.send("Done")
+        await send(ctx, "Done")
 
     @commands.command(hidden=True)
     @isaBotAdmin()
@@ -91,9 +91,9 @@ class Admin(commands.Cog):
                 self.bot.serverWords[0][u] -= c
             self.bot.userWords.pop(user_id)
             await self.bot.collection.delete_one({"__id": user_id})
-            await ctx.send("Done")
+            await send(ctx, "Done")
         except KeyError as e:
-            await ctx.send(f"User `{e}` does not exist or has no words logged yet.")
+            await send(ctx, f"User `{e}` does not exist or has no words logged yet.")
 
     # @commands.command(hidden=True)
     # @isaBotAdmin()
@@ -105,9 +105,9 @@ class Admin(commands.Cog):
     #         with ctx.channel.typing():
     #             async with self.bot.pool.acquire() as conn:
     #                 result = await conn.execute(query)
-    #         await ctx.send(f"Query complete:```{result}```")
+    #         await send(ctx, f"Query complete:```{result}```")
     #     except Exception as e:
-    #         await ctx.send(f"Query failed:```{e}```")
+    #         await send(ctx, f"Query failed:```{e}```")
 
     @commands.command(aliases=["resetstatus"], hidden=True)
     @isaBotAdmin()
@@ -120,7 +120,7 @@ class Admin(commands.Cog):
             ),
         )
 
-        await ctx.send("Reset playing status")
+        await send(ctx, "Reset playing status")
 
     @commands.command(hidden=True)
     @isaBotAdmin()
@@ -136,17 +136,20 @@ class Admin(commands.Cog):
         elif status.startswith("off") or status.startswith("in"):
             await self.bot.change_presence(status=discord.Status.invisible)
         else:
-            await ctx.send("Invalid status")
+            await send(ctx, "Invalid status")
 
-        await ctx.send("Set new status")
+        await send(ctx, "Set new status")
 
     @commands.command(hidden=True)
     @isaBotAdmin()
-    async def reload(ctx):
+    async def reload(self, ctx):
         # Reload the bot
-        bot.reload_extension("commands")
-        bot.reload_extension("error_handlers")
-        await ctx.send("Reloaded extensions")
+        self.bot.reload_extension("commands")
+        self.bot.reload_extension("error_handlers")
+        self.bot.reload_extension("management")
+        self.bot.reload_extension("info")
+        self.bot.reload_extension("admin")
+        await send(ctx, "Reloaded extensions")
 
     @commands.command(hidden=True)
     @isaBotAdmin()
@@ -155,12 +158,12 @@ class Admin(commands.Cog):
 
         await cancel_workers()
         await start_workers()
-        await ctx.send("Restarted db workers")
+        await send(ctx, "Restarted db workers")
 
     @commands.command()
     @isaBotAdmin()
     async def serverdump(self, ctx):
-        resp = await ctx.send("Dumping Server...")
+        resp = await send(ctx, "Dumping Server...")
         path = os.path.join(
             os.path.abspath(os.getcwd()), "serverdump", str(ctx.guild.id) + ".txt"
         )

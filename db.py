@@ -28,6 +28,7 @@ async def create_db():
     bot.blacklist = {"__id": "blacklist"}
     bot.filter = {"__id": "filter"}
     bot.readHistory = {"__id": "readHistory"}
+    bot.readHistoryChannel = {"__id": "readHistoryChannel"}
     async for i in bot.serverCollection.find({}, {"_id": 0}):
         if i.get("__id") == "prefixes":
             bot.prefixes.update(dict(i))

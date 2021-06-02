@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import datetime
-from utilities import wordListToString, find_color
+from utilities import wordListToString, find_color, send
 import sys
 
 
@@ -23,7 +23,7 @@ class Info(commands.Cog):
             prefixes = self.bot.prefixes[str(ctx.guild.id)]
         except:
             description += ": `!`"
-            await ctx.send(description)
+            await send(ctx, description)
         if len(prefixes) > 1:
             description += "es: "
             description += wordListToString(prefixes)
@@ -39,7 +39,7 @@ class Info(commands.Cog):
         for c in cmds:
             embed.add_field(name=c.name, value=c.help, inline=False)
 
-        await ctx.send(embed=embed)
+        await send(ctx, embed=embed)
 
     @commands.command(aliases=["info"])
     async def about(self, ctx):
@@ -88,7 +88,7 @@ class Info(commands.Cog):
             inline=False,
         )
 
-        await ctx.send(embed=embed)
+        await send(ctx, embed=embed)
 
     @commands.command()
     async def stats(self, ctx):
@@ -166,13 +166,13 @@ class Info(commands.Cog):
             icon_url=self.bot.user.avatar_url,
         )
 
-        await ctx.send(embed=embed)
+        await send(ctx, embed=embed)
 
     @commands.command()
     async def invite(self, ctx):
         # Sends an invite link
 
-        await ctx.send(
+        await send(ctx, 
             "Here's my invite link so I can count words on your server too:\n"
             f"https://discordapp.com/oauth2/authorize?client_id={self.bot.app_info.id}"
             "&permissions=67501120&scope=bot"

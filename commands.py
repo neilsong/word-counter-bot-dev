@@ -119,8 +119,8 @@ class Commands(commands.Cog):
             try:
                 dict = self.bot.userWords[user.id]
             except:
-                return await send(ctx, 
-                    f"{user.mention} hasn't said anything that I have logged yet."
+                return await send(
+                    ctx, f"{user.mention} hasn't said anything that I have logged yet."
                 )
 
             embeds = await count(dict, user, ctx, self)
@@ -137,8 +137,9 @@ class Commands(commands.Cog):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word == None:
-            return await send(ctx, 
-                f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
+            return await send(
+                ctx,
+                f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`",
             )
         if word in defaultFilter:
             return await send(ctx, "That word is filtered by default")
@@ -160,18 +161,21 @@ class Commands(commands.Cog):
                     else:
                         hasemote = True
             if hasmultiple:
-                return await send(ctx, 
-                    f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
+                return await send(
+                    ctx,
+                    f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`",
                 )
             elif not hasemote:
                 words = word.split()
                 if words[1] == "global":
-                    return await send(ctx, 
-                        f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                    return await send(
+                        ctx,
+                        f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`",
                     )
                 else:
-                    return await send(ctx, 
-                        f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`"
+                    return await send(
+                        ctx,
+                        f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}top lol`",
                     )
 
         word = word.lower()
@@ -192,8 +196,9 @@ class Commands(commands.Cog):
         # See the leaderboard of the top users of this server for this word. Do `top global` to see the top users across all servers
         # Note: If a user said any words on another server that this bot is also on, those will be taken into account
         if word == None:
-            return await send(ctx, 
-                f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+            return await send(
+                ctx,
+                f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`",
             )
         if word in defaultFilter:
             return await send(ctx, "That word is filtered by default")
@@ -214,18 +219,21 @@ class Commands(commands.Cog):
                     else:
                         hasemote = True
             if hasmultiple:
-                return await send(ctx, 
-                    f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                return await send(
+                    ctx,
+                    f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`",
                 )
             elif not hasemote:
                 words = word.split()
                 if words[1] == "global":
-                    return await send(ctx, 
-                        f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                    return await send(
+                        ctx,
+                        f"If you are trying to get the global leaderboard, do `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`",
                     )
                 else:
-                    return await send(ctx, 
-                        f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`"
+                    return await send(
+                        ctx,
+                        f"Please type a word or individual emote to search for. Ex: `{get_prefix(self.bot, ctx.message)[0]}topglobal lol`",
                     )
 
         word = word.lower()
@@ -266,7 +274,7 @@ class Commands(commands.Cog):
                 self.bot.readHistory[str(ctx.guild.id)] = 1
 
                 for channel in ctx.guild.text_channels:
-                    print('#'+channel.name, end="")
+                    print("#" + channel.name, end="")
                     self.bot.readHistoryChannel[str(ctx.guild.id)] = str(channel.id)
                     if isbotchannel(str(channel.name).lower()) or isbotchannel(
                         str(channel.category).lower()
@@ -302,8 +310,9 @@ class Commands(commands.Cog):
 
             await resp.edit(content="Done\n")
         else:
-            await send(ctx, 
-                f"History already read. `readhistory` is only allowed once per server."
+            await send(
+                ctx,
+                f"History already read. `readhistory` is only allowed once per server.",
             )
 
     @commands.command(hidden=True)
@@ -316,8 +325,8 @@ class Commands(commands.Cog):
         async with session.get(url) as res:
             r = res.text()
             if ".ngrok.io not found" in r:
-                await send(ctx, 
-                    "Backend set to `" + url + "`, but backend failed to respond."
+                await send(
+                    ctx, "Backend set to `" + url + "`, but backend failed to respond."
                 )
                 custombackendURL = ""
             else:
@@ -332,7 +341,8 @@ class Commands(commands.Cog):
             gep[r[:3]] = r
         if not word == None:
             session = aiohttp.ClientSession()
-            message = await send(ctx, 
+            message = await send(
+                ctx,
                 "Your request is being processed, this will take around 1-2 minutes",
                 allowed_mentions=discord.AllowedMentions.none(),
             )

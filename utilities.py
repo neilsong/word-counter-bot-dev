@@ -5,14 +5,18 @@ from constants import emotes
 import datetime
 import asyncio
 
+
 def historyInProgress(ctx):
     from main import bot
+
     return f"History reading is in progress... Current Channel: <#{bot.readHistoryChannel[str(ctx.guild.id)]}>"
+
 
 async def send(ctx, message):
     from main import bot
+
     readHistoryProgress = False
-    try: 
+    try:
         if bot.readHistory[str(ctx.guild.id)] == 1:
             readHistoryProgress = True
         else:
@@ -23,10 +27,12 @@ async def send(ctx, message):
         await ctx.send(historyInProgress(ctx))
     return await ctx.send(message)
 
+
 def testSend(ctx):
     from main import bot
+
     readHistoryProgress = False
-    try: 
+    try:
         if bot.readHistory[str(ctx.guild.id)] == 1:
             readHistoryProgress = True
         else:
@@ -34,6 +40,7 @@ def testSend(ctx):
     except:
         pass
     return readHistoryProgress
+
 
 def addItem(dict, string, id):
     try:

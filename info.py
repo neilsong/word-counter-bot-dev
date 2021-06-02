@@ -172,10 +172,11 @@ class Info(commands.Cog):
     async def invite(self, ctx):
         # Sends an invite link
 
-        await send(ctx, 
+        await send(
+            ctx,
             "Here's my invite link so I can count words on your server too:\n"
             f"https://discordapp.com/oauth2/authorize?client_id={self.bot.app_info.id}"
-            "&permissions=67501120&scope=bot"
+            "&permissions=67501120&scope=bot",
         )
 
 

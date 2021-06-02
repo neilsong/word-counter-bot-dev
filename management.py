@@ -40,8 +40,9 @@ class Management(commands.Cog):
                 await send(ctx, "Prefix set")
             await insert(state=0, id=str(ctx.guild.id), value=prefixlist)
         else:
-            await send(ctx, 
-                "Please set either a one-character prefix, or multiple one-character prefixes separated by spaces"
+            await send(
+                ctx,
+                "Please set either a one-character prefix, or multiple one-character prefixes separated by spaces",
             )
 
     @commands.command()

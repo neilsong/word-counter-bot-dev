@@ -31,14 +31,15 @@ class Error_Handlers(commands.Cog):
             return
 
         elif isinstance(exc, commands.MissingPermissions):
-            return await send(ctx, 
-                "You don't have the permissions to execute this command."
+            return await send(
+                ctx, "You don't have the permissions to execute this command."
             )
 
         else:
-            return await send(ctx, 
+            return await send(
+                ctx,
                 f"```Command: {ctx.command.qualified_name}\n{exc}```An unknown error occured "
-                "and I wasn't able to complete that command. Sorry!"
+                "and I wasn't able to complete that command. Sorry!",
             )
 
 

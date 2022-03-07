@@ -64,18 +64,19 @@ voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
 name = "dnspython"
-version = "2.1.0"
+version = "2.2.1"
 description = "DNS toolkit"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.6,<4.0"
 
 [package.extras]
-dnssec = ["cryptography (>=2.6)"]
-doh = ["requests", "requests-toolbelt"]
-idna = ["idna (>=2.1)"]
-curio = ["curio (>=1.2)", "sniffio (>=1.1)"]
-trio = ["trio (>=0.14.0)", "sniffio (>=1.1)"]
+dnssec = ["cryptography (>=2.6,<37.0)"]
+curio = ["curio (>=1.2,<2.0)", "sniffio (>=1.1,<2.0)"]
+doh = ["h2 (>=4.1.0)", "httpx (>=0.21.1)", "requests (>=2.23.0,<3.0.0)", "requests-toolbelt (>=0.9.1,<0.10.0)"]
+idna = ["idna (>=2.1,<4.0)"]
+trio = ["trio (>=0.14,<0.20)"]
+wmi = ["wmi (>=1.5.1,<2.0.0)"]
 
 [[package]]
 name = "idna"
@@ -160,7 +161,7 @@ typing-extensions = {version = ">=3.7.4", markers = "python_version < \"3.8\""}
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "f83a708887e0114c27ff61eca8183c135c2d4db1c3335d9f9cd4ae94293100d7"
+content-hash = "8729e7d869b68340d9e2471ef098b1a2cfa40ebeaba5b2fa0bb86edc07c7f5bb"
 
 [metadata.files]
 aiohttp = [
@@ -219,8 +220,8 @@ chardet = [
     {file = "discord.py-1.7.0.tar.gz", hash = "sha256:1b05150e767c4a18941d863d819844ecef8395b0ca3784055d78770b8fa70b68"},
 ]
 dnspython = [
-    {file = "dnspython-2.1.0-py3-none-any.whl", hash = "sha256:95d12f6ef0317118d2a1a6fc49aac65ffec7eb8087474158f42f26a639135216"},
-    {file = "dnspython-2.1.0.zip", hash = "sha256:e4a87f0b573201a0f3727fa18a516b055fd1107e0e5477cded4a2de497df1dd4"},
+    {file = "dnspython-2.2.1-py3-none-any.whl", hash = "sha256:a851e51367fb93e9e1361732c1d60dab63eff98712e503ea7d92e6eccb109b4f"},
+    {file = "dnspython-2.2.1.tar.gz", hash = "sha256:0f7569a4a6ff151958b64304071d370daa3243d15941a7beedf0c9fe5105603e"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
